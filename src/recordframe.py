@@ -1,0 +1,138 @@
+#
+# Loxodo -- Password Safe V3 compatible Password Vault
+# Copyright (C) 2008 Christoph Sommer <mail@christoph-sommer.de>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+#
+
+import wx
+
+class RecordFrame(wx.Frame):
+
+    """
+    Displays (and lets the user edit) a single Vault Record.
+    """
+
+    def __init__(self, *args, **kwds):
+        kwds["style"] = wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL
+        wx.Frame.__init__(self, *args, **kwds)
+
+        self.panel = wx.Panel(self, -1)
+
+        _sz_main = wx.BoxSizer(wx.VERTICAL)
+        _sz_fields = wx.FlexGridSizer(5, 2, 5, 5)
+        _sz_fields.AddGrowableCol(1)
+        _sz_fields.AddGrowableRow(4)
+        self._tc_group = self._add_a_textcontrol(_sz_fields, "Group:", "")
+        self._tc_title = self._add_a_textcontrol(_sz_fields, "Title:", "")
+        self._tc_user = self._add_a_textcontrol(_sz_fields, "Username:", "")
+        self._tc_passwd = self._add_a_textcontrol(_sz_fields, "Password:", "", extrastyle=wx.PASSWORD)
+        self._tc_notes = self._add_a_textbox(_sz_fields, "Notes:", "")
+        _sz_main.Add(_sz_fields, 1, wx.EXPAND | wx.GROW)
+
+        _ln_line = wx.StaticLine(self.panel, -1, size=(20, -1), style=wx.LI_HORIZONTAL)
+        _sz_main.Add(_ln_line, 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.RIGHT|wx.TOP, 5)
+
+        btnsizer = wx.StdDialogButtonSizer()
+        btn = wx.Button(self.panel, wx.ID_APPLY)
+        wx.EVT_BUTTON(self, wx.ID_APPLY, self._on_apply)
+        btnsizer.AddButton(btn)
+        btn = wx.Button(self.panel, wx.ID_CANCEL)
+        wx.EVT_BUTTON(self, wx.ID_CANCEL, self._on_cancel)
+        btnsizer.AddButton(btn)
+        btn = wx.Button(self.panel, wx.ID_OK)
+        wx.EVT_BUTTON(self, wx.ID_OK, self._on_ok)
+        btn.SetDefault()
+        btnsizer.AddButton(btn)
+        btnsizer.Realize()
+        _sz_main.Add(btnsizer, 0, wx.ALIGN_RIGHT | wx.TOP | wx.BOTTOM, 5)
+
+        self.panel.SetSizer(_sz_main)
+        _sz_frame = wx.BoxSizer()
+        _sz_frame.Add(self.panel, 1, wx.EXPAND | wx.ALL, 5)
+        self.SetSizer(_sz_frame)
+
+        self.SetTitle("Edit Vault Record")
+        self.Layout()
+
+        self.Fit()
+        self.SetMinSize(self.GetSize())
+
+        self._vault_record = None
+        self.refresh_subscriber = None
+
+
+    def _add_a_textcontrol(self, parent_sizer, label, default_value, extrastyle=0):
+        _label = wx.StaticText(self.panel, -1, label, style=wx.ALIGN_RIGHT)
+        parent_sizer.Add(_label, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5)
+        r = wx.TextCtrl(self.panel, -1, default_value, style=extrastyle, size=(128, -1))
+        parent_sizer.Add(r, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.ALL|wx.EXPAND, 5)
+        return r
+
+    def _add_a_textbox(self, parent_sizer, label, default_value):
+        _label = wx.StaticText(self.panel, -1, label, style=wx.ALIGN_RIGHT)
+        parent_sizer.Add(_label, 0, wx.ALL|wx.ALIGN_TOP|wx.ALIGN_RIGHT, 5)
+        control = wx.TextCtrl(self.panel, -1, default_value, style=wx.TE_MULTILINE, size=(128, -1))
+        parent_sizer.Add(control, 1, wx.ALIGN_TOP|wx.ALIGN_LEFT|wx.ALL|wx.EXPAND, 5)
+        return control
+
+    def Refresh(self):
+        """
+        Update fields from source
+
+        Extends the base classes' method.
+        """
+        if (self._vault_record is not None):
+            self._tc_group.SetValue(self._vault_record.group)
+            self._tc_title.SetValue(self._vault_record.title)
+            self._tc_user.SetValue(self._vault_record.user)
+            self._tc_passwd.SetValue(self._vault_record.passwd)
+            self._tc_notes.SetValue(self._vault_record.notes)
+        wx.Frame.Refresh(self)
+
+    def _on_apply(self, dummy):
+        """
+        Event handler: Fires when user chooses this button.
+        """
+        if (not self._vault_record is None):
+            self._vault_record.group = self._tc_group.Value
+            self._vault_record.title = self._tc_title.Value
+            self._vault_record.user = self._tc_user.Value
+            self._vault_record.passwd = self._tc_passwd.Value
+            self._vault_record.notes = self._tc_notes.Value
+        if (not self.refresh_subscriber is None):
+            self.refresh_subscriber.on_modified()
+
+    def _on_cancel(self, dummy):
+        """
+        Event handler: Fires when user chooses this button.
+        """
+        self.Show(False)
+
+    def _on_ok(self, evt):
+        """
+        Event handler: Fires when user chooses this button.
+        """
+        self._on_apply(evt)
+        self.Show(False)
+
+    def _set_vault_record(self, vault_record):
+        self._vault_record = vault_record
+        self.Refresh()
+
+    def _get_vault_record(self):
+        return self._vault_record
+
+    vault_record = property(_get_vault_record, _set_vault_record)
