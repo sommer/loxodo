@@ -204,7 +204,7 @@ class Vault(object):
             if (raw_len > 1024):
                 print "Emergency Exit"
                 sys.exit(1)
-            for dummy in range(raw_len//16):
+            for dummy in range((raw_len+4)//16):
                 data = filehandle.read(16)
                 if not data:
                     return None
