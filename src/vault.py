@@ -22,7 +22,8 @@ import hashlib
 import struct
 from hmac import HMAC
 import random
-from os import urandom
+import os
+import tempfile
 
 from twofish.twofish_ecb import TwofishECB
 from twofish.twofish_cbc import TwofishCBC
@@ -214,7 +215,7 @@ class Vault(object):
 
     def _urandom(self, count):
         try:
-            return urandom(count)
+            return os.urandom(count)
         except NotImplementedError:
             retval = ""
             for dummy in range(count):
@@ -320,9 +321,11 @@ class Vault(object):
         """
         Store contents of this Vault into a file.
         """
-        filehandle = file(filename, 'wb')
+        
+        # write to temporary file first
+        (osfilehandle, tmpfilename) = tempfile.mkstemp('.part', os.path.basename(filename) + ".", os.path.dirname(filename), text=False)
+        filehandle = os.fdopen(osfilehandle, "wb")
 
-        # FIXME: do not "in-place" write out Vault to disk to avoid data loss
         # FIXME: choose new SALT, B1-B4, IV values on each file write? Conflicting Specs!
 
         # write boilerplate
@@ -369,3 +372,14 @@ class Vault(object):
         self.f_hmac = hmac_checker.digest()
         filehandle.write(self.f_hmac)
         filehandle.close()
+
+        try:
+            tmpvault = Vault()
+            tmpvault.read_from_file(tmpfilename, password)
+        except RuntimeError:
+            os.remove(tmpfilename)
+            raise self.VaultFormatError("File integrity check failed")
+
+        # after writing the temporary file, replace the original file with it
+        os.remove(filename)
+        os.rename(tmpfilename, filename)

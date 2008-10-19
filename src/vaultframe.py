@@ -189,13 +189,23 @@ class VaultFrame(wx.Frame):
 
     def save_vault(self, filename, password):
         """
-        Set the Vault that this frame should display.
+        Write Vault contents to disk.
         """
-        self._is_modified = False
-        self.vault_file_name = filename
-        self.vault_password = password
-        self.vault.write_to_file(filename, password)
-        self.statusbar.SetStatusText("Wrote Vault contents to disk", 0)
+        try:
+            self._is_modified = False
+            self.vault_file_name = filename
+            self.vault_password = password
+            self.vault.write_to_file(filename, password)
+            self.statusbar.SetStatusText("Wrote Vault contents to disk", 0)
+        except RuntimeError:
+            dial = wx.MessageDialog(self,
+                                    'Could not write Vault contents to disk',
+                                    'Error writing to disk',
+                                    wx.OK | wx.ICON_ERROR
+                                    )
+            dial.ShowModal()
+            dial.Destroy()
+
 
     def _copy_to_clipboard(self, text):
         if not wx.TheClipboard.Open():
