@@ -17,6 +17,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 
+import os
+import string
 import wx
 
 class RecordFrame(wx.Frame):
@@ -38,7 +40,7 @@ class RecordFrame(wx.Frame):
         self._tc_group = self._add_a_textcontrol(_sz_fields, "Group:", "")
         self._tc_title = self._add_a_textcontrol(_sz_fields, "Title:", "")
         self._tc_user = self._add_a_textcontrol(_sz_fields, "Username:", "")
-        self._tc_passwd = self._add_a_textcontrol(_sz_fields, "Password:", "", extrastyle=wx.PASSWORD)
+        (self._tc_passwd, self._tc_passwd_alt, self._bt_showhide) = self._add_a_passwdfield(_sz_fields, "Password:", "")
         self._tc_notes = self._add_a_textbox(_sz_fields, "Notes:", "")
         _sz_main.Add(_sz_fields, 1, wx.EXPAND | wx.GROW)
 
@@ -80,6 +82,25 @@ class RecordFrame(wx.Frame):
         r = wx.TextCtrl(self.panel, -1, default_value, style=extrastyle, size=(128, -1))
         parent_sizer.Add(r, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.ALL|wx.EXPAND, 5)
         return r
+
+    def _add_a_passwdfield(self, parent_sizer, label, default_value, extrastyle=0):
+        _label = wx.StaticText(self.panel, -1, label, style=wx.ALIGN_RIGHT)
+        parent_sizer.Add(_label, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5)
+        r_container = wx.BoxSizer()
+        parent_sizer.Add(r_container, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.ALL|wx.EXPAND, 5)
+        r_masked = wx.TextCtrl(self.panel, -1, default_value, style=wx.PASSWORD, size=(128, -1))
+        r_container.Add(r_masked, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.EXPAND, 0)
+        r_shown = wx.TextCtrl(self.panel, -1, default_value, size=(128, -1))
+        r_shown.Hide()
+        r_container.Add(r_shown, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.EXPAND, 0)
+        r_toggle = wx.Button(self.panel, wx.ID_MORE, "(un)mask")
+        wx.EVT_BUTTON(self, wx.ID_MORE, self._on_toggle_passwd_mask)
+        r_container.Add(r_toggle, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.SHRINK|wx.LEFT, 10)
+        r_generate = wx.Button(self.panel, wx.ID_REPLACE, "generate")
+        wx.EVT_BUTTON(self, wx.ID_REPLACE, self._on_generate_passwd)
+        r_container.Add(r_generate, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.SHRINK|wx.LEFT, 10)
+
+        return (r_masked, r_shown, r_toggle)
 
     def _add_a_textbox(self, parent_sizer, label, default_value):
         _label = wx.StaticText(self.panel, -1, label, style=wx.ALIGN_RIGHT)
@@ -127,6 +148,60 @@ class RecordFrame(wx.Frame):
         """
         self._on_apply(evt)
         self.Show(False)
+        
+    def _on_toggle_passwd_mask(self, dummy):
+        _tmp = self._tc_passwd
+        _passwd = _tmp.GetValue()
+        self._tc_passwd = self._tc_passwd_alt
+        self._tc_passwd_alt = _tmp
+        self._tc_passwd.Show()
+        self._tc_passwd_alt.Hide()
+        self._tc_passwd.GetParent().Layout()
+        self._tc_passwd.SetValue(_passwd)
+        if (self._tc_passwd_alt.FindFocus() == self._tc_passwd_alt):
+            self._tc_passwd.SetFocus()        
+   
+    def _on_generate_passwd(self, dummy):
+        _pwd = self.generate_password()
+        self._tc_passwd.SetValue(_pwd)
+
+    def _urandom(self, count):
+        try:
+            return os.urandom(count)
+        except NotImplementedError:
+            retval = ""
+            for dummy in range(count):
+                retval += struct.pack("<B", random.randint(0, 0xFF))
+            return retval
+
+    def generate_password(self, alphabet=None, pwd_length=8, allow_reduction=True):
+    
+        # default alphabet is all alphanumerics characters
+        if alphabet is None:
+            alphabet = string.ascii_lowercase + string.digits + string.ascii_uppercase
+    
+        # remove some easy-to-mistake characters
+        if allow_reduction:
+            for _chr in "0OjlI1":
+                alphabet = alphabet.replace(_chr, "")
+    
+        # iteratively pick one character from this alphabet to assemble password
+        last_chr = "x"
+        pwd = ""
+        for dummy in range(pwd_length):
+    
+            # temporarily reduce alphabet to avoid easy-to-mistake character pairs
+            alphabet2 = alphabet
+            if allow_reduction:
+                for _chr in ('cl', 'mn', 'nm', 'nn', 'rn', 'vv', 'VV'):
+                    if last_chr == _chr[0]:
+                        alphabet2 = alphabet.replace(_chr[1],"")
+    
+            _chr = alphabet2[int(len(alphabet2) / 256.0 * ord(self._urandom(1)))]
+            pwd += _chr
+            last_chr = _chr
+    
+        return pwd
 
     def _set_vault_record(self, vault_record):
         self._vault_record = vault_record
