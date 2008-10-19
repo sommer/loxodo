@@ -101,6 +101,9 @@ class VaultFrame(wx.Frame):
         self.panel = wx.Panel(self, -1)
 
         self.list = self.VaultListCtrl(self.panel, -1, size=(640, 240), style=wx.LC_REPORT|wx.SUNKEN_BORDER|wx.LC_VIRTUAL|wx.LC_EDIT_LABELS)
+        self.list.Bind(wx.EVT_COMMAND_RIGHT_CLICK, self._on_list_contextmenu)
+        self.list.Bind(wx.EVT_RIGHT_UP, self._on_list_contextmenu)
+
         self.statusbar = self.CreateStatusBar(1, wx.ST_SIZEGRIP)
 
         # Set up menus
@@ -110,22 +113,22 @@ class VaultFrame(wx.Frame):
         filemenu.AppendSeparator()
         filemenu.Append(wx.ID_EXIT, " E&xit", "Terminate the program")
         wx.EVT_MENU(self, wx.ID_EXIT, self._on_exit)
-        entrymenu = wx.Menu()
-        entrymenu.Append(wx.ID_ADD, "&Add\tCtrl+A", "Add a new record, ...")
+        self._recordmenu = wx.Menu()
+        self._recordmenu.Append(wx.ID_ADD, "&Add\tCtrl+A", "Add a new record, ...")
         wx.EVT_MENU(self, wx.ID_ADD, self._on_add)
-        entrymenu.Append(wx.ID_DELETE, "&Delete\tCtrl+Back", "Delete this record")
+        self._recordmenu.Append(wx.ID_DELETE, "&Delete\tCtrl+Back", "Delete this record")
         wx.EVT_MENU(self, wx.ID_DELETE, self._on_delete)
-        entrymenu.AppendSeparator()
-        entrymenu.Append(wx.ID_EDIT, "&Edit\tCtrl+E", "Change this record's username, password, ...")
+        self._recordmenu.AppendSeparator()
+        self._recordmenu.Append(wx.ID_EDIT, "&Edit\tCtrl+E", "Change this record's username, password, ...")
         wx.EVT_MENU(self, wx.ID_EDIT, self._on_edit)
-        entrymenu.AppendSeparator()
-        entrymenu.Append(wx.ID_VIEW_DETAILS, "Copy &Username\tCtrl+U", "Copy this record's username to the clipboard")
+        self._recordmenu.AppendSeparator()
+        self._recordmenu.Append(wx.ID_VIEW_DETAILS, "Copy &Username\tCtrl+U", "Copy this record's username to the clipboard")
         wx.EVT_MENU(self, wx.ID_VIEW_DETAILS, self._on_copy_username)
-        entrymenu.Append(wx.ID_COPY, "Copy &Password\tCtrl+P", "Copy this record's password to the clipboard")
+        self._recordmenu.Append(wx.ID_COPY, "Copy &Password\tCtrl+P", "Copy this record's password to the clipboard")
         wx.EVT_MENU(self, wx.ID_COPY, self._on_copy_password)
         menu_bar = wx.MenuBar()
         menu_bar.Append(filemenu,"&Vault")
-        menu_bar.Append(entrymenu,"&Record")
+        menu_bar.Append(self._recordmenu,"&Record")
         self.SetMenuBar(menu_bar)
 
         self.SetTitle("Vault Contents")
@@ -256,6 +259,9 @@ class VaultFrame(wx.Frame):
         if (col == 2):
             self.list.sort_function = lambda e1, e2: cmp(e1.group, e2.group)
         self.list.Refresh()
+        
+    def _on_list_contextmenu(self, dummy):
+        self.PopupMenu(self._recordmenu)
 
     def _on_about(self, dummy):
         """
