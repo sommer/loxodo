@@ -103,6 +103,8 @@ class LoadFrame(wx.Frame):
                                     )
             dial.ShowModal()
             dial.Destroy()
+            self._tc_passwd.SetFocus()
+            self._tc_passwd.SelectAll()
         except vaultframe.vault.VaultVersionError:
             vaultframe.Destroy()
             dial = wx.MessageDialog(self,
