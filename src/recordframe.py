@@ -21,15 +21,15 @@ import os
 import string
 import wx
 
-class RecordFrame(wx.Frame):
+class RecordFrame(wx.MiniFrame):
 
     """
     Displays (and lets the user edit) a single Vault Record.
     """
 
-    def __init__(self, *args, **kwds):
-        kwds["style"] = wx.DEFAULT_FRAME_STYLE | wx.TAB_TRAVERSAL
-        wx.Frame.__init__(self, *args, **kwds)
+    def __init__(self, parent):
+        wx.MiniFrame.__init__(self, parent, -1, style=wx.DEFAULT_FRAME_STYLE | wx.TINY_CAPTION_HORIZ)
+        wx.EVT_CLOSE(self, self._on_frame_close)
 
         self.panel = wx.Panel(self, -1)
 
@@ -71,6 +71,8 @@ class RecordFrame(wx.Frame):
 
         self.Fit()
         self.SetMinSize(self.GetSize())
+
+        self._tc_passwd.SetFocus()        
 
         self._vault_record = None
         self.refresh_subscriber = None
@@ -202,6 +204,16 @@ class RecordFrame(wx.Frame):
             last_chr = _chr
     
         return pwd
+
+    def _on_frame_close(self, dummy):
+        """
+        Event handler: Fires when user closes the frame
+        """
+        self.Hide()
+
+    def set_initial_focus(self):
+        self._tc_title.SetFocus()
+        self._tc_title.SelectAll()
 
     def _set_vault_record(self, vault_record):
         self._vault_record = vault_record
