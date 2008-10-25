@@ -28,8 +28,13 @@ class Config(object):
     """
 
     def __init__(self):
+        self._fname = self.get_config_filename()
         self.parser = SafeConfigParser()
-        self.parser.read(self.get_config_filename())
+
+        if not os.path.exists(self._fname):
+            self.save()
+
+        self.parser.read(self._fname)
         if not self.parser.has_section("base"):
             self.parser.add_section("base")
 
@@ -40,10 +45,8 @@ class Config(object):
             self.recentvaults.append(self.parser.get("base", "recentvaults" + str(num)))
 
     def save(self):
-        fname = self.get_config_filename()
-        
-        if (not os.path.exists(os.path.dirname(fname))):
-            os.mkdir(os.path.dirname(fname))
+        if (not os.path.exists(os.path.dirname(self._fname))):
+            os.mkdir(os.path.dirname(self._fname))
 
         # remove duplicates and trim to 10 items
         _saved_recentvaults = []
@@ -54,23 +57,47 @@ class Config(object):
             _saved_recentvaults.append(item)
             if (len(_saved_recentvaults) >= 10):
                 break
-        
-        filehandle = open(fname, 'w')
+
+        filehandle = open(self._fname, 'w')
         self.parser.write(filehandle)
         filehandle.close()
 
     def get_config_filename(self):
+        """
+        Returns the full filename of the config file
+        """
         base_fname = "loxodo"
-        
-        if (os.environ.has_key("XDG_CONFIG_HOME")):
-            return os.path.join(os.environ["XDG_CONFIG_HOME"], base_fname + ".ini")
-        if platform.system() == "Linux":
-            return os.path.join(os.path.expanduser("~"), ".config", base_fname + ".ini")
-        if platform.system() == "Darwin":
-            return os.path.join(os.path.expanduser("~"), "Library", "Application Support", base_fname, base_fname + ".ini")
-        if platform.system() == "Windows":
-            return os.path.join(os.path.expanduser("~"), "Application Data", base_fname, base_fname + ".ini")
 
+        # On Mac OS X, config files go to ~/Library/Application Support/foo/
+        if platform.system() == "Darwin":
+            base_path = os.path.join(os.path.expanduser("~"), "Library", "Application Support")
+            if os.path.isdir(base_path):
+                return os.path.join(base_path, base_fname, base_fname + ".ini")
+
+        # On Microsoft Windows, config files go to $APPDATA/foo/
+        if platform.system() in ("Windows", "Microsoft"):
+            if (os.environ.has_key("APPDATA")):
+                base_path = os.environ["APPDATA"]
+                if os.path.isdir(base_path):
+                    return os.path.join(base_path, base_fname, base_fname + ".ini")
+
+        # Allow config directory override as per freedesktop.org XDG Base Directory Specification
+        if (os.environ.has_key("XDG_CONFIG_HOME")):
+            base_path = os.environ["XDG_CONFIG_HOME"]
+            if os.path.isdir(base_path):
+                return os.path.join(base_path, base_fname, base_fname + ".ini")
+
+        # Default configuration path is ~/.config/foo/
+        base_path = os.path.join(os.path.expanduser("~"), ".config")
+        if os.path.isdir(base_path):
+            return os.path.join(base_path, base_fname, base_fname + ".ini")
+
+        # First fallback is writing to the program's base directory
+        base_path = os.path.join(os.path.dirname(__file__), "..")
+        if os.path.isdir(base_path):
+            return os.path.join(base_path, base_fname + ".ini")
+
+        # Final fallback is writing to the current working directory
         return base_fname + ".ini"
 
 config = Config()
