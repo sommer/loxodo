@@ -42,6 +42,7 @@ class RecordFrame(_RecordFrameBase):
     def __init__(self, parent):
         _RecordFrameBase.__init__(self, parent)
         wx.EVT_CLOSE(self, self._on_frame_close)
+        self.Bind(wx.EVT_CHAR_HOOK, self._on_escape)
 
         self.panel = wx.Panel(self, -1)
 
@@ -222,6 +223,19 @@ class RecordFrame(_RecordFrameBase):
         Event handler: Fires when user closes the frame
         """
         self.Hide()
+
+    def _on_escape(self, evt):
+        """
+        Event handler: Fires when user presses a key
+        """
+
+        # If "Escape" was pressed, hide the frame
+        if evt.GetKeyCode() == wx.WXK_ESCAPE:
+            self.Hide()
+            return
+
+        # Ignore all other keys
+        evt.Skip()
 
     def set_initial_focus(self):
         self._tc_title.SetFocus()
