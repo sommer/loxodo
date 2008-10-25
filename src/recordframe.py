@@ -18,17 +18,29 @@
 #
 
 import os
+import platform
 import string
 import wx
 
-class RecordFrame(wx.MiniFrame):
+# RecordFrame is a wx.MiniFrame on platforms where this helps usability
+_RecordFrameBase = None
+if platform.system() in ("Windows", "Microsoft", "Darwin"):
+    class _RecordFrameBase(wx.MiniFrame):
+        def __init__(self, parent):
+            wx.MiniFrame.__init__(self, parent, -1, style=wx.DEFAULT_FRAME_STYLE | wx.TINY_CAPTION_HORIZ)
+else:
+    class _RecordFrameBase(wx.Frame):
+        def __init__(self, parent):
+            wx.Frame.__init__(self, parent, -1, style=wx.DEFAULT_FRAME_STYLE)
+
+class RecordFrame(_RecordFrameBase):
 
     """
     Displays (and lets the user edit) a single Vault Record.
     """
 
     def __init__(self, parent):
-        wx.MiniFrame.__init__(self, parent, -1, style=wx.DEFAULT_FRAME_STYLE | wx.TINY_CAPTION_HORIZ)
+        _RecordFrameBase.__init__(self, parent)
         wx.EVT_CLOSE(self, self._on_frame_close)
 
         self.panel = wx.Panel(self, -1)
