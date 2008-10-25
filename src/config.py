@@ -28,21 +28,22 @@ class Config(object):
     """
 
     def __init__(self):
+        self.recentvaults = []
+
         self._fname = self.get_config_filename()
-        self.parser = SafeConfigParser()
+        self._parser = SafeConfigParser()
 
         if not os.path.exists(self._fname):
             self.save()
 
-        self.parser.read(self._fname)
-        if not self.parser.has_section("base"):
-            self.parser.add_section("base")
+        self._parser.read(self._fname)
+        if not self._parser.has_section("base"):
+            self._parser.add_section("base")
 
-        self.recentvaults = []
         for num in range(10):
-            if (not self.parser.has_option("base", "recentvaults" + str(num))):
+            if (not self._parser.has_option("base", "recentvaults" + str(num))):
                 break
-            self.recentvaults.append(self.parser.get("base", "recentvaults" + str(num)))
+            self.recentvaults.append(self._parser.get("base", "recentvaults" + str(num)))
 
     def save(self):
         if (not os.path.exists(os.path.dirname(self._fname))):
@@ -53,13 +54,13 @@ class Config(object):
         for item in self.recentvaults:
             if item in _saved_recentvaults:
                 continue
-            self.parser.set("base", "recentvaults" + str(len(_saved_recentvaults)), item)
+            self._parser.set("base", "recentvaults" + str(len(_saved_recentvaults)), item)
             _saved_recentvaults.append(item)
             if (len(_saved_recentvaults) >= 10):
                 break
 
         filehandle = open(self._fname, 'w')
-        self.parser.write(filehandle)
+        self._parser.write(filehandle)
         filehandle.close()
 
     def get_config_filename(self):
