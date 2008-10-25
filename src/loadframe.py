@@ -22,6 +22,7 @@ import wx
 from wx.lib import filebrowsebutton
 
 from vaultframe import VaultFrame
+from vault import Vault
 from config import config
 
 class LoadFrame(wx.Frame):
@@ -94,7 +95,7 @@ class LoadFrame(wx.Frame):
             self.Hide()
             vaultframe.Show()
             self.Destroy()
-        except vaultframe.vault.BadPasswordError:
+        except Vault.BadPasswordError:
             vaultframe.Destroy()
             dial = wx.MessageDialog(self,
                                     'The given password does not match the Vault',
@@ -105,7 +106,7 @@ class LoadFrame(wx.Frame):
             dial.Destroy()
             self._tc_passwd.SetFocus()
             self._tc_passwd.SelectAll()
-        except vaultframe.vault.VaultVersionError:
+        except Vault.VaultVersionError:
             vaultframe.Destroy()
             dial = wx.MessageDialog(self,
                                     'This is not a PasswordSafe V3 Vault',
@@ -114,7 +115,7 @@ class LoadFrame(wx.Frame):
                                     )
             dial.ShowModal()
             dial.Destroy()
-        except vaultframe.vault.VaultFormatError:
+        except Vault.VaultFormatError:
             vaultframe.Destroy()
             dial = wx.MessageDialog(self,
                                     'Vault integrity check failed',
