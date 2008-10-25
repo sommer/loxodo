@@ -84,6 +84,7 @@ class VaultFrame(wx.Frame):
             """
             self.vault = vault
             self.Refresh()
+            self.select_first()
 
         def set_filter(self, filterstring):
             """
@@ -91,12 +92,31 @@ class VaultFrame(wx.Frame):
             """
             self._filterstring = filterstring
             self.Refresh()
+            self.select_first()
+
+        def deselect_all(self):
+            """
+            De-selects all items
+            """
+            while (self.GetFirstSelected() != -1):
+                self.Select(self.GetFirstSelected(), False)
+
+        def select_first(self):
+            """
+            Selects and focuses the first item (if there is one)
+            """
+            self.deselect_all()
+            if (self.GetItemCount() > 0):
+                self.Select(0, True)
+                self.Focus(0)
+
 
     def __init__(self, *args, **kwds):
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
 
         wx.EVT_CLOSE(self, self._on_frame_close)
+        self.Bind(wx.EVT_CHAR_HOOK, self._on_char)
 
         self.panel = wx.Panel(self, -1)
 
@@ -132,7 +152,6 @@ class VaultFrame(wx.Frame):
         self.SetMenuBar(menu_bar)
 
         self.SetTitle("Vault Contents")
-        self.list.SetFocus()
         self.statusbar.SetStatusWidths([-1])
         statusbar_fields = [""]
         for i in range(len(statusbar_fields)):
@@ -159,6 +178,8 @@ class VaultFrame(wx.Frame):
         self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self._on_list_item_activated, self.list)
         self.Bind(wx.EVT_LIST_END_LABEL_EDIT, self._on_list_item_label_edit, self.list)
         self.Bind(wx.EVT_LIST_COL_CLICK, self._on_list_column_click, self.list)
+
+        self._searchbox.SetFocus()
 
         self.vault_file_name = None
         self.vault_password = None
@@ -401,3 +422,22 @@ class VaultFrame(wx.Frame):
         Event handler: Fires when user closes the frame
         """
         self.Destroy()
+
+    def _on_char(self, evt):
+        """
+        Event handler: Fires when user presses a key
+        """
+
+        # If "Escape" was pressed, ignore key and clear the Search box
+        if evt.GetKeyCode() == wx.WXK_ESCAPE:
+            self._on_search_cancel(None)
+            return
+
+        # If "Up" or "Down" was pressed in self._searchbox, ignore key and focus self.list
+        if self.FindFocus() == self._searchbox or (self._searchbox.GetChildren() and self.FindFocus() in self._searchbox.GetChildren()):
+            if evt.GetKeyCode() in (wx.WXK_UP, wx.WXK_DOWN):
+                self.list.SetFocus()
+                return
+
+        # Ignore all other keys
+        evt.Skip()
