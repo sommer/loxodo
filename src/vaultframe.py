@@ -256,6 +256,8 @@ class VaultFrame(wx.Frame):
         """
         Event handler: Fires when user edits an entry's label.
         """
+        if event.IsEditCancelled():
+            return
         index = event.GetIndex()
         entry = self.list.displayed_entries[index]
         label_str = event.GetLabel()
