@@ -40,9 +40,9 @@ class VaultFrame(wx.Frame):
             self.vault = None
             self._filterstring = ""
             self.displayed_entries = []
-            self.InsertColumn(0, "Title")
-            self.InsertColumn(1, "User")
-            self.InsertColumn(2, "Group")
+            self.InsertColumn(0, _("Title"))
+            self.InsertColumn(1, _("Username"))
+            self.InsertColumn(2, _("Group"))
             self.SetColumnWidth(0, 256)
             self.SetColumnWidth(1, 128)
             self.SetColumnWidth(2, 256)
@@ -128,30 +128,30 @@ class VaultFrame(wx.Frame):
 
         # Set up menus
         filemenu = wx.Menu()
-        filemenu.Append(wx.ID_ABOUT, "&About", "Information about this program")
+        filemenu.Append(wx.ID_ABOUT, _("&About"))
         wx.EVT_MENU(self, wx.ID_ABOUT, self._on_about)
         filemenu.AppendSeparator()
-        filemenu.Append(wx.ID_EXIT, " E&xit", "Terminate the program")
+        filemenu.Append(wx.ID_EXIT, _("E&xit"))
         wx.EVT_MENU(self, wx.ID_EXIT, self._on_exit)
         self._recordmenu = wx.Menu()
-        self._recordmenu.Append(wx.ID_ADD, "&Add\tCtrl+A", "Add a new record, ...")
+        self._recordmenu.Append(wx.ID_ADD, _("&Add\tCtrl+A"))
         wx.EVT_MENU(self, wx.ID_ADD, self._on_add)
-        self._recordmenu.Append(wx.ID_DELETE, "&Delete\tCtrl+Back", "Delete this record")
+        self._recordmenu.Append(wx.ID_DELETE, _("&Delete\tCtrl+Back"))
         wx.EVT_MENU(self, wx.ID_DELETE, self._on_delete)
         self._recordmenu.AppendSeparator()
-        self._recordmenu.Append(wx.ID_EDIT, "&Edit\tCtrl+E", "Change this record's username, password, ...")
+        self._recordmenu.Append(wx.ID_EDIT, _("&Edit\tCtrl+E"))
         wx.EVT_MENU(self, wx.ID_EDIT, self._on_edit)
         self._recordmenu.AppendSeparator()
-        self._recordmenu.Append(wx.ID_VIEW_DETAILS, "Copy &Username\tCtrl+U", "Copy this record's username to the clipboard")
+        self._recordmenu.Append(wx.ID_VIEW_DETAILS, _("Copy &Username\tCtrl+U"))
         wx.EVT_MENU(self, wx.ID_VIEW_DETAILS, self._on_copy_username)
-        self._recordmenu.Append(wx.ID_COPY, "Copy &Password\tCtrl+P", "Copy this record's password to the clipboard")
+        self._recordmenu.Append(wx.ID_COPY, _("Copy &Password\tCtrl+P"))
         wx.EVT_MENU(self, wx.ID_COPY, self._on_copy_password)
         menu_bar = wx.MenuBar()
-        menu_bar.Append(filemenu,"&Vault")
-        menu_bar.Append(self._recordmenu,"&Record")
+        menu_bar.Append(filemenu,_("&Vault"))
+        menu_bar.Append(self._recordmenu,_("&Record"))
         self.SetMenuBar(menu_bar)
 
-        self.SetTitle("Vault Contents")
+        self.SetTitle("Loxodo - " + _("Vault Contents"))
         self.statusbar.SetStatusWidths([-1])
         statusbar_fields = [""]
         for i in range(len(statusbar_fields)):
@@ -208,7 +208,7 @@ class VaultFrame(wx.Frame):
         self.list.set_vault(self.vault)
         self.vault_file_name = filename
         self.vault_password = password
-        self.statusbar.SetStatusText("Read Vault contents from disk", 0)
+        self.statusbar.SetStatusText(_("Read Vault contents from disk"), 0)
 
     def save_vault(self, filename, password):
         """
@@ -219,11 +219,11 @@ class VaultFrame(wx.Frame):
             self.vault_file_name = filename
             self.vault_password = password
             self.vault.write_to_file(filename, password)
-            self.statusbar.SetStatusText("Wrote Vault contents to disk", 0)
+            self.statusbar.SetStatusText(_("Wrote Vault contents to disk"), 0)
         except RuntimeError:
             dial = wx.MessageDialog(self,
-                                    'Could not write Vault contents to disk',
-                                    'Error writing to disk',
+                                    _("Could not write Vault contents to disk"),
+                                    _("Error writing to disk"),
                                     wx.OK | wx.ICON_ERROR
                                     )
             dial.ShowModal()
@@ -232,7 +232,7 @@ class VaultFrame(wx.Frame):
 
     def _copy_to_clipboard(self, text):
         if not wx.TheClipboard.Open():
-            raise RuntimeError("Could not open clipboard")
+            raise RuntimeError(_("Could not open clipboard"))
         try:
             clip_object = wx.TextDataObject(text)
             wx.TheClipboard.SetData(clip_object)
@@ -248,9 +248,9 @@ class VaultFrame(wx.Frame):
         entry = self.list.displayed_entries[index]
         try:
             self._copy_to_clipboard(entry.passwd)
-            self.statusbar.SetStatusText('Copied password of "'+entry.title+'" to clipboard', 0)
+            self.statusbar.SetStatusText(_('Copied password of "%s" to clipboard') % entry.title, 0)
         except RuntimeError:
-            self.statusbar.SetStatusText('Error copying password of "'+entry.title+'" to clipboard', 0)
+            self.statusbar.SetStatusText(_('Error copying password of "%s" to clipboard') % entry.title, 0)
 
     def _on_list_item_label_edit(self, event):
         """
@@ -264,7 +264,7 @@ class VaultFrame(wx.Frame):
         self.list.Refresh()
         if ((not self._recordframe is None) and (self._recordframe.IsShown())):
             self._recordframe.Refresh()
-        self.statusbar.SetStatusText('Changed title of "'+old_title+'"', 0)
+        self.statusbar.SetStatusText(_('Changed title of "%s"') % old_title, 0)
         self.mark_modified()
 
     def _on_list_column_click(self, event):
@@ -362,8 +362,8 @@ class VaultFrame(wx.Frame):
 
         if ((entry.user != "") or (entry.passwd != "")):
             dial = wx.MessageDialog(self,
-                                    'Are you sure you want to delete this record? It contains a username or password and there is no way to undo this action.',
-                                    'Really delete record?',
+                                    _("Are you sure you want to delete this record? It contains a username or password and there is no way to undo this action."),
+                                    _("Really delete record?"),
                                     wx.YES_NO | wx.YES_DEFAULT | wx.ICON_QUESTION
                                     )
             retval = dial.ShowModal()
@@ -387,9 +387,9 @@ class VaultFrame(wx.Frame):
         entry = self.list.displayed_entries[index]
         try:
             self._copy_to_clipboard(entry.user)
-            self.statusbar.SetStatusText('Copied username of "'+entry.title+'" to clipboard', 0)
+            self.statusbar.SetStatusText(_('Copied username of "%s" to clipboard') % entry.title, 0)
         except RuntimeError:
-            self.statusbar.SetStatusText('Error copying username of "'+entry.title+'" to clipboard', 0)
+            self.statusbar.SetStatusText(_('Error copying username of "%s" to clipboard') % entry.title, 0)
 
     def _on_copy_password(self, dummy):
         """
@@ -401,9 +401,9 @@ class VaultFrame(wx.Frame):
         entry = self.list.displayed_entries[index]
         try:
             self._copy_to_clipboard(entry.user)
-            self.statusbar.SetStatusText('Copied password of "'+entry.title+'" to clipboard', 0)
+            self.statusbar.SetStatusText(_('Copied password of "%s" to clipboard') % entry.title, 0)
         except RuntimeError:
-            self.statusbar.SetStatusText('Error copying password of "'+entry.title+'" to clipboard', 0)
+            self.statusbar.SetStatusText(_('Error copying password of "%s" to clipboard') % entry.title, 0)
 
     def _on_search_do(self, dummy):
         """

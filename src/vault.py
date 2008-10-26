@@ -194,7 +194,7 @@ class Vault(object):
         """
         data = filehandle.read(16)
         if not data:
-            raise self.VaultFormatError("EOF encountered when parsing record field")
+            raise self.VaultFormatError(_("EOF encountered when parsing record field"))
         if data == "PWS3-EOFPWS3-EOF":
             return None
         data = cipher.decrypt(data)
@@ -203,8 +203,7 @@ class Vault(object):
         raw_value = data[5:]
         if (raw_len > 11):
             if (raw_len > 1024):
-                print "Emergency Exit"
-                sys.exit(1)
+                raise self.VaultFormatError(_("Encountered unreasonably long field"))
             for dummy in range((raw_len+4)//16):
                 data = filehandle.read(16)
                 if not data:
@@ -256,7 +255,7 @@ class Vault(object):
 
         self.f_tag = filehandle.read(4)  # TAG: magic tag
         if (self.f_tag != 'PWS3'):
-            raise self.VaultVersionError("Not a PasswordSafe V3 file")
+            raise self.VaultVersionError(_("Not a PasswordSafe V3 file"))
 
         self.f_salt = filehandle.read(32)  # SALT: SHA-256 salt
         self.f_iter = struct.unpack("<L", filehandle.read(4))[0]  # ITER: SHA-256 keystretch iterations
@@ -265,7 +264,7 @@ class Vault(object):
 
         self.f_sha_ps = filehandle.read(32) # H(P'): SHA-256 hash of stretched passphrase
         if (self.f_sha_ps != my_sha_ps):
-            raise self.BadPasswordError("Wrong password")
+            raise self.BadPasswordError(_("Wrong password"))
 
         self.f_b1 = filehandle.read(16)  # B1
         self.f_b2 = filehandle.read(16)  # B2
@@ -313,7 +312,7 @@ class Vault(object):
 
         my_hmac = hmac_checker.digest()
         if (self.f_hmac != my_hmac):
-            raise self.VaultFormatError("File integrity check failed")
+            raise self.VaultFormatError(_("File integrity check failed"))
 
         filehandle.close()
 
@@ -378,7 +377,7 @@ class Vault(object):
             tmpvault.read_from_file(tmpfilename, password)
         except RuntimeError:
             os.remove(tmpfilename)
-            raise self.VaultFormatError("File integrity check failed")
+            raise self.VaultFormatError(_("File integrity check failed"))
 
         # after writing the temporary file, replace the original file with it
         os.remove(filename)

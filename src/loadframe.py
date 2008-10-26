@@ -37,14 +37,14 @@ class LoadFrame(wx.Frame):
         wx.Frame.__init__(self, *args, **kwds)
         self.panel_1 = wx.Panel(self, -1)
         self.bitmap_1 = wx.StaticBitmap(self.panel_1, -1, wx.Bitmap(os.path.join(os.path.dirname(__file__), "..", "resources", "loxodo-icon.png"), wx.BITMAP_TYPE_ANY))
-        self._fb_filename = filebrowsebutton.FileBrowseButtonWithHistory(self.panel_1, -1, size=(450, -1),  changeCallback = self._on_pickvault, labelText = "Vault:")
+        self._fb_filename = filebrowsebutton.FileBrowseButtonWithHistory(self.panel_1, -1, size=(450, -1),  changeCallback = self._on_pickvault, labelText = _("Vault") + ":")
         if (config.recentvaults):
             self._fb_filename.SetHistory(config.recentvaults, 0)
-        self._lb_passwd = wx.StaticText(self.panel_1, -1, "Password:")
+        self._lb_passwd = wx.StaticText(self.panel_1, -1, _("Password") + ":")
         self._tc_passwd = wx.TextCtrl(self.panel_1, -1, "", style=wx.TE_PASSWORD)
         self.static_line_1 = wx.StaticLine(self.panel_1, -1)
 
-        self.SetTitle("Open Vault")
+        self.SetTitle("Loxodo - " + _("Open Vault"))
 
         sizer_2 = wx.BoxSizer(wx.VERTICAL)
         sizer_3 = wx.BoxSizer(wx.VERTICAL)
@@ -98,8 +98,8 @@ class LoadFrame(wx.Frame):
         except Vault.BadPasswordError:
             vaultframe.Destroy()
             dial = wx.MessageDialog(self,
-                                    'The given password does not match the Vault',
-                                    'Bad Password',
+                                    _('The given password does not match the Vault'),
+                                    _('Bad Password'),
                                     wx.OK | wx.ICON_ERROR
                                     )
             dial.ShowModal()
@@ -109,8 +109,8 @@ class LoadFrame(wx.Frame):
         except Vault.VaultVersionError:
             vaultframe.Destroy()
             dial = wx.MessageDialog(self,
-                                    'This is not a PasswordSafe V3 Vault',
-                                    'Bad Vault',
+                                    _('This is not a PasswordSafe V3 Vault'),
+                                    _('Bad Vault'),
                                     wx.OK | wx.ICON_ERROR
                                     )
             dial.ShowModal()
@@ -118,8 +118,8 @@ class LoadFrame(wx.Frame):
         except Vault.VaultFormatError:
             vaultframe.Destroy()
             dial = wx.MessageDialog(self,
-                                    'Vault integrity check failed',
-                                    'Bad Vault',
+                                    _('Vault integrity check failed'),
+                                    _('Bad Vault'),
                                     wx.OK | wx.ICON_ERROR
                                     )
             dial.ShowModal()

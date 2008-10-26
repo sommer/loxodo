@@ -50,11 +50,11 @@ class RecordFrame(_RecordFrameBase):
         _sz_fields = wx.FlexGridSizer(5, 2, 5, 5)
         _sz_fields.AddGrowableCol(1)
         _sz_fields.AddGrowableRow(4)
-        self._tc_group = self._add_a_textcontrol(_sz_fields, "Group:", "")
-        self._tc_title = self._add_a_textcontrol(_sz_fields, "Title:", "")
-        self._tc_user = self._add_a_textcontrol(_sz_fields, "Username:", "")
-        (self._tc_passwd, self._tc_passwd_alt, self._bt_showhide) = self._add_a_passwdfield(_sz_fields, "Password:", "")
-        self._tc_notes = self._add_a_textbox(_sz_fields, "Notes:", "")
+        self._tc_group = self._add_a_textcontrol(_sz_fields, _("Group") + ":", "")
+        self._tc_title = self._add_a_textcontrol(_sz_fields, _("Title") + ":", "")
+        self._tc_user = self._add_a_textcontrol(_sz_fields, _("Username") + ":", "")
+        (self._tc_passwd, self._tc_passwd_alt, self._bt_showhide) = self._add_a_passwdfield(_sz_fields, _("Password") + ":", "")
+        self._tc_notes = self._add_a_textbox(_sz_fields, _("Notes") + ":", "")
         _sz_main.Add(_sz_fields, 1, wx.EXPAND | wx.GROW)
 
         _ln_line = wx.StaticLine(self.panel, -1, size=(20, -1), style=wx.LI_HORIZONTAL)
@@ -79,7 +79,7 @@ class RecordFrame(_RecordFrameBase):
         _sz_frame.Add(self.panel, 1, wx.EXPAND | wx.ALL, 5)
         self.SetSizer(_sz_frame)
 
-        self.SetTitle("Edit Vault Record")
+        self.SetTitle("Loxodo - " + _("Edit Vault Record"))
         self.Layout()
 
         self.Fit()
@@ -108,10 +108,10 @@ class RecordFrame(_RecordFrameBase):
         r_shown = wx.TextCtrl(self.panel, -1, default_value, size=(128, -1))
         r_shown.Hide()
         r_container.Add(r_shown, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.EXPAND, 0)
-        r_toggle = wx.Button(self.panel, wx.ID_MORE, "(un)mask")
+        r_toggle = wx.Button(self.panel, wx.ID_MORE, _("(un)mask"))
         wx.EVT_BUTTON(self, wx.ID_MORE, self._on_toggle_passwd_mask)
         r_container.Add(r_toggle, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.SHRINK|wx.LEFT, 10)
-        r_generate = wx.Button(self.panel, wx.ID_REPLACE, "generate")
+        r_generate = wx.Button(self.panel, wx.ID_REPLACE, _("generate"))
         wx.EVT_BUTTON(self, wx.ID_REPLACE, self._on_generate_passwd)
         r_container.Add(r_generate, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.SHRINK|wx.LEFT, 10)
 
