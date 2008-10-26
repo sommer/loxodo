@@ -432,13 +432,15 @@ class VaultFrame(wx.Frame):
         Event handler: Fires when user presses a key
         """
 
-        # If "Escape" was pressed, ignore key and clear the Search box
-        if evt.GetKeyCode() == wx.WXK_ESCAPE:
-            self._on_search_cancel(None)
-            return
-
-        # If "Up" or "Down" was pressed in self._searchbox, ignore key and focus self.list
+        # Shortcuts for self._searchbox
         if self.FindFocus() == self._searchbox or (self._searchbox.GetChildren() and self.FindFocus() in self._searchbox.GetChildren()):
+
+            # If "Escape" was pressed, ignore key and clear the Search box
+            if evt.GetKeyCode() == wx.WXK_ESCAPE:
+                self._on_search_cancel(None)
+                return
+            
+            # If "Up" or "Down" was pressed, ignore key and focus self.list
             if evt.GetKeyCode() in (wx.WXK_UP, wx.WXK_DOWN):
                 self.list.SetFocus()
                 return
