@@ -88,8 +88,9 @@ class LoadFrame(wx.Frame):
 
     def _on_open(self, dummy):
         try:
+            password = self._tc_passwd.GetValue().encode('latin1', 'replace')
             vaultframe = VaultFrame(None, -1, "")
-            vaultframe.open_vault(self._fb_filename.GetValue(), self._tc_passwd.GetValue())
+            vaultframe.open_vault(self._fb_filename.GetValue(), password)
             config.recentvaults.insert(0, self._fb_filename.GetValue())
             config.save()
             self.Hide()

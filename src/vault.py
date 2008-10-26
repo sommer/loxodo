@@ -249,6 +249,9 @@ class Vault(object):
         """
         Initialize all class members by loading the contents of a Vault stored in the given file.
         """
+
+        assert type(password) != unicode
+        
         filehandle = file(filename, 'rb')
 
         # read boilerplate
@@ -320,6 +323,8 @@ class Vault(object):
         """
         Store contents of this Vault into a file.
         """
+
+        assert type(password) != unicode
         
         # write to temporary file first
         (osfilehandle, tmpfilename) = tempfile.mkstemp('.part', os.path.basename(filename) + ".", os.path.dirname(filename), text=False)
