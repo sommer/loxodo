@@ -19,13 +19,13 @@
 
 import os
 import platform
-import string
+import random
+import struct
 import wx
 
 from wxlocale import _
 
 # RecordFrame is a wx.MiniFrame on platforms where this helps usability
-_RecordFrameBase = None
 if platform.system() in ("Windows", "Microsoft", "Darwin"):
     class _RecordFrameBase(wx.MiniFrame):
         def __init__(self, parent):
@@ -96,11 +96,11 @@ class RecordFrame(_RecordFrameBase):
     def _add_a_textcontrol(self, parent_sizer, label, default_value, extrastyle=0):
         _label = wx.StaticText(self.panel, -1, label, style=wx.ALIGN_RIGHT)
         parent_sizer.Add(_label, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5)
-        r = wx.TextCtrl(self.panel, -1, default_value, style=extrastyle, size=(128, -1))
-        parent_sizer.Add(r, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.ALL|wx.EXPAND, 5)
-        return r
+        control = wx.TextCtrl(self.panel, -1, default_value, style=extrastyle, size=(128, -1))
+        parent_sizer.Add(control, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.ALL|wx.EXPAND, 5)
+        return control
 
-    def _add_a_passwdfield(self, parent_sizer, label, default_value, extrastyle=0):
+    def _add_a_passwdfield(self, parent_sizer, label, default_value):
         _label = wx.StaticText(self.panel, -1, label, style=wx.ALIGN_RIGHT)
         parent_sizer.Add(_label, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5)
         r_container = wx.BoxSizer()
@@ -126,22 +126,22 @@ class RecordFrame(_RecordFrameBase):
         parent_sizer.Add(control, 1, wx.ALIGN_TOP|wx.ALIGN_LEFT|wx.ALL|wx.EXPAND, 5)
         return control
 
-    def _crlf_to_native(self, text):
+    @staticmethod
+    def _crlf_to_native(text):
         text = text.replace("\r\n", "\n")
         text = text.replace("\r", "\n")
         return text
 
-    def _native_to_crlf(self, text):
+    @staticmethod
+    def _native_to_crlf(text):
         text = text.replace("\r\n", "\n")
         text = text.replace("\r", "\n")
         text = text.replace("\n", "\r\n")
         return text
 
-    def Refresh(self):
+    def update_fields(self):
         """
         Update fields from source
-
-        Extends the base classes' method.
         """
         if (self._vault_record is not None):
             self._tc_group.SetValue(self._vault_record.group)
@@ -149,7 +149,6 @@ class RecordFrame(_RecordFrameBase):
             self._tc_user.SetValue(self._vault_record.user)
             self._tc_passwd.SetValue(self._vault_record.passwd)
             self._tc_notes.SetValue(self._crlf_to_native(self._vault_record.notes))
-        wx.Frame.Refresh(self)
 
     def _on_apply(self, dummy):
         """
@@ -193,7 +192,8 @@ class RecordFrame(_RecordFrameBase):
         _pwd = self.generate_password()
         self._tc_passwd.SetValue(_pwd)
 
-    def _urandom(self, count):
+    @staticmethod
+    def _urandom(count):
         try:
             return os.urandom(count)
         except NotImplementedError:
@@ -202,11 +202,12 @@ class RecordFrame(_RecordFrameBase):
                 retval += struct.pack("<B", random.randint(0, 0xFF))
             return retval
 
-    def generate_password(self, alphabet=None, pwd_length=8, allow_reduction=True):
+    @staticmethod
+    def generate_password(alphabet=None, pwd_length=8, allow_reduction=True):
     
         # default alphabet is all alphanumerics characters
         if alphabet is None:
-            alphabet = string.ascii_lowercase + string.digits + string.ascii_uppercase
+            alphabet = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     
         # remove some easy-to-mistake characters
         if allow_reduction:
@@ -225,7 +226,7 @@ class RecordFrame(_RecordFrameBase):
                     if last_chr == _chr[0]:
                         alphabet2 = alphabet.replace(_chr[1],"")
     
-            _chr = alphabet2[int(len(alphabet2) / 256.0 * ord(self._urandom(1)))]
+            _chr = alphabet2[int(len(alphabet2) / 256.0 * ord(RecordFrame._urandom(1)))]
             pwd += _chr
             last_chr = _chr
     
@@ -256,7 +257,7 @@ class RecordFrame(_RecordFrameBase):
 
     def _set_vault_record(self, vault_record):
         self._vault_record = vault_record
-        self.Refresh()
+        self.update_fields()
 
     def _get_vault_record(self):
         return self._vault_record

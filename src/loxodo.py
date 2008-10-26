@@ -23,20 +23,22 @@ from wxlocale import _
 from wxlocale import setup_wx_locale
 from loadframe import LoadFrame
 
-app = wx.PySimpleApp(0)
-setup_wx_locale()
-wx.InitAllImageHandlers()
-main = LoadFrame(None, -1, "")
-app.SetTopWindow(main)
-main.Show()
+def main():
+    app = wx.PySimpleApp(0)
+    setup_wx_locale()
+    wx.InitAllImageHandlers()
+    mainframe = LoadFrame(None, -1, "")
+    app.SetTopWindow(mainframe)
+    mainframe.Show()
+    
+    dial = wx.MessageDialog(mainframe,
+                                        _('This is an unstable preview version of Loxodo. Prior to opening any file with this program, please create a backup and store it in a safe place - this version *will* destroy the original copy.'),
+                                        _('Version warning'),
+                                        wx.OK | wx.ICON_WARNING
+                                        )
+    dial.ShowModal()
+    dial.Destroy()
+    
+    app.MainLoop()
 
-dial = wx.MessageDialog(main,
-                                    _('This is an unstable preview version of Loxodo. Prior to opening any file with this program, please create a backup and store it in a safe place - this version *will* destroy the original copy.'),
-                                    _('Version warning'),
-                                    wx.OK | wx.ICON_WARNING
-                                    )
-dial.ShowModal()
-dial.Destroy()
-
-app.MainLoop()
-
+main()

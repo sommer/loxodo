@@ -17,7 +17,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 
-import sys
 import hashlib
 import struct
 from hmac import HMAC
@@ -173,7 +172,8 @@ class Vault(object):
         notes = property(_get_notes, _set_notes)
         passwd = property(_get_passwd, _set_passwd)
 
-    def _stretch_password(self, password, salt, iterations):
+    @staticmethod
+    def _stretch_password(password, salt, iterations):
         """
         Generate the SHA-256 value of a password after several rounds of stretching.
 
@@ -212,7 +212,8 @@ class Vault(object):
         raw_value = raw_value[:raw_len]
         return self.Field(raw_type, raw_len, raw_value)
 
-    def _urandom(self, count):
+    @staticmethod
+    def _urandom(count):
         try:
             return os.urandom(count)
         except NotImplementedError:

@@ -48,7 +48,7 @@ class VaultFrame(wx.Frame):
             self.SetColumnWidth(1, 128)
             self.SetColumnWidth(2, 256)
             self.sort_function = lambda e1, e2: cmp(e1.group, e2.group)
-            self.Refresh()
+            self.update_fields()
 
         def OnGetItemText(self, item, col):
             """
@@ -64,7 +64,7 @@ class VaultFrame(wx.Frame):
                 return self.displayed_entries[item].group
             return "--"
 
-        def Refresh(self):
+        def update_fields(self):
             """
             Update the visual representation of list.
 
@@ -84,7 +84,7 @@ class VaultFrame(wx.Frame):
             Set the Vault this control should display.
             """
             self.vault = vault
-            self.Refresh()
+            self.update_fields()
             self.select_first()
 
         def set_filter(self, filterstring):
@@ -92,7 +92,7 @@ class VaultFrame(wx.Frame):
             Sets a filter string to limit the displayed entries
             """
             self._filterstring = filterstring
-            self.Refresh()
+            self.update_fields()
             self.select_first()
 
         def deselect_all(self):
@@ -148,8 +148,8 @@ class VaultFrame(wx.Frame):
         self._recordmenu.Append(wx.ID_COPY, _("Copy &Password\tCtrl+P"))
         wx.EVT_MENU(self, wx.ID_COPY, self._on_copy_password)
         menu_bar = wx.MenuBar()
-        menu_bar.Append(filemenu,_("&Vault"))
-        menu_bar.Append(self._recordmenu,_("&Record"))
+        menu_bar.Append(filemenu, _("&Vault"))
+        menu_bar.Append(self._recordmenu, _("&Record"))
         self.SetMenuBar(menu_bar)
 
         self.SetTitle("Loxodo - " + _("Vault Contents"))
@@ -195,7 +195,7 @@ class VaultFrame(wx.Frame):
         self._is_modified = True
         if ((self.vault_file_name is not None) and (self.vault_password is not None)):
             self.save_vault(self.vault_file_name, self.vault_password)
-        self.list.Refresh()
+        self.list.update_fields()
 
     def open_vault(self, filename, password):
         """
@@ -231,7 +231,8 @@ class VaultFrame(wx.Frame):
             dial.Destroy()
 
 
-    def _copy_to_clipboard(self, text):
+    @staticmethod
+    def _copy_to_clipboard(text):
         if not wx.TheClipboard.Open():
             raise RuntimeError(_("Could not open clipboard"))
         try:
@@ -264,9 +265,9 @@ class VaultFrame(wx.Frame):
         label_str = event.GetLabel()
         old_title = entry.title
         entry.title = label_str
-        self.list.Refresh()
+        self.list.update_fields()
         if ((not self._recordframe is None) and (self._recordframe.IsShown())):
-            self._recordframe.Refresh()
+            self._recordframe.update_fields()
         self.statusbar.SetStatusText(_('Changed title of "%s"') % old_title, 0)
         self.mark_modified()
 
@@ -281,7 +282,7 @@ class VaultFrame(wx.Frame):
             self.list.sort_function = lambda e1, e2: cmp(e1.user, e2.user)
         if (col == 2):
             self.list.sort_function = lambda e1, e2: cmp(e1.group, e2.group)
-        self.list.Refresh()
+        self.list.update_fields()
         
     def _on_list_contextmenu(self, dummy):
         self.PopupMenu(self._recordmenu)

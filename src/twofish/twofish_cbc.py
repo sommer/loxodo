@@ -26,13 +26,13 @@ class TwofishCBC:
     Cipher-block chaining (CBC) Twofish operation mode.
     """
 
-    def __init__(self, key, iv=0):
+    def __init__(self, key, init_vec=0):
         """
         Set the key to be used for en-/de-cryption and optionally specify an initialization vector (aka seed/salt).
         """
         self.twofish = twofish.Twofish()
         self.twofish.set_key(key)
-        self.state = iv
+        self.state = init_vec
 
     def encrypt(self, plaintext):
         """
@@ -62,22 +62,25 @@ class TwofishCBC:
             self.state = block
         return plaintext
 
-    def _xor_block(self, s1, s2):
+    @staticmethod
+    def _xor_block(text1, text2):
         """
         Return the bitwise xor of two arbitrary-length blocks of data
         """
         return "".join(
                        map(
                            lambda c1, c2: chr(operator.xor(ord(c1), ord(c2))),
-                           s1,
-                           s2
+                           text1,
+                           text2
                            )
                        )
 
+def test_twofish_cbc():
+    __testkey = "Now Testing Crypto-Functions...."
+    __testivc = "Initialization V"
+    __testenc = "Passing nonsense through crypt-API, will then do assertion check"
+    __testdec = "\x38\xd1\xe3\xb1\xe6\x0d\x41\xa7\xe7\xba\xf1\xeb\x34\x4b\xc3\xdb\x88\x38\xf5\x47\x41\x15\x3f\x26\xa4\x2d\x53\xd8\xd2\x80\x25\x0a\xf3\xe4\xbe\xe4\xba\xe1\xeb\x18\x18\x66\x8a\xa6\xe2\xd0\x2b\x6e\x62\x36\x91\xf7\x72\x28\x5e\xc6\x40\x89\x70\x91\x2c\x35\x71\x39"
+    assert TwofishCBC(__testkey, __testivc).decrypt(__testenc) == __testdec
+    assert TwofishCBC(__testkey, __testivc).encrypt(__testdec) == __testenc
 
-__testkey = "Now Testing Crypto-Functions...."
-__testivc = "Initialization V"
-__testenc = "Passing nonsense through crypt-API, will then do assertion check"
-__testdec = "\x38\xd1\xe3\xb1\xe6\x0d\x41\xa7\xe7\xba\xf1\xeb\x34\x4b\xc3\xdb\x88\x38\xf5\x47\x41\x15\x3f\x26\xa4\x2d\x53\xd8\xd2\x80\x25\x0a\xf3\xe4\xbe\xe4\xba\xe1\xeb\x18\x18\x66\x8a\xa6\xe2\xd0\x2b\x6e\x62\x36\x91\xf7\x72\x28\x5e\xc6\x40\x89\x70\x91\x2c\x35\x71\x39"
-assert TwofishCBC(__testkey, __testivc).decrypt(__testenc) == __testdec
-assert TwofishCBC(__testkey, __testivc).encrypt(__testdec) == __testenc
+test_twofish_cbc()

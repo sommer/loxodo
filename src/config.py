@@ -63,7 +63,8 @@ class Config(object):
         self._parser.write(filehandle)
         filehandle.close()
 
-    def get_config_filename(self):
+    @staticmethod
+    def get_config_filename():
         """
         Returns the full filename of the config file
         """
