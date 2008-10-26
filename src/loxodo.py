@@ -18,42 +18,13 @@
 #
 
 import wx
-import os
-import __builtin__
 
+from wxlocale import _
+from wxlocale import setup_wx_locale
 from loadframe import LoadFrame
 
-def _configure_locale():
-    """
-    Set up internationalization support.
-    """
-    if 'unicode' not in wx.PlatformInfo:
-        print "Warning: You need a unicode build of wxPython to run this application. Continuing anyway."
-    try:
-        localedir = os.path.join(os.path.dirname(__file__), "..", "locale")
-        domain = "loxodo"
-
-        from locale import getdefaultlocale
-        langid = wx.LANGUAGE_DEFAULT
-        try:
-            (lang_name, dummy) = getdefaultlocale()
-        except ValueError:
-            pass
-        else:
-            if lang_name:
-                langid = wx.Locale.FindLanguageInfo(lang_name).Language
-        mylocale = wx.Locale(langid)
-        mylocale.AddCatalogLookupPathPrefix(localedir)
-        mylocale.AddCatalog(domain)
-        __builtin__.__dict__['_'] = wx.GetTranslation
-        __builtin__.__dict__['LOXODO_LOCALE'] = mylocale
-    except:
-        print "Warning: Setting up internationalization support failed. Continuing anyway."
-        __builtin__.__dict__['_'] = lambda x: x
-
-
 app = wx.PySimpleApp(0)
-_configure_locale()
+setup_wx_locale()
 wx.InitAllImageHandlers()
 main = LoadFrame(None, -1, "")
 app.SetTopWindow(main)

@@ -22,6 +22,8 @@ import platform
 import string
 import wx
 
+from wxlocale import _
+
 # RecordFrame is a wx.MiniFrame on platforms where this helps usability
 _RecordFrameBase = None
 if platform.system() in ("Windows", "Microsoft", "Darwin"):

@@ -20,6 +20,7 @@
 import os
 import wx
 
+from wxlocale import _
 from vault import Vault
 from recordframe import RecordFrame
 

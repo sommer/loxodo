@@ -21,6 +21,7 @@ import os
 import wx
 from wx.lib import filebrowsebutton
 
+from wxlocale import _
 from vaultframe import VaultFrame
 from vault import Vault
 from config import config
