@@ -124,6 +124,17 @@ class RecordFrame(_RecordFrameBase):
         parent_sizer.Add(control, 1, wx.ALIGN_TOP|wx.ALIGN_LEFT|wx.ALL|wx.EXPAND, 5)
         return control
 
+    def _crlf_to_native(self, text):
+        text = text.replace("\r\n", "\n")
+        text = text.replace("\r", "\n")
+        return text
+
+    def _native_to_crlf(self, text):
+        text = text.replace("\r\n", "\n")
+        text = text.replace("\r", "\n")
+        text = text.replace("\n", "\r\n")
+        return text
+
     def Refresh(self):
         """
         Update fields from source
@@ -135,7 +146,7 @@ class RecordFrame(_RecordFrameBase):
             self._tc_title.SetValue(self._vault_record.title)
             self._tc_user.SetValue(self._vault_record.user)
             self._tc_passwd.SetValue(self._vault_record.passwd)
-            self._tc_notes.SetValue(self._vault_record.notes)
+            self._tc_notes.SetValue(self._crlf_to_native(self._vault_record.notes))
         wx.Frame.Refresh(self)
 
     def _on_apply(self, dummy):
@@ -147,7 +158,7 @@ class RecordFrame(_RecordFrameBase):
             self._vault_record.title = self._tc_title.Value
             self._vault_record.user = self._tc_user.Value
             self._vault_record.passwd = self._tc_passwd.Value
-            self._vault_record.notes = self._tc_notes.Value
+            self._vault_record.notes = self._native_to_crlf(self._tc_notes.Value)
         if (not self.refresh_subscriber is None):
             self.refresh_subscriber.on_modified()
 
