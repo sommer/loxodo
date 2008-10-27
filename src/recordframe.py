@@ -56,6 +56,7 @@ class RecordFrame(_RecordFrameBase):
         self._tc_title = self._add_a_textcontrol(_sz_fields, _("Title") + ":", "")
         self._tc_user = self._add_a_textcontrol(_sz_fields, _("Username") + ":", "")
         (self._tc_passwd, self._tc_passwd_alt, self._bt_showhide) = self._add_a_passwdfield(_sz_fields, _("Password") + ":", "")
+        self._tc_url = self._add_a_textcontrol(_sz_fields, _("URL") + ":", "")
         self._tc_notes = self._add_a_textbox(_sz_fields, _("Notes") + ":", "")
         _sz_main.Add(_sz_fields, 1, wx.EXPAND | wx.GROW)
 
@@ -148,6 +149,7 @@ class RecordFrame(_RecordFrameBase):
             self._tc_title.SetValue(self._vault_record.title)
             self._tc_user.SetValue(self._vault_record.user)
             self._tc_passwd.SetValue(self._vault_record.passwd)
+            self._tc_url.SetValue(self._vault_record.url)
             self._tc_notes.SetValue(self._crlf_to_native(self._vault_record.notes))
 
     def _on_apply(self, dummy):
@@ -159,6 +161,7 @@ class RecordFrame(_RecordFrameBase):
             self._vault_record.title = self._tc_title.Value
             self._vault_record.user = self._tc_user.Value
             self._vault_record.passwd = self._tc_passwd.Value
+            self._vault_record.url = self._tc_url.Value
             self._vault_record.notes = self._native_to_crlf(self._tc_notes.Value)
         if (not self.refresh_subscriber is None):
             self.refresh_subscriber.on_modified()

@@ -97,6 +97,7 @@ class Vault(object):
             self._notes = ""
             self._passwd = ""
             self._last_mod = 0
+            self._url = ""
 
         def add_raw_field(self, raw_field):
             self.raw_fields[raw_field.raw_type] = raw_field
@@ -112,6 +113,8 @@ class Vault(object):
                 self._passwd = raw_field.raw_value.decode('utf_8', 'replace')
             if ((raw_field.raw_type == 0x0c) and (raw_field.raw_len == 4)):
                 self._last_mod = struct.unpack("<L", raw_field.raw_value)[0]
+            if (raw_field.raw_type == 0x0d):
+                self._url = raw_field.raw_value.decode('utf_8', 'replace')
 
         def mark_modified(self):
             self.last_mod = int(time.time())
@@ -190,12 +193,25 @@ class Vault(object):
             self.raw_fields[raw_id].raw_value = struct.pack("<L", value)
             self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
 
+        def _get_url(self):
+            return self._url
+
+        def _set_url(self, value):
+            self._url = value
+            raw_id = 0x0d
+            if (not self.raw_fields.has_key(raw_id)):
+                self.raw_fields[raw_id] = Vault.Field(raw_id, len(value), value)
+            self.raw_fields[raw_id].raw_value = value.encode('utf_8', 'replace')
+            self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
+            self.mark_modified()
+
         group = property(_get_group, _set_group)
         title = property(_get_title, _set_title)
         user = property(_get_user, _set_user)
         notes = property(_get_notes, _set_notes)
         passwd = property(_get_passwd, _set_passwd)
         last_mod = property(_get_last_mod, _set_last_mod)
+        url = property(_get_url, _set_url)
 
     @staticmethod
     def _stretch_password(password, salt, iterations):

@@ -147,6 +147,8 @@ class VaultFrame(wx.Frame):
         wx.EVT_MENU(self, wx.ID_VIEW_DETAILS, self._on_copy_username)
         self._recordmenu.Append(wx.ID_COPY, _("Copy &Password\tCtrl+P"))
         wx.EVT_MENU(self, wx.ID_COPY, self._on_copy_password)
+        self._recordmenu.Append(wx.ID_VIEW_LIST, _("Copy UR&L\tCtrl+L"))
+        wx.EVT_MENU(self, wx.ID_VIEW_LIST, self._on_copy_url)
         menu_bar = wx.MenuBar()
         menu_bar.Append(filemenu, _("&Vault"))
         menu_bar.Append(self._recordmenu, _("&Record"))
@@ -410,6 +412,20 @@ class VaultFrame(wx.Frame):
             self.statusbar.SetStatusText(_('Copied password of "%s" to clipboard') % entry.title, 0)
         except RuntimeError:
             self.statusbar.SetStatusText(_('Error copying password of "%s" to clipboard') % entry.title, 0)
+
+    def _on_copy_url(self, dummy):
+        """
+        Event handler: Fires when user chooses this menu item.
+        """
+        index = self.list.GetFirstSelected()
+        if (index == -1):
+            return
+        entry = self.list.displayed_entries[index]
+        try:
+            self._copy_to_clipboard(entry.url)
+            self.statusbar.SetStatusText(_('Copied URL of "%s" to clipboard') % entry.title, 0)
+        except RuntimeError:
+            self.statusbar.SetStatusText(_('Error copying URL of "%s" to clipboard') % entry.title, 0)
 
     def _on_search_do(self, dummy):
         """
