@@ -404,7 +404,7 @@ class VaultFrame(wx.Frame):
             return
         entry = self.list.displayed_entries[index]
         try:
-            self._copy_to_clipboard(entry.user)
+            self._copy_to_clipboard(entry.passwd)
             self.statusbar.SetStatusText(_('Copied password of "%s" to clipboard') % entry.title, 0)
         except RuntimeError:
             self.statusbar.SetStatusText(_('Error copying password of "%s" to clipboard') % entry.title, 0)
