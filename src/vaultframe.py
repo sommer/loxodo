@@ -263,6 +263,8 @@ class VaultFrame(wx.Frame):
         index = event.GetIndex()
         entry = self.list.displayed_entries[index]
         label_str = event.GetLabel()
+        if entry.title == label_str:
+            return
         old_title = entry.title
         entry.title = label_str
         self.list.update_fields()
