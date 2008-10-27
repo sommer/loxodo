@@ -23,6 +23,7 @@ from hmac import HMAC
 import random
 import os
 import tempfile
+import time
 
 from twofish.twofish_ecb import TwofishECB
 from twofish.twofish_cbc import TwofishCBC
@@ -95,6 +96,7 @@ class Vault(object):
             self._user = ""
             self._notes = ""
             self._passwd = ""
+            self._last_mod = 0
 
         def add_raw_field(self, raw_field):
             self.raw_fields[raw_field.raw_type] = raw_field
@@ -108,6 +110,11 @@ class Vault(object):
                 self._notes = raw_field.raw_value.decode('utf_8', 'replace')
             if (raw_field.raw_type == 0x06):
                 self._passwd = raw_field.raw_value.decode('utf_8', 'replace')
+            if ((raw_field.raw_type == 0x0c) and (raw_field.raw_len == 4)):
+                self._last_mod = struct.unpack("<L", raw_field.raw_value)[0]
+
+        def mark_modified(self):
+            self.last_mod = int(time.time())
 
         def _get_group(self):
             return self._group
@@ -121,6 +128,7 @@ class Vault(object):
                 self.raw_fields[raw_id] = Vault.Field(raw_id, len(value), value)
             self.raw_fields[raw_id].raw_value = value.encode('utf_8', 'replace')
             self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
+            self.mark_modified()
 
         def _get_title(self):
             return self._title
@@ -132,6 +140,7 @@ class Vault(object):
                 self.raw_fields[raw_id] = Vault.Field(raw_id, len(value), value)
             self.raw_fields[raw_id].raw_value = value.encode('utf_8', 'replace')
             self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
+            self.mark_modified()
 
         def _get_user(self):
             return self._user
@@ -143,6 +152,7 @@ class Vault(object):
                 self.raw_fields[raw_id] = Vault.Field(raw_id, len(value), value)
             self.raw_fields[raw_id].raw_value = value.encode('utf_8', 'replace')
             self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
+            self.mark_modified()
 
         def _get_notes(self):
             return self._notes
@@ -154,6 +164,7 @@ class Vault(object):
                 self.raw_fields[raw_id] = Vault.Field(raw_id, len(value), value)
             self.raw_fields[raw_id].raw_value = value.encode('utf_8', 'replace')
             self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
+            self.mark_modified()
 
         def _get_passwd(self):
             return self._passwd
@@ -165,12 +176,26 @@ class Vault(object):
                 self.raw_fields[raw_id] = Vault.Field(raw_id, len(value), value)
             self.raw_fields[raw_id].raw_value = value.encode('utf_8', 'replace')
             self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
+            self.mark_modified()
+
+        def _get_last_mod(self):
+            return self._last_mod
+
+        def _set_last_mod(self, value):
+            assert type(value) == int
+            self._last_mod = value
+            raw_id = 0x0c
+            if (not self.raw_fields.has_key(raw_id)):
+                self.raw_fields[raw_id] = Vault.Field(raw_id, 0, "0")
+            self.raw_fields[raw_id].raw_value = struct.pack("<L", value)
+            self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
 
         group = property(_get_group, _set_group)
         title = property(_get_title, _set_title)
         user = property(_get_user, _set_user)
         notes = property(_get_notes, _set_notes)
         passwd = property(_get_passwd, _set_passwd)
+        last_mod = property(_get_last_mod, _set_last_mod)
 
     @staticmethod
     def _stretch_password(password, salt, iterations):
@@ -325,6 +350,11 @@ class Vault(object):
 
         assert type(password) != unicode
         
+        _last_save = struct.pack("<L", int(time.time()))
+        self.header.raw_fields[0x04] = self.Field(0x04, len(_last_save), _last_save)
+        _what_saved = "Loxodo 0.0-git".encode("utf_8", "replace")
+        self.header.raw_fields[0x06] = self.Field(0x06, len(_what_saved), _what_saved)
+
         # write to temporary file first
         (osfilehandle, tmpfilename) = tempfile.mkstemp('.part', os.path.basename(filename) + ".", os.path.dirname(filename), text=False)
         filehandle = os.fdopen(osfilehandle, "wb")
