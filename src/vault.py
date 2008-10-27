@@ -193,7 +193,7 @@ class Vault(object):
         Return one field of a vault record by reading from the given file handle.
         """
         data = filehandle.read(16)
-        if not data:
+        if (not data) or (len(data) < 16):
             raise self.VaultFormatError("EOF encountered when parsing record field")
         if data == "PWS3-EOFPWS3-EOF":
             return None
@@ -202,12 +202,10 @@ class Vault(object):
         raw_type = struct.unpack("<B", data[4])[0]
         raw_value = data[5:]
         if (raw_len > 11):
-            if (raw_len > 1024):
-                raise self.VaultFormatError("Encountered unreasonably long field")
             for dummy in range((raw_len+4)//16):
                 data = filehandle.read(16)
-                if not data:
-                    return None
+                if (not data) or (len(data) < 16):
+                    raise self.VaultFormatError("EOF encountered when parsing record field")
                 raw_value += cipher.decrypt(data)
         raw_value = raw_value[:raw_len]
         return self.Field(raw_type, raw_len, raw_value)
