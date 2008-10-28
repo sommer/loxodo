@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-10-26 03:19+0100\n"
+"POT-Creation-Date: 2008-10-28 01:05+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,188 +16,186 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/loadframe.py:40
+#: ../src/loadframe.py:41
 msgid "Vault"
 msgstr ""
 
-#: ../src/loadframe.py:43 ../src/recordframe.py:56
+#: ../src/loadframe.py:44 ../src/recordframe.py:58
 msgid "Password"
 msgstr ""
 
-#: ../src/loadframe.py:47
+#: ../src/loadframe.py:48
 msgid "Open Vault"
 msgstr ""
 
-#: ../src/loadframe.py:101
+#: ../src/loadframe.py:103
 msgid "The given password does not match the Vault"
 msgstr ""
 
-#: ../src/loadframe.py:102
+#: ../src/loadframe.py:104
 msgid "Bad Password"
 msgstr ""
 
-#: ../src/loadframe.py:112
+#: ../src/loadframe.py:114
 msgid "This is not a PasswordSafe V3 Vault"
 msgstr ""
 
-#: ../src/loadframe.py:113 ../src/loadframe.py:122
+#: ../src/loadframe.py:115 ../src/loadframe.py:124
 msgid "Bad Vault"
 msgstr ""
 
-#: ../src/loadframe.py:121
+#: ../src/loadframe.py:123
 msgid "Vault integrity check failed"
 msgstr ""
 
-#: ../src/loxodo.py:63
+#: ../src/loxodo.py:35
 msgid ""
 "This is an unstable preview version of Loxodo. Prior to opening any file "
 "with this program, please create a backup and store it in a safe place - "
 "this version *will* destroy the original copy."
 msgstr ""
 
-#: ../src/loxodo.py:64
+#: ../src/loxodo.py:36
 msgid "Version warning"
 msgstr ""
 
-#: ../src/recordframe.py:53 ../src/vaultframe.py:45
+#: ../src/recordframe.py:55 ../src/vaultframe.py:46
 msgid "Group"
 msgstr ""
 
-#: ../src/recordframe.py:54 ../src/vaultframe.py:43
+#: ../src/recordframe.py:56 ../src/vaultframe.py:44
 msgid "Title"
 msgstr ""
 
-#: ../src/recordframe.py:55 ../src/vaultframe.py:44
+#: ../src/recordframe.py:57 ../src/vaultframe.py:45
 msgid "Username"
 msgstr ""
 
-#: ../src/recordframe.py:57
+#: ../src/recordframe.py:59
+msgid "URL"
+msgstr ""
+
+#: ../src/recordframe.py:60
 msgid "Notes"
 msgstr ""
 
-#: ../src/recordframe.py:82
+#: ../src/recordframe.py:85
 msgid "Edit Vault Record"
 msgstr ""
 
-#: ../src/recordframe.py:111
+#: ../src/recordframe.py:114
 msgid "(un)mask"
 msgstr ""
 
-#: ../src/recordframe.py:114
+#: ../src/recordframe.py:117
 msgid "generate"
 msgstr ""
 
-#: ../src/vault.py:197
-msgid "EOF encountered when parsing record field"
-msgstr ""
-
-#: ../src/vault.py:206
-msgid "Encountered unreasonably long field"
-msgstr ""
-
-#: ../src/vault.py:258
-msgid "Not a PasswordSafe V3 file"
-msgstr ""
-
-#: ../src/vault.py:267
-msgid "Wrong password"
-msgstr ""
-
-#: ../src/vault.py:315 ../src/vault.py:380
-msgid "File integrity check failed"
-msgstr ""
-
-#: ../src/vaultframe.py:131
+#: ../src/vaultframe.py:132
 msgid "&About"
 msgstr ""
 
-#: ../src/vaultframe.py:134
+#: ../src/vaultframe.py:135
 msgid "E&xit"
 msgstr ""
 
-#: ../src/vaultframe.py:137
+#: ../src/vaultframe.py:138
 msgid "&Add\tCtrl+A"
 msgstr ""
 
-#: ../src/vaultframe.py:139
+#: ../src/vaultframe.py:140
 msgid "&Delete\tCtrl+Back"
 msgstr ""
 
-#: ../src/vaultframe.py:142
+#: ../src/vaultframe.py:143
 msgid "&Edit\tCtrl+E"
 msgstr ""
 
-#: ../src/vaultframe.py:145
+#: ../src/vaultframe.py:147
 msgid "Copy &Username\tCtrl+U"
 msgstr ""
 
-#: ../src/vaultframe.py:147
+#: ../src/vaultframe.py:150
 msgid "Copy &Password\tCtrl+P"
 msgstr ""
 
-#: ../src/vaultframe.py:150
+#: ../src/vaultframe.py:153
+msgid "Copy UR&L\tCtrl+L"
+msgstr ""
+
+#: ../src/vaultframe.py:156
 msgid "&Vault"
 msgstr ""
 
-#: ../src/vaultframe.py:151
+#: ../src/vaultframe.py:157
 msgid "&Record"
 msgstr ""
 
-#: ../src/vaultframe.py:154
+#: ../src/vaultframe.py:160
 msgid "Vault Contents"
 msgstr ""
 
-#: ../src/vaultframe.py:211
+#: ../src/vaultframe.py:217
 msgid "Read Vault contents from disk"
 msgstr ""
 
-#: ../src/vaultframe.py:222
+#: ../src/vaultframe.py:228
 msgid "Wrote Vault contents to disk"
 msgstr ""
 
-#: ../src/vaultframe.py:225
+#: ../src/vaultframe.py:231
 msgid "Could not write Vault contents to disk"
 msgstr ""
 
-#: ../src/vaultframe.py:226
+#: ../src/vaultframe.py:232
 msgid "Error writing to disk"
 msgstr ""
 
-#: ../src/vaultframe.py:235
+#: ../src/vaultframe.py:242
 msgid "Could not open clipboard"
 msgstr ""
 
-#: ../src/vaultframe.py:251 ../src/vaultframe.py:404
+#: ../src/vaultframe.py:258 ../src/vaultframe.py:415
 #, python-format
 msgid "Copied password of \"%s\" to clipboard"
 msgstr ""
 
-#: ../src/vaultframe.py:253 ../src/vaultframe.py:406
+#: ../src/vaultframe.py:260 ../src/vaultframe.py:417
 #, python-format
 msgid "Error copying password of \"%s\" to clipboard"
 msgstr ""
 
-#: ../src/vaultframe.py:267
+#: ../src/vaultframe.py:278
 #, python-format
 msgid "Changed title of \"%s\""
 msgstr ""
 
-#: ../src/vaultframe.py:365
+#: ../src/vaultframe.py:376
 msgid ""
 "Are you sure you want to delete this record? It contains a username or "
 "password and there is no way to undo this action."
 msgstr ""
 
-#: ../src/vaultframe.py:366
+#: ../src/vaultframe.py:377
 msgid "Really delete record?"
 msgstr ""
 
-#: ../src/vaultframe.py:390
+#: ../src/vaultframe.py:401
 #, python-format
 msgid "Copied username of \"%s\" to clipboard"
 msgstr ""
 
-#: ../src/vaultframe.py:392
+#: ../src/vaultframe.py:403
 #, python-format
 msgid "Error copying username of \"%s\" to clipboard"
+msgstr ""
+
+#: ../src/vaultframe.py:429
+#, python-format
+msgid "Copied URL of \"%s\" to clipboard"
+msgstr ""
+
+#: ../src/vaultframe.py:431
+#, python-format
+msgid "Error copying URL of \"%s\" to clipboard"
 msgstr ""
