@@ -235,15 +235,28 @@ class VaultFrame(wx.Frame):
             dial.ShowModal()
             dial.Destroy()
 
+    def _clear_clipboard(self, match_text = None):
+        if match_text:
+            if not wx.TheClipboard.Open():
+                raise RuntimeError(_("Could not open clipboard"))
+            try:
+                clip_object = wx.TextDataObject()
+                if wx.TheClipboard.GetData(clip_object):
+                    if clip_object.GetText() != match_text:
+                        return
+            finally:
+                wx.TheClipboard.Close()
+        wx.TheClipboard.Clear()
+        self.statusbar.SetStatusText(_('Cleared clipboard'), 0)
 
-    @staticmethod
-    def _copy_to_clipboard(text):
+    def _copy_to_clipboard(self, text, duration = None):
         if not wx.TheClipboard.Open():
             raise RuntimeError(_("Could not open clipboard"))
         try:
             clip_object = wx.TextDataObject(text)
             wx.TheClipboard.SetData(clip_object)
-            clip_object.clear_after_get = True
+            if duration:
+                wx.FutureCall(duration * 1000, self._clear_clipboard, text)
         finally:
             wx.TheClipboard.Close()
 
@@ -409,7 +422,7 @@ class VaultFrame(wx.Frame):
             return
         entry = self.list.displayed_entries[index]
         try:
-            self._copy_to_clipboard(entry.passwd)
+            self._copy_to_clipboard(entry.passwd, duration=10)
             self.statusbar.SetStatusText(_('Copied password of "%s" to clipboard') % entry.title, 0)
         except RuntimeError:
             self.statusbar.SetStatusText(_('Error copying password of "%s" to clipboard') % entry.title, 0)
