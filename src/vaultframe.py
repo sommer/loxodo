@@ -117,7 +117,6 @@ class VaultFrame(wx.Frame):
         wx.Frame.__init__(self, *args, **kwds)
 
         wx.EVT_CLOSE(self, self._on_frame_close)
-        self.Bind(wx.EVT_CHAR_HOOK, self._on_char)
 
         self.panel = wx.Panel(self, -1)
 
@@ -169,6 +168,7 @@ class VaultFrame(wx.Frame):
         self._searchbox.ShowCancelButton(True)
         self.Bind(wx.EVT_SEARCHCTRL_CANCEL_BTN, self._on_search_cancel, self._searchbox)
         self.Bind(wx.EVT_TEXT, self._on_search_do, self._searchbox)
+        self._searchbox.Bind(wx.EVT_CHAR, self._on_searchbox_char)
 
         _rowsizer.Add(self._searchbox, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT, 5)
         sizer.Add(_rowsizer, 0, wx.ALIGN_RIGHT | wx.ALL, 5)
@@ -448,23 +448,25 @@ class VaultFrame(wx.Frame):
         """
         self.Destroy()
 
-    def _on_char(self, evt):
+    def _on_searchbox_char(self, evt):
         """
-        Event handler: Fires when user presses a key
+        Event handler: Fires when user presses a key in self._searchbox
         """
 
-        # Shortcuts for self._searchbox
-        if self.FindFocus() == self._searchbox or (self._searchbox.GetChildren() and self.FindFocus() in self._searchbox.GetChildren()):
+        # If "Enter" was pressed, ignore key and copy password of first match
+        if evt.GetKeyCode() == wx.WXK_RETURN:
+            self._on_copy_password(None)
+            return
 
-            # If "Escape" was pressed, ignore key and clear the Search box
-            if evt.GetKeyCode() == wx.WXK_ESCAPE:
-                self._on_search_cancel(None)
-                return
-            
-            # If "Up" or "Down" was pressed, ignore key and focus self.list
-            if evt.GetKeyCode() in (wx.WXK_UP, wx.WXK_DOWN):
-                self.list.SetFocus()
-                return
+        # If "Escape" was pressed, ignore key and clear the Search box
+        if evt.GetKeyCode() == wx.WXK_ESCAPE:
+            self._on_search_cancel(None)
+            return
+        
+        # If "Up" or "Down" was pressed, ignore key and focus self.list
+        if evt.GetKeyCode() in (wx.WXK_UP, wx.WXK_DOWN):
+            self.list.SetFocus()
+            return
 
         # Ignore all other keys
         evt.Skip()
