@@ -252,12 +252,10 @@ class VaultFrame(wx.Frame):
         Event handler: Fires when user double-clicks a list entry.
         """
         index = event.GetIndex()
-        entry = self.list.displayed_entries[index]
-        try:
-            self._copy_to_clipboard(entry.passwd)
-            self.statusbar.SetStatusText(_('Copied password of "%s" to clipboard') % entry.title, 0)
-        except RuntimeError:
-            self.statusbar.SetStatusText(_('Error copying password of "%s" to clipboard') % entry.title, 0)
+        self.list.deselect_all()
+        self.list.Select(index, True)
+        self.list.Focus(index)
+        self._on_copy_password(None)
 
     def _on_list_item_label_edit(self, event):
         """
