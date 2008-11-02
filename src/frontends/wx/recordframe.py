@@ -23,7 +23,7 @@ import random
 import struct
 import wx
 
-from wxlocale import _
+from .wxlocale import _
 
 # RecordFrame is a wx.MiniFrame on platforms where this helps usability
 if platform.system() in ("Windows", "Microsoft", "Darwin"):
