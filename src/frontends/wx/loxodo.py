@@ -30,15 +30,6 @@ def main():
     mainframe = LoadFrame(None, -1, "")
     app.SetTopWindow(mainframe)
     mainframe.Show()
-    
-    dial = wx.MessageDialog(mainframe,
-                                        _('This is an unstable preview version of Loxodo. Prior to opening any file with this program, please create a backup and store it in a safe place - this version *will* destroy the original copy.'),
-                                        _('Version warning'),
-                                        wx.OK | wx.ICON_WARNING
-                                        )
-    dial.ShowModal()
-    dial.Destroy()
-    
     app.MainLoop()
 
 main()

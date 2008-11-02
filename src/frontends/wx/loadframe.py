@@ -52,6 +52,9 @@ class LoadFrame(wx.Frame):
 
         sizer_3.Add(self.bitmap_1, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
 
+        lb_warning2 = wx.StaticText(self.panel_1, -1, _('This is an unstable preview version of Loxodo. Prior to opening any file with this program, please create a backup and store it in a safe place - this version *will* destroy the original copy.'), size=(128, 64))
+        sizer_3.Add(lb_warning2, 0, wx.TOP|wx.EXPAND, 0)
+
         sizer_3.Add(self._fb_filename, 0, wx.EXPAND|wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.RIGHT, 5)
 
         sizer_5 = wx.BoxSizer(wx.HORIZONTAL)
