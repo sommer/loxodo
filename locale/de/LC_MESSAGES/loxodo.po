@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Loxodo 0.0-git\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-10-28 01:05+0100\n"
-"PO-Revision-Date: 2008-10-28 01:11+0100\n"
+"POT-Creation-Date: 2008-11-02 20:54+0100\n"
+"PO-Revision-Date: 2008-11-02 20:55+0100\n"
 "Last-Translator: Christoph Sommer <mail@christoph-sommer.de>\n"
 "Language-Team: Christoph Sommer <mail@christoph.sommer.de>\n"
 "MIME-Version: 1.0\n"
@@ -18,192 +18,193 @@ msgstr ""
 "X-Poedit-Country: GERMANY\n"
 "X-Poedit-SourceCharset: utf-8\n"
 
-#: ../src/loadframe.py:41
+#: ../src/frontends/wx/loadframe.py:41
 msgid "Vault"
 msgstr "Tresor"
 
-#: ../src/loadframe.py:44
-#: ../src/recordframe.py:58
+#: ../src/frontends/wx/loadframe.py:44
+#: ../src/frontends/wx/recordframe.py:58
 msgid "Password"
 msgstr "Passwort"
 
-#: ../src/loadframe.py:48
+#: ../src/frontends/wx/loadframe.py:48
 msgid "Open Vault"
 msgstr "Tresor öffnen"
 
-#: ../src/loadframe.py:103
-msgid "The given password does not match the Vault"
-msgstr "Dieses Passwort stimmt nicht mit dem des Tresors überein"
-
-#: ../src/loadframe.py:104
-msgid "Bad Password"
-msgstr "Falsches Passwort"
-
-#: ../src/loadframe.py:114
-msgid "This is not a PasswordSafe V3 Vault"
-msgstr "Dies ist kein \"PasswordSafe V3\"-Tresor"
-
-#: ../src/loadframe.py:115
-#: ../src/loadframe.py:124
-msgid "Bad Vault"
-msgstr "Defekter Tresor"
-
-#: ../src/loadframe.py:123
-msgid "Vault integrity check failed"
-msgstr "Integritätsprüfung fehlgeschlagen"
-
-#: ../src/loxodo.py:35
+#: ../src/frontends/wx/loadframe.py:55
 msgid "This is an unstable preview version of Loxodo. Prior to opening any file with this program, please create a backup and store it in a safe place - this version *will* destroy the original copy."
 msgstr "Dies ist eine instabile vorab-Version von Loxodo. Bevor Sie eine Datei mit diesem Programm öffnen, erstellen Sie bitte eine Kopie an einem sicheren Ort - diese Version *wird* das Original zerstören."
 
-#: ../src/loxodo.py:36
-msgid "Version warning"
-msgstr "Versionswarnung"
+#: ../src/frontends/wx/loadframe.py:106
+msgid "The given password does not match the Vault"
+msgstr "Dieses Passwort stimmt nicht mit dem des Tresors überein"
 
-#: ../src/recordframe.py:55
-#: ../src/vaultframe.py:46
+#: ../src/frontends/wx/loadframe.py:107
+msgid "Bad Password"
+msgstr "Falsches Passwort"
+
+#: ../src/frontends/wx/loadframe.py:117
+msgid "This is not a PasswordSafe V3 Vault"
+msgstr "Dies ist kein \"PasswordSafe V3\"-Tresor"
+
+#: ../src/frontends/wx/loadframe.py:118
+#: ../src/frontends/wx/loadframe.py:127
+msgid "Bad Vault"
+msgstr "Defekter Tresor"
+
+#: ../src/frontends/wx/loadframe.py:126
+msgid "Vault integrity check failed"
+msgstr "Integritätsprüfung fehlgeschlagen"
+
+#: ../src/frontends/wx/recordframe.py:55
+#: ../src/frontends/wx/vaultframe.py:46
 msgid "Group"
 msgstr "Gruppe"
 
-#: ../src/recordframe.py:56
-#: ../src/vaultframe.py:44
+#: ../src/frontends/wx/recordframe.py:56
+#: ../src/frontends/wx/vaultframe.py:44
 msgid "Title"
 msgstr "Titel"
 
-#: ../src/recordframe.py:57
-#: ../src/vaultframe.py:45
+#: ../src/frontends/wx/recordframe.py:57
+#: ../src/frontends/wx/vaultframe.py:45
 msgid "Username"
 msgstr "Benutzername"
 
-#: ../src/recordframe.py:59
+#: ../src/frontends/wx/recordframe.py:59
 msgid "URL"
 msgstr "URL"
 
-#: ../src/recordframe.py:60
+#: ../src/frontends/wx/recordframe.py:60
 msgid "Notes"
 msgstr "Notizen"
 
-#: ../src/recordframe.py:85
+#: ../src/frontends/wx/recordframe.py:85
 msgid "Edit Vault Record"
 msgstr "Eintrag bearbeiten"
 
-#: ../src/recordframe.py:114
+#: ../src/frontends/wx/recordframe.py:114
 msgid "(un)mask"
 msgstr "(de)maskieren"
 
-#: ../src/recordframe.py:117
+#: ../src/frontends/wx/recordframe.py:117
 msgid "generate"
 msgstr "erzeugen"
 
-#: ../src/vaultframe.py:132
+#: ../src/frontends/wx/vaultframe.py:131
 msgid "&About"
 msgstr "&Über"
 
-#: ../src/vaultframe.py:135
+#: ../src/frontends/wx/vaultframe.py:134
 msgid "E&xit"
 msgstr "&Beenden"
 
-#: ../src/vaultframe.py:138
+#: ../src/frontends/wx/vaultframe.py:137
 msgid "&Add\tCtrl+A"
 msgstr "&Hinzufügen\tCtrl+A"
 
-#: ../src/vaultframe.py:140
+#: ../src/frontends/wx/vaultframe.py:139
 msgid "&Delete\tCtrl+Back"
 msgstr "&Entfernen\tCtrl+Back"
 
-#: ../src/vaultframe.py:143
+#: ../src/frontends/wx/vaultframe.py:142
 msgid "&Edit\tCtrl+E"
 msgstr "&Bearbeiten\tCtrl+E"
 
-#: ../src/vaultframe.py:147
+#: ../src/frontends/wx/vaultframe.py:146
 msgid "Copy &Username\tCtrl+U"
 msgstr "Ben&utzernamen kopieren\tCtrl+U"
 
-#: ../src/vaultframe.py:150
+#: ../src/frontends/wx/vaultframe.py:149
 msgid "Copy &Password\tCtrl+P"
 msgstr "&Passwort kopieren\tCtrl+P"
 
-#: ../src/vaultframe.py:153
+#: ../src/frontends/wx/vaultframe.py:152
 msgid "Copy UR&L\tCtrl+L"
 msgstr "UR&L kopieren\tCtrl+U"
 
-#: ../src/vaultframe.py:156
+#: ../src/frontends/wx/vaultframe.py:155
 msgid "&Vault"
 msgstr "&Tresor"
 
-#: ../src/vaultframe.py:157
+#: ../src/frontends/wx/vaultframe.py:156
 msgid "&Record"
 msgstr "&Eintrag"
 
-#: ../src/vaultframe.py:160
+#: ../src/frontends/wx/vaultframe.py:159
 msgid "Vault Contents"
 msgstr "Tresorinhalt"
 
-#: ../src/vaultframe.py:217
+#: ../src/frontends/wx/vaultframe.py:217
 msgid "Read Vault contents from disk"
 msgstr "Tresorinhalt geladen"
 
-#: ../src/vaultframe.py:228
+#: ../src/frontends/wx/vaultframe.py:228
 msgid "Wrote Vault contents to disk"
 msgstr "Tresorinhalt gespeichert"
 
-#: ../src/vaultframe.py:231
+#: ../src/frontends/wx/vaultframe.py:231
 msgid "Could not write Vault contents to disk"
 msgstr "Konnte Tresorinhalt nicht speichern"
 
-#: ../src/vaultframe.py:232
+#: ../src/frontends/wx/vaultframe.py:232
 msgid "Error writing to disk"
 msgstr "Fehler beim Speichern"
 
-#: ../src/vaultframe.py:242
+#: ../src/frontends/wx/vaultframe.py:241
+#: ../src/frontends/wx/vaultframe.py:254
 msgid "Could not open clipboard"
 msgstr "Konnte Zwischenablage nicht öffnen"
 
-#: ../src/vaultframe.py:258
-#: ../src/vaultframe.py:415
-#, python-format
-msgid "Copied password of \"%s\" to clipboard"
-msgstr "Passwort für \"%s\" in Zwischenablage kopiert"
+#: ../src/frontends/wx/vaultframe.py:250
+msgid "Cleared clipboard"
+msgstr "Zwischenablage geleert"
 
-#: ../src/vaultframe.py:260
-#: ../src/vaultframe.py:417
-#, python-format
-msgid "Error copying password of \"%s\" to clipboard"
-msgstr "Konnte Passwort für \"%s\" nicht in Zwischenablage kopieren"
-
-#: ../src/vaultframe.py:278
+#: ../src/frontends/wx/vaultframe.py:289
 #, python-format
 msgid "Changed title of \"%s\""
 msgstr "Titel von \"%s\" geändet"
 
-#: ../src/vaultframe.py:376
+#: ../src/frontends/wx/vaultframe.py:387
 msgid "Are you sure you want to delete this record? It contains a username or password and there is no way to undo this action."
 msgstr "Sind Sie sicher, dass Sie diesen Eintrag löschen wollen? Er enthält einen Benutzernamen oder ein Passwort, die unwiederbringlich gelöscht würden."
 
-#: ../src/vaultframe.py:377
+#: ../src/frontends/wx/vaultframe.py:388
 msgid "Really delete record?"
 msgstr "Eintrag wirklich löschen?"
 
-#: ../src/vaultframe.py:401
+#: ../src/frontends/wx/vaultframe.py:412
 #, python-format
 msgid "Copied username of \"%s\" to clipboard"
 msgstr "Benutzernamen für \"%s\" in die Zwischenablage kopiert"
 
-#: ../src/vaultframe.py:403
+#: ../src/frontends/wx/vaultframe.py:414
 #, python-format
 msgid "Error copying username of \"%s\" to clipboard"
 msgstr "Konnte Benutzernamen für \"%s\" nicht in die Zwischenablage kopieren"
 
-#: ../src/vaultframe.py:429
+#: ../src/frontends/wx/vaultframe.py:426
+#, python-format
+msgid "Copied password of \"%s\" to clipboard"
+msgstr "Passwort für \"%s\" in Zwischenablage kopiert"
+
+#: ../src/frontends/wx/vaultframe.py:428
+#, python-format
+msgid "Error copying password of \"%s\" to clipboard"
+msgstr "Konnte Passwort für \"%s\" nicht in Zwischenablage kopieren"
+
+#: ../src/frontends/wx/vaultframe.py:440
 #, python-format
 msgid "Copied URL of \"%s\" to clipboard"
 msgstr "URL für \"%s\" in Zwischenablage kopiert"
 
-#: ../src/vaultframe.py:431
+#: ../src/frontends/wx/vaultframe.py:442
 #, python-format
 msgid "Error copying URL of \"%s\" to clipboard"
 msgstr "Konnte URL für \"%s\" nicht in Zwischenablage kopieren"
 
+#~ msgid "Version warning"
+#~ msgstr "Versionswarnung"
 #~ msgid "EOF encountered when parsing record field"
 #~ msgstr "Beim Parsen des Eintrags auf EOF gestoßen"
 #~ msgid "Encountered unreasonably long field"
