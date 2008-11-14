@@ -51,7 +51,7 @@ class RecordFrame(_RecordFrameBase):
         _sz_main = wx.BoxSizer(wx.VERTICAL)
         _sz_fields = wx.FlexGridSizer(5, 2, 5, 5)
         _sz_fields.AddGrowableCol(1)
-        _sz_fields.AddGrowableRow(4)
+        _sz_fields.AddGrowableRow(5)
         self._tc_group = self._add_a_textcontrol(_sz_fields, _("Group") + ":", "")
         self._tc_title = self._add_a_textcontrol(_sz_fields, _("Title") + ":", "")
         self._tc_user = self._add_a_textcontrol(_sz_fields, _("Username") + ":", "")
