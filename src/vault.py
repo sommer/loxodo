@@ -37,7 +37,7 @@ class Vault(object):
     http://passwordsafe.svn.sourceforge.net/viewvc/passwordsafe/trunk/pwsafe/pwsafe/docs/formatV3.txt?revision=2139
     """
 
-    def __init__(self):
+    def __init__(self, password, filename=None):
         self.f_tag = None
         self.f_salt = None
         self.f_iter = None
@@ -50,6 +50,10 @@ class Vault(object):
         self.f_hmac = None
         self.header = self.Header()
         self.records = []
+        if not filename:
+            self._create_empty(password)
+        else:
+            self._read_from_file(filename, password)
 
     class BadPasswordError(RuntimeError):
         pass
@@ -285,7 +289,40 @@ class Vault(object):
 
         filehandle.write(data)
 
-    def read_from_file(self, filename, password):
+    @staticmethod
+    def create(password, filename):
+        vault = Vault(password)
+        vault.write_to_file(filename, password)
+        pass
+
+    def _create_empty(self, password):
+        
+        assert type(password) != unicode
+
+        self.f_tag = 'PWS3'
+        self.f_salt = Vault._urandom(32)
+        self.f_iter = 2048
+        stretched_password = self._stretch_password(password, self.f_salt, self.f_iter)
+        self.f_sha_ps = hashlib.sha256(stretched_password).digest()
+
+        cipher = TwofishECB(stretched_password)
+        self.f_b1 = cipher.encrypt(Vault._urandom(16))
+        self.f_b2 = cipher.encrypt(Vault._urandom(16))
+        self.f_b3 = cipher.encrypt(Vault._urandom(16))
+        self.f_b4 = cipher.encrypt(Vault._urandom(16))
+        key_k = cipher.decrypt(self.f_b1) + cipher.decrypt(self.f_b2)
+        key_l = cipher.decrypt(self.f_b3) + cipher.decrypt(self.f_b4)
+
+        self.f_iv = Vault._urandom(16)
+        
+        hmac_checker = HMAC(key_l, "", hashlib.sha256)
+        cipher = TwofishCBC(key_k, self.f_iv)
+
+        # No records yet
+
+        self.f_hmac = hmac_checker.digest()
+
+    def _read_from_file(self, filename, password):
         """
         Initialize all class members by loading the contents of a Vault stored in the given file.
         """
@@ -423,12 +460,14 @@ class Vault(object):
         filehandle.close()
 
         try:
-            tmpvault = Vault()
-            tmpvault.read_from_file(tmpfilename, password)
+            tmpvault = Vault(password, filename=tmpfilename)
         except RuntimeError:
             os.remove(tmpfilename)
             raise self.VaultFormatError("File integrity check failed")
 
         # after writing the temporary file, replace the original file with it
-        os.remove(filename)
+        try:
+            os.remove(filename)
+        except OSError:
+            pass
         os.rename(tmpfilename, filename)

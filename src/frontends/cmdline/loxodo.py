@@ -79,8 +79,7 @@ def main(argv):
 	print "Opening " + fname + "..."
 	vault_records = []
 	try:
-		vault = Vault()
-		vault.read_from_file(fname, passwd)
+		vault = Vault(passwd, filename=fname)
 		vault_records = vault.records[:]
 		vault_records.sort(lambda e1, e2: cmp(e1.title, e2.title))
 	except Vault.BadPasswordError:

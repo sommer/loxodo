@@ -87,8 +87,29 @@ class LoadFrame(wx.Frame):
         pass
 
     def _on_new(self, dummy):
-        # FIXME: Implement "Create Vault" method
-        pass
+        password = self._tc_passwd.GetValue().encode('latin1', 'replace')
+
+        filename = self._fb_filename.GetValue()
+        wildcard = "|".join((_("Vault") + " (*.psafe3)", "*.psafe3", _("All files") + " (*.*)", "*.*"))
+        dialog = wx.FileDialog(self, message = _("Save new Vault as..."), defaultFile = filename, wildcard = wildcard, style = wx.SAVE | wx.OVERWRITE_PROMPT)
+        if dialog.ShowModal() != wx.ID_OK:
+            return
+        filename = dialog.GetPath()
+        dialog.Destroy()
+
+        Vault.create(password, filename=filename)
+        self._fb_filename.SetValue(filename)
+        
+        dial = wx.MessageDialog(self,
+                                _('A new Vault has been created using the given password. You can now proceed to open the Vault.'),
+                                _('Vault Created'),
+                                wx.OK | wx.ICON_INFORMATION
+                                )
+        dial.ShowModal()
+        dial.Destroy()
+        self._tc_passwd.SetFocus()
+        self._tc_passwd.SelectAll()
+    
 
     def _on_open(self, dummy):
         try:

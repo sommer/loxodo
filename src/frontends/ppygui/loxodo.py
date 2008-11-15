@@ -53,8 +53,7 @@ class VaultFrame(gui.CeFrame):
         self.vault_file_name = None
         self.vault_password = None
         self._is_modified = False
-        self.vault = Vault()
-        self.vault.read_from_file(filename, password)
+        self.vault = Vault(password, filename=filename)
 
         self.list.redraw = False
         for record in self.vault.records:

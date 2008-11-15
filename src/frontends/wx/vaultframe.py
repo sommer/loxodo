@@ -189,7 +189,7 @@ class VaultFrame(wx.Frame):
 
         self.vault_file_name = None
         self.vault_password = None
-        self.vault = Vault()
+        self.vault = None
         self._recordframe = None
         self._is_modified = False
 
@@ -209,8 +209,7 @@ class VaultFrame(wx.Frame):
         self.vault_file_name = None
         self.vault_password = None
         self._is_modified = False
-        self.vault = Vault()
-        self.vault.read_from_file(filename, password)
+        self.vault = Vault(password, filename=filename)
         self.list.set_vault(self.vault)
         self.vault_file_name = filename
         self.vault_password = password
