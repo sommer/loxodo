@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-15 18:53+0100\n"
+"POT-Creation-Date: 2008-11-15 20:19+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,7 +50,7 @@ msgstr ""
 msgid "The given password does not match the Vault"
 msgstr ""
 
-#: ../src/frontends/wx/loadframe.py:125
+#: ../src/frontends/wx/loadframe.py:125 ../src/frontends/wx/vaultframe.py:368
 msgid "Bad Password"
 msgstr ""
 
@@ -98,115 +98,139 @@ msgstr ""
 msgid "generate"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:136
-msgid "&About"
+#: ../src/frontends/wx/vaultframe.py:137
+msgid "Change &Password"
 msgstr ""
 
 #: ../src/frontends/wx/vaultframe.py:139
-msgid "E&xit"
+msgid "&About"
 msgstr ""
 
 #: ../src/frontends/wx/vaultframe.py:142
+msgid "E&xit"
+msgstr ""
+
+#: ../src/frontends/wx/vaultframe.py:145
 msgid "&Add\tCtrl+A"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:144
+#: ../src/frontends/wx/vaultframe.py:147
 msgid "&Delete\tCtrl+Back"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:147
+#: ../src/frontends/wx/vaultframe.py:150
 msgid "&Edit\tCtrl+E"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:151
+#: ../src/frontends/wx/vaultframe.py:154
 msgid "Copy &Username\tCtrl+U"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:154
+#: ../src/frontends/wx/vaultframe.py:157
 msgid "Copy &Password\tCtrl+P"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:157
+#: ../src/frontends/wx/vaultframe.py:160
 msgid "Copy UR&L\tCtrl+L"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:160
+#: ../src/frontends/wx/vaultframe.py:163
 msgid "&Vault"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:161
+#: ../src/frontends/wx/vaultframe.py:164
 msgid "&Record"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:164
+#: ../src/frontends/wx/vaultframe.py:167
 msgid "Vault Contents"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:221
+#: ../src/frontends/wx/vaultframe.py:224
 msgid "Read Vault contents from disk"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:232
+#: ../src/frontends/wx/vaultframe.py:235
 msgid "Wrote Vault contents to disk"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:235
+#: ../src/frontends/wx/vaultframe.py:238
 msgid "Could not write Vault contents to disk"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:236
+#: ../src/frontends/wx/vaultframe.py:239
 msgid "Error writing to disk"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:245 ../src/frontends/wx/vaultframe.py:258
+#: ../src/frontends/wx/vaultframe.py:248 ../src/frontends/wx/vaultframe.py:261
 msgid "Could not open clipboard"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:254
+#: ../src/frontends/wx/vaultframe.py:257
 msgid "Cleared clipboard"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:293
+#: ../src/frontends/wx/vaultframe.py:296
 #, python-format
 msgid "Changed title of \"%s\""
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:391
+#: ../src/frontends/wx/vaultframe.py:347
+msgid "New password"
+msgstr ""
+
+#: ../src/frontends/wx/vaultframe.py:348 ../src/frontends/wx/vaultframe.py:358
+msgid "Change Vault Password"
+msgstr ""
+
+#: ../src/frontends/wx/vaultframe.py:357
+msgid "Re-enter new password"
+msgstr ""
+
+#: ../src/frontends/wx/vaultframe.py:367
+msgid "The given passwords do not match"
+msgstr ""
+
+#: ../src/frontends/wx/vaultframe.py:376
+msgid "Changed Vault password"
+msgstr ""
+
+#: ../src/frontends/wx/vaultframe.py:431
 msgid ""
 "Are you sure you want to delete this record? It contains a username or "
 "password and there is no way to undo this action."
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:392
+#: ../src/frontends/wx/vaultframe.py:432
 msgid "Really delete record?"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:416
+#: ../src/frontends/wx/vaultframe.py:456
 #, python-format
 msgid "Copied username of \"%s\" to clipboard"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:418
+#: ../src/frontends/wx/vaultframe.py:458
 #, python-format
 msgid "Error copying username of \"%s\" to clipboard"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:430
+#: ../src/frontends/wx/vaultframe.py:470
 #, python-format
 msgid "Copied password of \"%s\" to clipboard"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:432
+#: ../src/frontends/wx/vaultframe.py:472
 #, python-format
 msgid "Error copying password of \"%s\" to clipboard"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:444
+#: ../src/frontends/wx/vaultframe.py:484
 #, python-format
 msgid "Copied URL of \"%s\" to clipboard"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:446
+#: ../src/frontends/wx/vaultframe.py:486
 #, python-format
 msgid "Error copying URL of \"%s\" to clipboard"
 msgstr ""

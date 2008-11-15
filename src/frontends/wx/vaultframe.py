@@ -133,6 +133,9 @@ class VaultFrame(wx.Frame):
 
         # Set up menus
         filemenu = wx.Menu()
+        temp_id = wx.NewId()
+        filemenu.Append(temp_id, _("Change &Password") + "...")
+        wx.EVT_MENU(self, temp_id, self._on_change_password)
         filemenu.Append(wx.ID_ABOUT, _("&About"))
         wx.EVT_MENU(self, wx.ID_ABOUT, self._on_about)
         filemenu.AppendSeparator()
@@ -335,6 +338,43 @@ class VaultFrame(wx.Frame):
         about.SetLicense(gpl_v2)
         about.SetDevelopers(developers)
         wx.AboutBox(about)
+        
+    def _on_change_password(self, dummy):
+        
+        # FIXME: choose new SALT, B1-B4, IV values on password change? Conflicting Specs! 
+        
+        dial = wx.PasswordEntryDialog(self,
+                                _("New password"),
+                                _("Change Vault Password")
+                                )
+        retval = dial.ShowModal()
+        password_new = dial.Value.encode('latin1', 'replace')
+        dial.Destroy()
+        if retval != wx.ID_OK:
+            return
+
+        dial = wx.PasswordEntryDialog(self,
+                                _("Re-enter new password"),
+                                _("Change Vault Password")
+                                )
+        retval = dial.ShowModal()
+        password_new_confirm = dial.Value.encode('latin1', 'replace')
+        dial.Destroy()
+        if retval != wx.ID_OK:
+            return
+        if password_new_confirm != password_new:
+            dial = wx.MessageDialog(self,
+                                    _('The given passwords do not match'),
+                                    _('Bad Password'),
+                                    wx.OK | wx.ICON_ERROR
+                                    )
+            dial.ShowModal()
+            dial.Destroy()
+            return
+        
+        self.vault_password = password_new
+        self.statusbar.SetStatusText(_('Changed Vault password'), 0)
+        self.mark_modified()
 
     def _on_exit(self, dummy):
         """
