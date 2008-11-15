@@ -56,6 +56,11 @@ class VaultFrame(wx.Frame):
 
             Overrides the base classes' method.
             """
+
+            # Workaround for obscure wxPython behaviour that leads to an empty wx.ListCtrl sometimes calling OnGetItemText
+            if (item < 0) or (item >= len(self.displayed_entries)):
+              return "--"
+            
             if (col == 0):
                 return self.displayed_entries[item].title
             if (col == 1):
