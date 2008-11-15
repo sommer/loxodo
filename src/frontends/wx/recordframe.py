@@ -88,7 +88,7 @@ class RecordFrame(_RecordFrameBase):
         self.Fit()
         self.SetMinSize(self.GetSize())
 
-        self._tc_passwd.SetFocus()        
+        self.set_initial_focus()  
 
         self._vault_record = None
         self.refresh_subscriber = None
