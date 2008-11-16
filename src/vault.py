@@ -24,6 +24,7 @@ import random
 import os
 import tempfile
 import time
+import uuid
 
 from .twofish.twofish_ecb import TwofishECB
 from .twofish.twofish_cbc import TwofishCBC
@@ -74,6 +75,12 @@ class Vault(object):
             self.raw_type = raw_type
             self.raw_len = raw_len
             self.raw_value = raw_value
+            
+        def is_equal(self, field):
+            """
+            Return True if this Field and the given one are of the same type and both contain the same value.
+            """
+            return self.raw_type == field.raw_type and self.raw_value == field.raw_value
 
     class Header(object):
 
@@ -95,6 +102,7 @@ class Vault(object):
 
         def __init__(self):
             self.raw_fields = {}
+            self._uuid = None
             self._group = ""
             self._title = ""
             self._user = ""
@@ -102,9 +110,18 @@ class Vault(object):
             self._passwd = ""
             self._last_mod = 0
             self._url = ""
+            
+        @staticmethod
+        def create():
+            record = Vault.Record()
+            record.uuid = uuid.uuid4()
+            record.last_mod = int(time.time())
+            return record
 
         def add_raw_field(self, raw_field):
             self.raw_fields[raw_field.raw_type] = raw_field
+            if (raw_field.raw_type == 0x01):
+                self._uuid = uuid.UUID(bytes_le=raw_field.raw_value)
             if (raw_field.raw_type == 0x02):
                 self._group = raw_field.raw_value.decode('utf_8', 'replace')
             if (raw_field.raw_type == 0x03):
@@ -123,10 +140,22 @@ class Vault(object):
         def mark_modified(self):
             self.last_mod = int(time.time())
 
+        # TODO: refactor Record._set_xyz methods to be less repetitive
+
+        def _get_uuid(self):
+            return self._uuid
+
+        def _set_uuid(self, value):
+            self._uuid = value
+            raw_id = 0x01
+            if (not self.raw_fields.has_key(raw_id)):
+                self.raw_fields[raw_id] = Vault.Field(raw_id, 0, "")
+            self.raw_fields[raw_id].raw_value = value.bytes_le
+            self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
+            self.mark_modified()
+
         def _get_group(self):
             return self._group
-
-        # TODO: refactor Record._set_xyz methods to be less repetitive
 
         def _set_group(self, value):
             self._group = value
@@ -209,6 +238,30 @@ class Vault(object):
             self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
             self.mark_modified()
 
+        def is_corresponding(self, record):
+            """
+            Return True if Records are the same, based on either UUIDs (if available) or title 
+            """
+            if not self.uuid or not record.uuid:
+                return self.title == record.title
+            return self.uuid == record.uuid
+                    
+        def is_newer_than(self, record):
+            """
+            Return True if this Record's last modifed date is later than the given one's.
+            """
+            return self.last_mod > record.last_mod
+
+        def merge(self, record):
+            """
+            Merge in fields from another Record, replacing existing ones
+            """
+            self.raw_fields = {}
+            for field in record.raw_fields.values():
+                self.add_raw_field(field)
+
+
+        uuid = property(_get_uuid, _set_uuid)
         group = property(_get_group, _set_group)
         title = property(_get_title, _set_title)
         user = property(_get_user, _set_user)

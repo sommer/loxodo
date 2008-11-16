@@ -23,6 +23,7 @@ import wx
 from .wxlocale import _
 from ...vault import Vault
 from .recordframe import RecordFrame
+from .mergeframe import MergeFrame
 
 class VaultFrame(wx.Frame):
 
@@ -136,6 +137,9 @@ class VaultFrame(wx.Frame):
         temp_id = wx.NewId()
         filemenu.Append(temp_id, _("Change &Password") + "...")
         wx.EVT_MENU(self, temp_id, self._on_change_password)
+        temp_id = wx.NewId()
+        filemenu.Append(temp_id, _("&Merge Records from") + "...")
+        wx.EVT_MENU(self, temp_id, self._on_merge_vault)
         filemenu.Append(wx.ID_ABOUT, _("&About"))
         wx.EVT_MENU(self, wx.ID_ABOUT, self._on_about)
         filemenu.AppendSeparator()
@@ -376,6 +380,92 @@ class VaultFrame(wx.Frame):
         self.statusbar.SetStatusText(_('Changed Vault password'), 0)
         self.mark_modified()
 
+    def _on_merge_vault(self, dummy):
+        wildcard = "|".join((_("Vault") + " (*.psafe3)", "*.psafe3", _("All files") + " (*.*)", "*.*"))
+        dialog = wx.FileDialog(self, message = _("Open Vault..."), defaultFile = self.vault_file_name, wildcard = wildcard, style = wx.FD_OPEN)
+        if dialog.ShowModal() != wx.ID_OK:
+            return
+        filename = dialog.GetPath()
+        dialog.Destroy()
+        
+        dial = wx.PasswordEntryDialog(self,
+                                _("Password"),
+                                _("Open Vault...")
+                                )
+        retval = dial.ShowModal()
+        password = dial.Value.encode('latin1', 'replace')
+        dial.Destroy()
+        if retval != wx.ID_OK:
+            return
+        
+        merge_vault = None
+        try:
+            merge_vault = Vault(password, filename=filename)
+        except Vault.BadPasswordError:
+            dial = wx.MessageDialog(self,
+                                    _('The given password does not match the Vault'),
+                                    _('Bad Password'),
+                                    wx.OK | wx.ICON_ERROR
+                                    )
+            dial.ShowModal()
+            dial.Destroy()
+            return
+        except Vault.VaultVersionError:
+            dial = wx.MessageDialog(self,
+                                    _('This is not a PasswordSafe V3 Vault'),
+                                    _('Bad Vault'),
+                                    wx.OK | wx.ICON_ERROR
+                                    )
+            dial.ShowModal()
+            dial.Destroy()
+            return
+        except Vault.VaultFormatError:
+            dial = wx.MessageDialog(self,
+                                    _('Vault integrity check failed'),
+                                    _('Bad Vault'),
+                                    wx.OK | wx.ICON_ERROR
+                                    )
+            dial.ShowModal()
+            dial.Destroy()
+            return
+
+        oldrecord_newrecord_reason_pairs = []  # list of (oldrecord, newrecord, reason) tuples to merge
+        for record in merge_vault.records:
+            
+            # check if corresponding record exists in current Vault
+            my_record = None
+            for record2 in self.vault.records:
+                if record2.is_corresponding(record):
+                    my_record = record2
+                    break
+
+            # record is new
+            if not my_record:
+                oldrecord_newrecord_reason_pairs.append((None, record, _("new")))
+                continue
+            
+            # record is more recent
+            if record.is_newer_than(my_record):
+                oldrecord_newrecord_reason_pairs.append((my_record, record, _('updates "%s"') % my_record.title))
+                continue
+                            
+            pass
+
+        dial = MergeFrame(self, oldrecord_newrecord_reason_pairs)
+        retval = dial.ShowModal()
+        oldrecord_newrecord_reason_pairs = dial.get_checked_items()
+        dial.Destroy()
+        if retval != wx.ID_OK:
+            return
+        
+        for (oldrecord, newrecord, reason) in oldrecord_newrecord_reason_pairs:
+            if oldrecord:
+                oldrecord.merge(newrecord)
+            else:
+                self.vault.records.append(newrecord)
+        self.mark_modified()
+
+
     def _on_exit(self, dummy):
         """
         Event handler: Fires when user chooses this menu item.
@@ -404,7 +494,7 @@ class VaultFrame(wx.Frame):
         """
         Event handler: Fires when user chooses this menu item.
         """
-        entry = self.vault.Record()
+        entry = self.vault.Record.create()
         self.vault.records.append(entry)
         self.mark_modified()
         
