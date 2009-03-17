@@ -161,8 +161,8 @@ class VaultFrame(wx.Frame):
         self._recordmenu.Append(temp_id, _("Copy &Password\tCtrl+P"))
         wx.EVT_MENU(self, temp_id, self._on_copy_password)
         temp_id = wx.NewId()
-        self._recordmenu.Append(temp_id, _("Copy UR&L\tCtrl+L"))
-        wx.EVT_MENU(self, temp_id, self._on_copy_url)
+        self._recordmenu.Append(temp_id, _("Open UR&L\tCtrl+L"))
+        wx.EVT_MENU(self, temp_id, self._on_open_url)
         menu_bar = wx.MenuBar()
         menu_bar.Append(filemenu, _("&Vault"))
         menu_bar.Append(self._recordmenu, _("&Record"))
@@ -561,7 +561,7 @@ class VaultFrame(wx.Frame):
         except RuntimeError:
             self.statusbar.SetStatusText(_('Error copying password of "%s" to clipboard') % entry.title, 0)
 
-    def _on_copy_url(self, dummy):
+    def _on_open_url(self, dummy):
         """
         Event handler: Fires when user chooses this menu item.
         """
@@ -570,10 +570,10 @@ class VaultFrame(wx.Frame):
             return
         entry = self.list.displayed_entries[index]
         try:
-            self._copy_to_clipboard(entry.url)
-            self.statusbar.SetStatusText(_('Copied URL of "%s" to clipboard') % entry.title, 0)
-        except RuntimeError:
-            self.statusbar.SetStatusText(_('Error copying URL of "%s" to clipboard') % entry.title, 0)
+            import webbrowser
+            webbrowser.open(entry.url)
+        except ImportError:
+            self.statusbar.SetStatusText(_('Could not load python module "webbrowser" needed to open "%s"') % entry.url, 0)
 
     def _on_search_do(self, dummy):
         """
