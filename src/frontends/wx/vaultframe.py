@@ -22,6 +22,7 @@ import wx
 
 from .wxlocale import _
 from ...vault import Vault
+from ...config import config
 from .recordframe import RecordFrame
 from .mergeframe import MergeFrame
 
@@ -334,7 +335,7 @@ class VaultFrame(wx.Frame):
                       )
 
         about = wx.AboutDialogInfo()
-        about.SetIcon(wx.Icon(os.path.join(os.path.dirname(__file__), "..", "..", "..", "resources", "loxodo-icon.png"), wx.BITMAP_TYPE_PNG, 128, 128))
+        about.SetIcon(wx.Icon(os.path.join(os.path.dirname(config.get_basescript()), "resources", "loxodo-icon.png"), wx.BITMAP_TYPE_PNG, 128, 128))
         about.SetName("Loxodo")
         about.SetVersion("0.0-git")
         about.SetCopyright("Copyright (C) 2008 Christoph Sommer <mail@christoph-sommer.de>")

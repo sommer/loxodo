@@ -9,6 +9,10 @@ if platform.system() == "Windows" and platform.release() == "CE":
     from src.frontends.ppygui import loxodo
     sys.exit()
 
+# All other platforms use the Config module
+from src.config import config
+config.set_basescript(__file__)
+
 # If cmdline arguments were given, use the "cmdline" frontend.
 if len(sys.argv) > 1:
     from src.frontends.cmdline import loxodo
@@ -25,3 +29,4 @@ except ImportError, e:
     print >> sys.stderr, ''
     from src.frontends.cmdline import loxodo
     sys.exit()
+

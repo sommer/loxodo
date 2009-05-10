@@ -28,6 +28,7 @@ class Config(object):
     """
 
     def __init__(self):
+        self._basescript = None
         self.recentvaults = []
 
         self._fname = self.get_config_filename()
@@ -44,6 +45,12 @@ class Config(object):
             if (not self._parser.has_option("base", "recentvaults" + str(num))):
                 break
             self.recentvaults.append(self._parser.get("base", "recentvaults" + str(num)))
+
+    def set_basescript(self, basescript):
+        self._basescript = basescript
+
+    def get_basescript(self):
+        return self._basescript
 
     def save(self):
         if (not os.path.exists(os.path.dirname(self._fname))):
@@ -95,7 +102,7 @@ class Config(object):
             return os.path.join(base_path, base_fname, base_fname + ".ini")
 
         # First fallback is writing to the program's base directory
-        base_path = os.path.join(os.path.dirname(__file__), "..")
+        base_path = os.path.dirname(config.get_basescript())
         if os.path.isdir(base_path):
             return os.path.join(base_path, base_fname + ".ini")
 
