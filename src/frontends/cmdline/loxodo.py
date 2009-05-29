@@ -17,41 +17,165 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 
+import os
 import sys
 import getopt
 from getpass import getpass
+import cmd
 
 from ...vault import Vault
+
+class InteractiveConsole(cmd.Cmd):
+	
+	def __init__(self):
+		self.vault = None
+		
+		cmd.Cmd.__init__(self)
+		self.intro = 'Ready for commands. Type "help" or "help <command>" for help, type "quit" to quit.'
+		self.prompt = "[none]> "
+
+		
+	def open_vault(self, fname):
+
+		print "Opening " + fname + "..."
+		try:
+			passwd = getpass("Vault password: ")
+		except EOFError:
+			print ""
+			print ""
+			print "Bye."
+			raise RuntimeError("No password given")
+		try:
+			self.vault = Vault(passwd, filename=fname)
+			self.prompt = "[" + os.path.basename(fname) + "]> "
+		except Vault.BadPasswordError:
+			print "Bad password."
+			raise
+		except Vault.VaultVersionError:
+			print "This is not a PasswordSafe V3 Vault."
+			raise
+		except Vault.VaultFormatError:
+			print "Vault integrity check failed."
+			raise
+		print "... done."
+		print ""
+
+
+	def postloop(self):
+		print
+
+
+	def emptyline(self):
+		pass
+
+
+	def do_help(self, line):
+		"""
+		Displays this message.
+		"""
+		if line:
+			cmd.Cmd.do_help(self, line)
+			return
+		
+		print
+		print "Commands:"
+		print "  ".join(("ls", "show", "quit"))
+		print
+
+	def do_quit(self, line):
+		"""
+		Exits interactive mode.
+		"""
+		return True
+
+
+	def do_EOF(self, line):
+		"""
+		Exits interactive mode.
+		"""
+		return True
+	
+	
+	def do_ls(self, line):
+		"""
+		Show contents of this Vault.
+		"""
+		if not self.vault:
+			raise RuntimeError("No vault opened")
+		
+		vault_records = self.vault.records[:]
+		vault_records.sort(lambda e1, e2: cmp(e1.title, e2.title))
+
+		for record in vault_records:
+			print record.title + " [" + record.user + "]"
+			
+			
+	def do_show(self, line):
+		"""
+		Show the specified entry (including its password).
+		"""
+
+		if not self.vault:
+			raise RuntimeError("No vault opened")
+
+		if line.startswith('"') and line.endswith('"'):
+			title = line[1:-1]
+		else:
+			title = line
+		
+		matches = [record for record in self.vault.records if record.title == title]
+
+		if not matches:
+			print 'No entry found for "%s"' % title
+			return
+
+		for record in matches:
+			if record.notes.strip():
+				print record.notes.encode('utf-8', 'replace')
+				print
+			print "Title   : " + record.title.encode('utf-8', 'replace')
+			print "Username: " + record.user.encode('utf-8', 'replace')
+			print "Password: " + record.passwd.encode('utf-8', 'replace')
+			
+
+	def complete_show(self, text, line, begidx, endidx):
+		vault_records = self.vault.records[:]
+		vault_records.sort(lambda e1, e2: cmp(e1.title, e2.title))
+
+		if text.startswith('"') and line.endswith('"'):
+			text = text[1:]
+		
+		if not text:
+			completions = [record.title for record in vault_records]
+		else:
+			completions = [record.title for record in vault_records if record.title.startswith(text)]
+
+		return [['%s', '"%s"'][" " in s] % s for s in completions]
+
 
 def usage():
 	print
 	print "Usage:"
-	print "loxoxo.py --list Vault.psafe3"
+	print "loxoxo.py Vault.psafe3"
+	print "loxoxo.py --ls Vault.psafe3"
 	print "loxodo.py --show Title Vault.psafe3"
 
-def show_entry(record):
-	if record.notes.strip():
-		print record.notes.encode('utf-8', 'replace')
-		print
-	print "Title   : " + record.title.encode('utf-8', 'replace')
-	print "Username: " + record.user.encode('utf-8', 'replace')
-	print "Password: " + record.passwd.encode('utf-8', 'replace')
 
 def main(argv):
 	try:								
-		opts, args = getopt.getopt(argv, "hls:", ("help", "list", "show="))
+		opts, args = getopt.getopt(argv, "hls:", ("help", "ls", "show="))
 	except getopt.GetoptError:
 		print str(err)
 		usage()
 		sys.exit(2)					 
-	do_list = False
+	do_ls = False
 	do_show = None
 	for o, a in opts:
 		if o in ("-h", "--help"):
 			usage()
 			sys.exit()
-		elif o in ("-l", "--list"):
-			do_list = True
+		elif o in ("-l", "--ls"):
+			do_ls = True
 		elif o in ("-s", "--show"):
 			do_show = a
 		else:
@@ -66,85 +190,17 @@ def main(argv):
 		sys.exit(2)
 	fname = args[0]
 
-	passwd = None
-	try:
-		passwd = getpass("Vault password: ")
-	except EOFError:
-		print ""
-		print ""
-		print "Bye."
-		sys.exit(0)
+	interactiveConsole = InteractiveConsole()
+	interactiveConsole.open_vault(fname)
+	if do_ls:
+		interactiveConsole.do_ls("")
+	elif do_show:
+		interactiveConsole.do_show(do_show)
+	else:
+		interactiveConsole.cmdloop()
 
-	print ""
-	print "Opening " + fname + "..."
-	vault_records = []
-	try:
-		vault = Vault(passwd, filename=fname)
-		vault_records = vault.records[:]
-		vault_records.sort(lambda e1, e2: cmp(e1.title, e2.title))
-	except Vault.BadPasswordError:
-		print "Bad password."
-		sys.exit(1)
-	except Vault.VaultVersionError:
-		print "This is not a PasswordSafe V3 Vault."
-		sys.exit(1)
-	except Vault.VaultFormatError:
-		print "Vault integrity check failed."
-		sys.exit(1)
-	print "... done."
-	print ""
-
-	i = 0	
-	for record in vault_records:
-		print "" + str(i) + ") " + record.title + " [" + record.user + "]"
-		i+=1
-
-	print ""
-
-	inp = None
-	try:
-		inp = raw_input("Show which entry? ")
-		print
-	except EOFError:
-		print ""
-		print ""
-		print "Bye."
-		sys.exit(0)
-
-	if not inp:
-		print "Bye."
-		sys.exit(0)
-
-	inp_no = -1
-	try:
-		inp_no = int(inp)
-	except:
-		pass
-
-	if (inp_no >= 0):
-		if (inp_no >= len(vault_records)):
-			print "No such entry." 
-			sys.exit(2)
-		show_entry(vault_records[inp_no])
-		sys.exit(0)
-
-	for record in vault_records:
-		if (record.title.lower().find(inp.lower()) >= 0):
-			show_entry(record)
-			sys.exit(0)
-
-	for record in vault_records:
-		if (record.group.lower().find(inp.lower()) >= 0):
-			show_entry(record)
-			sys.exit(0)
-
-	for record in vault_records:
-		if (record.user.lower().find(inp.lower()) >= 0):
-			show_entry(record)
-			sys.exit(0)
+	sys.exit(0)
 			
-	print "No such entry." 
-	sys.exit(2)
 
 main(sys.argv[1:])
 
