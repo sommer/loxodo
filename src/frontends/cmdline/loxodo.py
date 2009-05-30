@@ -121,12 +121,9 @@ class InteractiveConsole(cmd.Cmd):
 		if not self.vault:
 			raise RuntimeError("No vault opened")
 
-		if line.startswith('"') and line.endswith('"'):
-			title = line[1:-1]
-		else:
-			title = line
+		title = line
 		
-		matches = [record for record in self.vault.records if record.title == title]
+		matches = [record for record in self.vault.records if record.title == title or '"%s"'%record.title == title]
 
 		if not matches:
 			print 'No entry found for "%s"' % title
@@ -142,18 +139,19 @@ class InteractiveConsole(cmd.Cmd):
 			
 
 	def complete_show(self, text, line, begidx, endidx):
-		vault_records = self.vault.records[:]
-		vault_records.sort(lambda e1, e2: cmp(e1.title, e2.title))
-
-		if text.startswith('"') and line.endswith('"'):
-			text = text[1:]
-		
+	
 		if not text:
-			completions = [record.title for record in vault_records]
+			completions = [record.title for record in self.vault.records]
 		else:
-			completions = [record.title for record in vault_records if record.title.startswith(text)]
+			fulltext = line[5:]
+			lastspace = fulltext.rfind(' ')
+			if lastspace == -1:
+				completions = [record.title for record in self.vault.records if record.title.upper().startswith(text.upper())]
+			else:
+				completions = [record.title[lastspace+1:] for record in self.vault.records if record.title.upper().startswith(fulltext.upper())]
 
-		return [['%s', '"%s"'][" " in s] % s for s in completions]
+		completions.sort(lambda e1, e2: cmp(e1.title, e2.title))
+		return completions
 
 
 def usage():
