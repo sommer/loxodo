@@ -21,6 +21,7 @@ import os
 import sys
 import getopt
 from getpass import getpass
+import readline
 import cmd
 
 from ...vault import Vault
@@ -31,6 +32,8 @@ class InteractiveConsole(cmd.Cmd):
 		self.vault = None
 		
 		cmd.Cmd.__init__(self)
+		if sys.platform == "darwin":
+			readline.parse_and_bind('bind ^I rl_complete')
 		self.intro = 'Ready for commands. Type "help" or "help <command>" for help, type "quit" to quit.'
 		self.prompt = "[none]> "
 
