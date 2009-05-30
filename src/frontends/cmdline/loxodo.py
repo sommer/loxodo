@@ -110,7 +110,7 @@ class InteractiveConsole(cmd.Cmd):
 		vault_records.sort(lambda e1, e2: cmp(e1.title, e2.title))
 
 		for record in vault_records:
-			print record.title + " [" + record.user + "]"
+			print record.title.encode('utf-8', 'replace') + " [" + record.user.encode('utf-8', 'replace') + "]"
 			
 			
 	def do_show(self, line):
