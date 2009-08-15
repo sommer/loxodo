@@ -23,6 +23,7 @@ import getopt
 from getpass import getpass
 import readline
 import cmd
+import re
 
 from ...vault import Vault
 
@@ -105,9 +106,16 @@ class InteractiveConsole(cmd.Cmd):
 		"""
 		if not self.vault:
 			raise RuntimeError("No vault opened")
-		
-		vault_records = self.vault.records[:]
-		vault_records.sort(lambda e1, e2: cmp(e1.title, e2.title))
+	
+		if line != None:
+			vault_records = self.find_titles(line)
+		else:
+			vault_records = self.vault.records[:]
+			vault_records.sort(lambda e1, e2: cmp(e1.title, e2.title))
+
+		if vault_records == None:
+			print "No matches found."
+			return
 
 		for record in vault_records:
 			print record.title.encode('utf-8', 'replace') + " [" + record.user.encode('utf-8', 'replace') + "]"
@@ -116,17 +124,16 @@ class InteractiveConsole(cmd.Cmd):
 	def do_show(self, line):
 		"""
 		Show the specified entry (including its password).
+		A case insenstive search of titles is done, entries can also be specified as regular expressions.
 		"""
 
 		if not self.vault:
 			raise RuntimeError("No vault opened")
 
-		title = line
-		
-		matches = [record for record in self.vault.records if record.title == title or '"%s"'%record.title == title]
+		matches = self.find_titles(line)
 
-		if not matches:
-			print 'No entry found for "%s"' % title
+		if matches == None:
+			print 'No entry found for "%s"' % line
 			return
 
 		for record in matches:
@@ -153,6 +160,18 @@ class InteractiveConsole(cmd.Cmd):
 		completions.sort(lambda e1, e2: cmp(e1.title, e2.title))
 		return completions
 
+	def find_titles(self, regexp):
+		"Finds titles matching a regular expression. (Case insensitive)"
+		matches = []
+		pat = re.compile(regexp, re.IGNORECASE)
+		for record in self.vault.records:
+			if pat.match(record.title) != None:
+				matches.append(record)
+
+		if len(matches) == 0:
+			return None
+		else:
+			return matches
 
 def usage():
 	print
