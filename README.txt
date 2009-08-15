@@ -5,5 +5,18 @@ Copyright (C) 2008 Christoph Sommer <mail@christoph-sommer.de>
 Loxodo lives at http://www.christoph-sommer.de/loxodo
 
 
-To start Loxodo, run ./loxodo.py
+Quickstart:
+-----------
+
+./loxodo.py
+	runs Loxodo in GUI mode (if available)
+
+./loxodo.py -h
+	displays help about Loxodo's cmdline mode
+
+./setup.py py2app
+	creates a stand-alone .app (Mac OS X) 
+
+./setup.py py2exe
+	creates a stand-alone .exe (Windows)
 
