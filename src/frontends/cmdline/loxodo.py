@@ -26,11 +26,14 @@ import cmd
 import re
 
 from ...vault import Vault
+from ...config import config
 
 class InteractiveConsole(cmd.Cmd):
 	
 	def __init__(self):
 		self.vault = None
+		self.vault_file_name = None
+		self.vault_password = None
 		
 		cmd.Cmd.__init__(self)
 		if sys.platform == "darwin":
@@ -39,19 +42,19 @@ class InteractiveConsole(cmd.Cmd):
 		self.prompt = "[none]> "
 
 		
-	def open_vault(self, fname):
+	def open_vault(self):
 
-		print "Opening " + fname + "..."
+		print "Opening " + self.vault_file_name + "..."
 		try:
-			passwd = getpass("Vault password: ")
+			self.vault_password = getpass("Vault password: ")
 		except EOFError:
 			print ""
 			print ""
 			print "Bye."
 			raise RuntimeError("No password given")
 		try:
-			self.vault = Vault(passwd, filename=fname)
-			self.prompt = "[" + os.path.basename(fname) + "]> "
+			self.vault = Vault(self.vault_password, filename=self.vault_file_name)
+			self.prompt = "[" + os.path.basename(self.vault_file_name) + "]> "
 		except Vault.BadPasswordError:
 			print "Bad password."
 			raise
@@ -71,7 +74,6 @@ class InteractiveConsole(cmd.Cmd):
 
 	def emptyline(self):
 		pass
-
 
 	def do_help(self, line):
 		"""
@@ -102,7 +104,8 @@ class InteractiveConsole(cmd.Cmd):
 	
 	def do_ls(self, line):
 		"""
-		Show contents of this Vault.
+		Show contents of this Vault. If an argument is added a case insensitive
+		search of titles is done, entries can also be specified as regular expressions.
 		"""
 		if not self.vault:
 			raise RuntimeError("No vault opened")
@@ -119,7 +122,6 @@ class InteractiveConsole(cmd.Cmd):
 
 		for record in vault_records:
 			print record.title.encode('utf-8', 'replace') + " [" + record.user.encode('utf-8', 'replace') + "]"
-			
 			
 	def do_show(self, line):
 		"""
@@ -176,8 +178,9 @@ class InteractiveConsole(cmd.Cmd):
 def usage():
 	print
 	print "Usage:"
-	print "loxoxo.py Vault.psafe3"
-	print "loxoxo.py --ls Vault.psafe3"
+	print "loxodo.py\n\tWith no arguments to pull vault filename from the config"
+	print "loxodo.py Vault.psafe3"
+	print "loxodo.py --ls Vault.psafe3"
 	print "loxodo.py --show Title Vault.psafe3"
 
 
@@ -200,18 +203,25 @@ def main(argv):
 			do_show = a
 		else:
 			assert False, "unhandled option"
+
+	interactiveConsole = InteractiveConsole()
+
 	if (len(args) < 1):
-		print "No Vault specified"
-		usage()
-		sys.exit(2)
-	if (len(args) > 1):
+		if (config.recentvaults):
+			interactiveConsole.vault_file_name = config.recentvaults[0]
+			print "No Vault specified, using " + interactiveConsole.vault_file_name
+		else:
+			print "No Vault specified, and none found in config."
+			usage()
+			sys.exit(2)
+	elif (len(args) > 1):
 		print "More than one Vault specified"
 		usage()
 		sys.exit(2)
-	fname = args[0]
+	else:
+		interactiveConsole.vault_file_name = args[0]
 
-	interactiveConsole = InteractiveConsole()
-	interactiveConsole.open_vault(fname)
+	interactiveConsole.open_vault()
 	if do_ls:
 		interactiveConsole.do_ls("")
 	elif do_show:
