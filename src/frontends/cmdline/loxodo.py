@@ -142,7 +142,7 @@ class InteractiveConsole(cmd.Cmd):
 			if record.notes.strip():
 				print record.notes.encode('utf-8', 'replace')
 				print
-			print "Title   : " + record.title.encode('utf-8', 'replace')
+			print "\nTitle   : " + record.title.encode('utf-8', 'replace')
 			print "Username: " + record.user.encode('utf-8', 'replace')
 			print "Password: " + record.passwd.encode('utf-8', 'replace')
 			
