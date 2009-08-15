@@ -19,7 +19,7 @@
 
 import os
 import sys
-import getopt
+from optparse import OptionParser
 from getpass import getpass
 import readline
 import cmd
@@ -175,34 +175,16 @@ class InteractiveConsole(cmd.Cmd):
 		else:
 			return matches
 
-def usage():
-	print
-	print "Usage:"
-	print "loxodo.py\n\tWith no arguments to pull vault filename from the config"
-	print "loxodo.py Vault.psafe3"
-	print "loxodo.py --ls Vault.psafe3"
-	print "loxodo.py --show Title Vault.psafe3"
-
 
 def main(argv):
-	try:								
-		opts, args = getopt.getopt(argv, "hls:", ("help", "ls", "show="))
-	except getopt.GetoptError:
-		print str(err)
-		usage()
-		sys.exit(2)					 
-	do_ls = False
-	do_show = None
-	for o, a in opts:
-		if o in ("-h", "--help"):
-			usage()
-			sys.exit()
-		elif o in ("-l", "--ls"):
-			do_ls = True
-		elif o in ("-s", "--show"):
-			do_show = a
-		else:
-			assert False, "unhandled option"
+
+	# Options
+	usage = "usage: %prog [options] [Vault.psafe3]"
+	parser = OptionParser(usage=usage)
+	parser.add_option("-l", "--ls", dest="do_ls", default=False, action="store_true", help="list contents of vault")
+	parser.add_option("-s", "--show", dest="do_show", default=None, action="store", type="string", help="show entries matching REGEX", metavar="REGEX")
+	parser.add_option("-i", "--interactive", dest="interactive", default=False, action="store_true", help="use command line interface")
+	(options, args) = parser.parse_args()
 
 	interactiveConsole = InteractiveConsole()
 
@@ -212,20 +194,18 @@ def main(argv):
 			print "No Vault specified, using " + interactiveConsole.vault_file_name
 		else:
 			print "No Vault specified, and none found in config."
-			usage()
 			sys.exit(2)
 	elif (len(args) > 1):
 		print "More than one Vault specified"
-		usage()
 		sys.exit(2)
 	else:
 		interactiveConsole.vault_file_name = args[0]
 
 	interactiveConsole.open_vault()
-	if do_ls:
+	if options.do_ls:
 		interactiveConsole.do_ls("")
-	elif do_show:
-		interactiveConsole.do_show(do_show)
+	elif options.do_show:
+		interactiveConsole.do_show(options.do_show)
 	else:
 		interactiveConsole.cmdloop()
 
