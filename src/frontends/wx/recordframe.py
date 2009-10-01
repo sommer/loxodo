@@ -24,6 +24,7 @@ import struct
 import wx
 
 from .wxlocale import _
+from ...config import config
 
 # RecordFrame is a wx.MiniFrame on platforms where this helps usability
 if platform.system() in ("Windows", "Microsoft", "Darwin"):
@@ -192,7 +193,7 @@ class RecordFrame(_RecordFrameBase):
             self._tc_passwd.SetFocus()        
    
     def _on_generate_passwd(self, dummy):
-        _pwd = self.generate_password()
+        _pwd = self.generate_password(alphabet=config.alphabet,pwd_length=config.pwlength,allow_reduction=config.reduction)
         self._tc_passwd.SetValue(_pwd)
 
     @staticmethod
@@ -206,11 +207,7 @@ class RecordFrame(_RecordFrameBase):
             return retval
 
     @staticmethod
-    def generate_password(alphabet=None, pwd_length=8, allow_reduction=True):
-    
-        # default alphabet is all alphanumerics characters
-        if alphabet is None:
-            alphabet = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    def generate_password(alphabet="abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_", pwd_length=8, allow_reduction=False):
     
         # remove some easy-to-mistake characters
         if allow_reduction:

@@ -28,8 +28,16 @@ class Config(object):
     """
 
     def __init__(self):
+        """
+        DEFAULT VALUES
+        """
+
         self._basescript = None
         self.recentvaults = []
+        self.pwlength = 10;
+        self.reduction = False
+        self.alphabet = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_"
+
 
         self._fname = self.get_config_filename()
         self._parser = SafeConfigParser()
@@ -45,6 +53,17 @@ class Config(object):
             if (not self._parser.has_option("base", "recentvaults" + str(num))):
                 break
             self.recentvaults.append(self._parser.get("base", "recentvaults" + str(num)))
+
+
+        if self._parser.has_option("base","alphabet"):
+            self.alphabet = int(self._parser.get("base","alphabet"))
+
+        if self._parser.has_option("base","pwlength"):
+            self.pwlength = int(self._parser.get("base","pwlength"))
+
+        if self._parser.has_option("base","alphabetreduction"):
+            if self._parser.get("base","alphabetreduction") == "True":
+                self.reduction = True
 
     def set_basescript(self, basescript):
         self._basescript = basescript
@@ -66,6 +85,8 @@ class Config(object):
             if (len(_saved_recentvaults) >= 10):
                 break
 
+        self._parser.set("base","pwlength",str(self.pwlength));
+        self._parser.set("base","alphabetreduction",str(self.reduction));
         filehandle = open(self._fname, 'w')
         self._parser.write(filehandle)
         filehandle.close()

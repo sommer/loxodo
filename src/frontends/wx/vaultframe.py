@@ -25,6 +25,7 @@ from ...vault import Vault
 from ...config import config
 from .recordframe import RecordFrame
 from .mergeframe import MergeFrame
+from .settings import Settings
 
 class VaultFrame(wx.Frame):
 
@@ -143,6 +144,8 @@ class VaultFrame(wx.Frame):
         wx.EVT_MENU(self, temp_id, self._on_merge_vault)
         filemenu.Append(wx.ID_ABOUT, _("&About"))
         wx.EVT_MENU(self, wx.ID_ABOUT, self._on_about)
+        filemenu.Append(temp_id, _("&Settings"))
+        wx.EVT_MENU(self, temp_id, self._on_settings)
         filemenu.AppendSeparator()
         filemenu.Append(wx.ID_EXIT, _("E&xit"))
         wx.EVT_MENU(self, wx.ID_EXIT, self._on_exit)
@@ -204,6 +207,7 @@ class VaultFrame(wx.Frame):
         self.vault_password = None
         self.vault = None
         self._recordframe = None
+        self._settings = None
         self._is_modified = False
 
     def on_modified(self):
@@ -343,7 +347,19 @@ class VaultFrame(wx.Frame):
         about.SetLicense(gpl_v2)
         about.SetDevelopers(developers)
         wx.AboutBox(about)
+     
+    def _on_settings(self,dummy):
+        """
+        Event handler: Fires when user chooses this menu item.
+        """
+        if (self._settings is None):
+            self._settings = Settings(self)
         
+        if (not self._settings.IsShown()):
+            self._settings.Show()
+            self._settings.Raise()
+            self._settings.set_initial_focus()
+ 
     def _on_change_password(self, dummy):
         
         # FIXME: choose new SALT, B1-B4, IV values on password change? Conflicting Specs! 
