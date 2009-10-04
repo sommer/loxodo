@@ -336,6 +336,8 @@ class VaultFrame(wx.Frame):
                       "Christoph Sommer",
                       "Bjorn Edstrom (Python Twofish)",
                       "Brian Gladman (C Twofish)",
+                      "Tim Kuhlman",
+                      "David Eckhoff",
                       )
 
         about = wx.AboutDialogInfo()
