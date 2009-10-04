@@ -26,24 +26,14 @@ import wx
 from .wxlocale import _
 from ...config import config
 
-# RecordFrame is a wx.MiniFrame on platforms where this helps usability
-if platform.system() in ("Windows", "Microsoft", "Darwin"):
-    class _RecordFrameBase(wx.MiniFrame):
-        def __init__(self, parent):
-            wx.MiniFrame.__init__(self, parent, -1, style=wx.DEFAULT_FRAME_STYLE | wx.TINY_CAPTION_HORIZ)
-else:
-    class _RecordFrameBase(wx.Frame):
-        def __init__(self, parent):
-            wx.Frame.__init__(self, parent, -1, style=wx.DEFAULT_FRAME_STYLE)
-
-class RecordFrame(_RecordFrameBase):
+class RecordFrame(wx.Dialog):
 
     """
     Displays (and lets the user edit) a single Vault Record.
     """
 
     def __init__(self, parent):
-        _RecordFrameBase.__init__(self, parent)
+        wx.Dialog.__init__(self, parent)
         wx.EVT_CLOSE(self, self._on_frame_close)
         self.Bind(wx.EVT_CHAR_HOOK, self._on_escape)
 
@@ -65,9 +55,6 @@ class RecordFrame(_RecordFrameBase):
         _sz_main.Add(_ln_line, 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.RIGHT|wx.TOP, 5)
 
         btnsizer = wx.StdDialogButtonSizer()
-        btn = wx.Button(self.panel, wx.ID_APPLY)
-        wx.EVT_BUTTON(self, wx.ID_APPLY, self._on_apply)
-        btnsizer.AddButton(btn)
         btn = wx.Button(self.panel, wx.ID_CANCEL)
         wx.EVT_BUTTON(self, wx.ID_CANCEL, self._on_cancel)
         btnsizer.AddButton(btn)
@@ -92,7 +79,6 @@ class RecordFrame(_RecordFrameBase):
         self.set_initial_focus()  
 
         self._vault_record = None
-        self.refresh_subscriber = None
 
 
     def _add_a_textcontrol(self, parent_sizer, label, default_value, extrastyle=0):
@@ -153,9 +139,9 @@ class RecordFrame(_RecordFrameBase):
             self._tc_url.SetValue(self._vault_record.url)
             self._tc_notes.SetValue(self._crlf_to_native(self._vault_record.notes))
 
-    def _on_apply(self, dummy):
+    def _apply_changes(self, dummy):
         """
-        Event handler: Fires when user chooses this button.
+        Update source from fields
         """
         if (not self._vault_record is None):
             self._vault_record.group = self._tc_group.Value
@@ -164,21 +150,19 @@ class RecordFrame(_RecordFrameBase):
             self._vault_record.passwd = self._tc_passwd.Value
             self._vault_record.url = self._tc_url.Value
             self._vault_record.notes = self._native_to_crlf(self._tc_notes.Value)
-        if (not self.refresh_subscriber is None):
-            self.refresh_subscriber.on_modified()
 
     def _on_cancel(self, dummy):
         """
         Event handler: Fires when user chooses this button.
         """
-        self.Show(False)
+        self.EndModal(wx.ID_CANCEL);
 
     def _on_ok(self, evt):
         """
         Event handler: Fires when user chooses this button.
         """
-        self._on_apply(evt)
-        self.Show(False)
+        self._apply_changes(evt)
+        self.EndModal(wx.ID_OK);
         
     def _on_toggle_passwd_mask(self, dummy):
         _tmp = self._tc_passwd
@@ -236,7 +220,7 @@ class RecordFrame(_RecordFrameBase):
         """
         Event handler: Fires when user closes the frame
         """
-        self.Hide()
+        self.EndModal(wx.ID_CANCEL);
 
     def _on_escape(self, evt):
         """
@@ -245,7 +229,7 @@ class RecordFrame(_RecordFrameBase):
 
         # If "Escape" was pressed, hide the frame
         if evt.GetKeyCode() == wx.WXK_ESCAPE:
-            self.Hide()
+            self.EndModal(wx.ID_CANCEL);
             return
 
         # Ignore all other keys

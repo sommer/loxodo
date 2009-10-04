@@ -206,11 +206,7 @@ class VaultFrame(wx.Frame):
         self.vault_file_name = None
         self.vault_password = None
         self.vault = None
-        self._recordframe = None
         self._is_modified = False
-
-    def on_modified(self):
-        self.mark_modified()
 
     def mark_modified(self):
         self._is_modified = True
@@ -299,8 +295,6 @@ class VaultFrame(wx.Frame):
         old_title = entry.title
         entry.title = label_str
         self.list.update_fields()
-        if ((not self._recordframe is None) and (self._recordframe.IsShown())):
-            self._recordframe.update_fields()
         self.statusbar.SetStatusText(_('Changed title of "%s"') % old_title, 0)
         self.mark_modified()
 
@@ -495,31 +489,24 @@ class VaultFrame(wx.Frame):
             return
         entry = self.list.displayed_entries[index]
 
-        if (self._recordframe is None):
-            self._recordframe = RecordFrame(self)
-            self._recordframe.refresh_subscriber = self
-        self._recordframe.vault_record = entry
-        if (not self._recordframe.IsShown()):
-            self._recordframe.Show()
-            self._recordframe.Raise()
-            self._recordframe.set_initial_focus()
+        recordframe = RecordFrame(self)
+        recordframe.vault_record = entry
+        if recordframe.ShowModal() != wx.ID_CANCEL:
+            self.mark_modified()
+        recordframe.Destroy()
 
     def _on_add(self, dummy):
         """
         Event handler: Fires when user chooses this menu item.
         """
         entry = self.vault.Record.create()
-        self.vault.records.append(entry)
-        self.mark_modified()
         
-        if (self._recordframe is None):
-            self._recordframe = RecordFrame(self)
-            self._recordframe.refresh_subscriber = self
-        self._recordframe.vault_record = entry
-        if (not self._recordframe.IsShown()):
-            self._recordframe.Show()
-            self._recordframe.Raise()
-            self._recordframe.set_initial_focus()
+        recordframe = RecordFrame(self)
+        recordframe.vault_record = entry
+        if recordframe.ShowModal() != wx.ID_CANCEL:
+            self.vault.records.append(entry)
+            self.mark_modified()
+        recordframe.Destroy()
 
     def _on_delete(self, dummy):
         """
@@ -541,9 +528,6 @@ class VaultFrame(wx.Frame):
             if retval != wx.ID_YES:
                 return
 
-        if ((not self._recordframe is None) and (entry == self._recordframe.vault_record)):
-            self._recordframe.Hide()
-            self._recordframe.vault_record = None
         self.vault.records.remove(entry)
         self.mark_modified()
 
