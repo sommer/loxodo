@@ -207,7 +207,6 @@ class VaultFrame(wx.Frame):
         self.vault_password = None
         self.vault = None
         self._recordframe = None
-        self._settings = None
         self._is_modified = False
 
     def on_modified(self):
@@ -354,13 +353,9 @@ class VaultFrame(wx.Frame):
         """
         Event handler: Fires when user chooses this menu item.
         """
-        if (self._settings is None):
-            self._settings = Settings(self)
-        
-        if (not self._settings.IsShown()):
-            self._settings.Show()
-            self._settings.Raise()
-            self._settings.set_initial_focus()
+        settings = Settings(self)
+        settings.ShowModal()
+        settings.Destroy()
  
     def _on_change_password(self, dummy):
         

@@ -26,24 +26,14 @@ import wx
 from .wxlocale import _
 from ...config import config
 
-# Settings is a wx.MiniFrame on platforms where this helps usability
-if platform.system() in ("Windows", "Microsoft", "Darwin"):
-    class _SettingsBase(wx.MiniFrame):
-        def __init__(self, parent):
-            wx.MiniFrame.__init__(self, parent, -1, style=wx.DEFAULT_FRAME_STYLE | wx.TINY_CAPTION_HORIZ)
-else:
-    class _SettingsBase(wx.Frame):
-        def __init__(self, parent):
-            wx.Frame.__init__(self, parent, -1, style=wx.DEFAULT_FRAME_STYLE)
-
-class Settings(_SettingsBase):
+class Settings(wx.Dialog):
 
     """
     Displays (and lets the user edit) a single Vault Record.
     """
 
     def __init__(self, parent):
-        _SettingsBase.__init__(self, parent)
+        wx.Dialog.__init__(self, parent)
         wx.EVT_CLOSE(self, self._on_frame_close)
         self.Bind(wx.EVT_CHAR_HOOK, self._on_escape)
 
@@ -71,9 +61,6 @@ class Settings(_SettingsBase):
 
 
         btnsizer = wx.StdDialogButtonSizer()
-        btn = wx.Button(self.panel, wx.ID_APPLY)
-        wx.EVT_BUTTON(self, wx.ID_APPLY, self._on_apply)
-        btnsizer.AddButton(btn)
         btn = wx.Button(self.panel, wx.ID_CANCEL)
         wx.EVT_BUTTON(self, wx.ID_CANCEL, self._on_cancel)
         btnsizer.AddButton(btn)
@@ -136,9 +123,9 @@ class Settings(_SettingsBase):
         self._tc_alphabet.SetValue(config.alphabet)
         self._cb_reduction.SetValue(config.reduction)
 
-    def _on_apply(self, dummy):
+    def _apply_changes(self, dummy):
         """
-        Event handler: Fires when user chooses this button.
+        Update source from fields
         """
         
         config.pwlength = self._sc_length.GetValue()
@@ -150,21 +137,21 @@ class Settings(_SettingsBase):
         """
         Event handler: Fires when user chooses this button.
         """
-        self.Show(False)
+        self.EndModal(wx.ID_CANCEL);
 
     def _on_ok(self, evt):
         """
         Event handler: Fires when user chooses this button.
         """
-        self._on_apply(evt)
-        self.Show(False)
+        self._apply_changes(evt)
+        self.EndModal(wx.ID_OK);
         
 
     def _on_frame_close(self, dummy):
         """
         Event handler: Fires when user closes the frame
         """
-        self.Hide()
+        self.EndModal(wx.ID_CANCEL);
 
     def _on_escape(self, evt):
         """
@@ -173,7 +160,7 @@ class Settings(_SettingsBase):
 
         # If "Escape" was pressed, hide the frame
         if evt.GetKeyCode() == wx.WXK_ESCAPE:
-            self.Hide()
+            self.EndModal(wx.ID_CANCEL);
             return
 
         # Ignore all other keys
