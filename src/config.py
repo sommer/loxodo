@@ -42,10 +42,9 @@ class Config(object):
         self._fname = self.get_config_filename()
         self._parser = SafeConfigParser()
 
-        if not os.path.exists(self._fname):
-            self.save()
+        if os.path.exists(self._fname):
+            self._parser.read(self._fname)
 
-        self._parser.read(self._fname)
         if not self._parser.has_section("base"):
             self._parser.add_section("base")
 
@@ -64,6 +63,9 @@ class Config(object):
         if self._parser.has_option("base","alphabetreduction"):
             if self._parser.get("base","alphabetreduction") == "True":
                 self.reduction = True
+
+        if not os.path.exists(self._fname):
+            self.save()
 
     def set_basescript(self, basescript):
         self._basescript = basescript
