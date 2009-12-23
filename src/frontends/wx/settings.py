@@ -45,13 +45,14 @@ class Settings(wx.Dialog):
         _sz_fields.AddGrowableRow(5)
         
 
+        self._search_notes = self._add_a_checkbox(_sz_fields,_("Search inside notes") + ":")
+        self._search_passwd = self._add_a_checkbox(_sz_fields,_("Search inside passwords") + ":")
+
         self._sc_length = self._add_a_spincontrol(_sz_fields, _("Generated Password Length") + ":",4,128)
 
         _sz_main.Add(_sz_fields, 1, wx.EXPAND | wx.GROW)
 
         self._cb_reduction = self._add_a_checkbox(_sz_fields,_("Avoid easy to mistake chars") + ":")
-
-
 
         self._tc_alphabet = self._add_a_textcontrol(_sz_fields,_("Alphabet")+ ":",config.alphabet)
 
@@ -122,6 +123,8 @@ class Settings(wx.Dialog):
         self._sc_length.SetValue(config.pwlength)
         self._tc_alphabet.SetValue(config.alphabet)
         self._cb_reduction.SetValue(config.reduction)
+        self._search_notes.SetValue(config.search_notes)
+        self._search_passwd.SetValue(config.search_passwd)
 
     def _apply_changes(self, dummy):
         """
@@ -130,6 +133,8 @@ class Settings(wx.Dialog):
         
         config.pwlength = self._sc_length.GetValue()
         config.reduction = self._cb_reduction.GetValue()
+        config.search_notes = self._search_notes.GetValue()
+        config.search_passwd = self._search_passwd.GetValue()
         config.alphabet = self._tc_alphabet.GetValue()
         config.save()
 

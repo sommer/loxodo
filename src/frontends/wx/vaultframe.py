@@ -81,11 +81,28 @@ class VaultFrame(wx.Frame):
             if not self.vault:
                 self.displayed_entries = []
                 return
-            self.displayed_entries = [record for record in self.vault.records if ((record.title.lower().find(self._filterstring.lower()) >= 0) or (record.group.lower().find(self._filterstring.lower()) >= 0))]
+            self.displayed_entries = [record for record in self.vault.records if self.filter_record(record)]
 
             self.displayed_entries.sort(self.sort_function)
             self.SetItemCount(len(self.displayed_entries))
             wx.ListCtrl.Refresh(self)
+
+        def filter_record(self,record):
+	    if record.title.lower().find(self._filterstring.lower()) >= 0:
+	       return True
+
+	    if record.group.lower().find(self._filterstring.lower()) >= 0:
+	       return True
+
+            if config.search_notes:
+             if record.notes.lower().find(self._filterstring.lower()) >= 0:
+	       return True
+
+            if config.search_passwd:
+             if record.passwd.find(self._filterstring) >= 0:
+	       return True
+
+	    return False
 
         def set_vault(self, vault):
             """
@@ -350,6 +367,7 @@ class VaultFrame(wx.Frame):
         settings = Settings(self)
         settings.ShowModal()
         settings.Destroy()
+	self.list.update_fields()
  
     def _on_change_password(self, dummy):
         
