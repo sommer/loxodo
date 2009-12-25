@@ -88,21 +88,21 @@ class VaultFrame(wx.Frame):
             wx.ListCtrl.Refresh(self)
 
         def filter_record(self,record):
-	    if record.title.lower().find(self._filterstring.lower()) >= 0:
-	       return True
+            if record.title.lower().find(self._filterstring.lower()) >= 0:
+               return True
 
-	    if record.group.lower().find(self._filterstring.lower()) >= 0:
-	       return True
+            if record.group.lower().find(self._filterstring.lower()) >= 0:
+               return True
 
             if config.search_notes:
              if record.notes.lower().find(self._filterstring.lower()) >= 0:
-	       return True
+                return True
 
             if config.search_passwd:
              if record.passwd.find(self._filterstring) >= 0:
-	       return True
+                return True
 
-	    return False
+            return False
 
         def set_vault(self, vault):
             """
@@ -367,7 +367,7 @@ class VaultFrame(wx.Frame):
         settings = Settings(self)
         settings.ShowModal()
         settings.Destroy()
-	self.list.update_fields()
+        self.list.update_fields()
  
     def _on_change_password(self, dummy):
         

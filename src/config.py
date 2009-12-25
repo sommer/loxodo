@@ -36,8 +36,8 @@ class Config(object):
         self.recentvaults = []
         self.pwlength = 10;
         self.reduction = False
-	self.search_notes = False
-	self.search_passwd = False
+        self.search_notes = False
+        self.search_passwd = False
         self.alphabet = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_"
 
 
