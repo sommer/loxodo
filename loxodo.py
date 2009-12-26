@@ -14,9 +14,9 @@ from src.config import config
 
 # store base script name, taking special care if we're "frozen" using py2app or py2exe
 if hasattr(sys,"frozen") and (sys.platform != 'darwin'):
-	config.set_basescript(unicode(sys.executable, sys.getfilesystemencoding()))
+    config.set_basescript(unicode(sys.executable, sys.getfilesystemencoding()))
 else:
-	config.set_basescript(unicode(__file__, sys.getfilesystemencoding()))
+    config.set_basescript(unicode(__file__, sys.getfilesystemencoding()))
 
 # If cmdline arguments were given, use the "cmdline" frontend.
 if len(sys.argv) > 1:

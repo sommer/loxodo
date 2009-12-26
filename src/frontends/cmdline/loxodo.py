@@ -29,188 +29,188 @@ from ...vault import Vault
 from ...config import config
 
 class InteractiveConsole(cmd.Cmd):
-	
-	def __init__(self):
-		self.vault = None
-		self.vault_file_name = None
-		self.vault_password = None
-		
-		cmd.Cmd.__init__(self)
-		if sys.platform == "darwin":
-			readline.parse_and_bind('bind ^I rl_complete')
-		self.intro = 'Ready for commands. Type "help" or "help <command>" for help, type "quit" to quit.'
-		self.prompt = "[none]> "
+    
+    def __init__(self):
+        self.vault = None
+        self.vault_file_name = None
+        self.vault_password = None
+        
+        cmd.Cmd.__init__(self)
+        if sys.platform == "darwin":
+            readline.parse_and_bind('bind ^I rl_complete')
+        self.intro = 'Ready for commands. Type "help" or "help <command>" for help, type "quit" to quit.'
+        self.prompt = "[none]> "
 
-		
-	def open_vault(self):
+        
+    def open_vault(self):
 
-		print "Opening " + self.vault_file_name + "..."
-		try:
-			self.vault_password = getpass("Vault password: ")
-		except EOFError:
-			print ""
-			print ""
-			print "Bye."
-			raise RuntimeError("No password given")
-		try:
-			self.vault = Vault(self.vault_password, filename=self.vault_file_name)
-			self.prompt = "[" + os.path.basename(self.vault_file_name) + "]> "
-		except Vault.BadPasswordError:
-			print "Bad password."
-			raise
-		except Vault.VaultVersionError:
-			print "This is not a PasswordSafe V3 Vault."
-			raise
-		except Vault.VaultFormatError:
-			print "Vault integrity check failed."
-			raise
-		print "... done."
-		print ""
-
-
-	def postloop(self):
-		print
+        print "Opening " + self.vault_file_name + "..."
+        try:
+            self.vault_password = getpass("Vault password: ")
+        except EOFError:
+            print ""
+            print ""
+            print "Bye."
+            raise RuntimeError("No password given")
+        try:
+            self.vault = Vault(self.vault_password, filename=self.vault_file_name)
+            self.prompt = "[" + os.path.basename(self.vault_file_name) + "]> "
+        except Vault.BadPasswordError:
+            print "Bad password."
+            raise
+        except Vault.VaultVersionError:
+            print "This is not a PasswordSafe V3 Vault."
+            raise
+        except Vault.VaultFormatError:
+            print "Vault integrity check failed."
+            raise
+        print "... done."
+        print ""
 
 
-	def emptyline(self):
-		pass
-
-	def do_help(self, line):
-		"""
-		Displays this message.
-		"""
-		if line:
-			cmd.Cmd.do_help(self, line)
-			return
-		
-		print
-		print "Commands:"
-		print "  ".join(("ls", "show", "quit"))
-		print
-
-	def do_quit(self, line):
-		"""
-		Exits interactive mode.
-		"""
-		return True
+    def postloop(self):
+        print
 
 
-	def do_EOF(self, line):
-		"""
-		Exits interactive mode.
-		"""
-		return True
-	
-	
-	def do_ls(self, line):
-		"""
-		Show contents of this Vault. If an argument is added a case insensitive
-		search of titles is done, entries can also be specified as regular expressions.
-		"""
-		if not self.vault:
-			raise RuntimeError("No vault opened")
-	
-		if line != None:
-			vault_records = self.find_titles(line)
-		else:
-			vault_records = self.vault.records[:]
-			vault_records.sort(lambda e1, e2: cmp(e1.title, e2.title))
+    def emptyline(self):
+        pass
 
-		if vault_records == None:
-			print "No matches found."
-			return
+    def do_help(self, line):
+        """
+        Displays this message.
+        """
+        if line:
+            cmd.Cmd.do_help(self, line)
+            return
+        
+        print
+        print "Commands:"
+        print "  ".join(("ls", "show", "quit"))
+        print
 
-		for record in vault_records:
-			print record.title.encode('utf-8', 'replace') + " [" + record.user.encode('utf-8', 'replace') + "]"
-			
-	def do_show(self, line):
-		"""
-		Show the specified entry (including its password).
-		A case insenstive search of titles is done, entries can also be specified as regular expressions.
-		"""
+    def do_quit(self, line):
+        """
+        Exits interactive mode.
+        """
+        return True
 
-		if not self.vault:
-			raise RuntimeError("No vault opened")
 
-		matches = self.find_titles(line)
+    def do_EOF(self, line):
+        """
+        Exits interactive mode.
+        """
+        return True
+    
+    
+    def do_ls(self, line):
+        """
+        Show contents of this Vault. If an argument is added a case insensitive
+        search of titles is done, entries can also be specified as regular expressions.
+        """
+        if not self.vault:
+            raise RuntimeError("No vault opened")
+    
+        if line != None:
+            vault_records = self.find_titles(line)
+        else:
+            vault_records = self.vault.records[:]
+            vault_records.sort(lambda e1, e2: cmp(e1.title, e2.title))
 
-		if matches == None:
-			print 'No entry found for "%s"' % line
-			return
+        if vault_records == None:
+            print "No matches found."
+            return
 
-		for record in matches:
-			if record.notes.strip():
-				print record.notes.encode('utf-8', 'replace')
-				print
-			print "\nTitle   : " + record.title.encode('utf-8', 'replace')
-			print "Username: " + record.user.encode('utf-8', 'replace')
-			print "Password: " + record.passwd.encode('utf-8', 'replace')
-			
+        for record in vault_records:
+            print record.title.encode('utf-8', 'replace') + " [" + record.user.encode('utf-8', 'replace') + "]"
+            
+    def do_show(self, line):
+        """
+        Show the specified entry (including its password).
+        A case insenstive search of titles is done, entries can also be specified as regular expressions.
+        """
 
-	def complete_show(self, text, line, begidx, endidx):
-	
-		if not text:
-			completions = [record.title for record in self.vault.records]
-		else:
-			fulltext = line[5:]
-			lastspace = fulltext.rfind(' ')
-			if lastspace == -1:
-				completions = [record.title for record in self.vault.records if record.title.upper().startswith(text.upper())]
-			else:
-				completions = [record.title[lastspace+1:] for record in self.vault.records if record.title.upper().startswith(fulltext.upper())]
+        if not self.vault:
+            raise RuntimeError("No vault opened")
 
-		completions.sort(lambda e1, e2: cmp(e1.title, e2.title))
-		return completions
+        matches = self.find_titles(line)
 
-	def find_titles(self, regexp):
-		"Finds titles matching a regular expression. (Case insensitive)"
-		matches = []
-		pat = re.compile(regexp, re.IGNORECASE)
-		for record in self.vault.records:
-			if pat.match(record.title) != None:
-				matches.append(record)
+        if matches == None:
+            print 'No entry found for "%s"' % line
+            return
 
-		if len(matches) == 0:
-			return None
-		else:
-			return matches
+        for record in matches:
+            if record.notes.strip():
+                print record.notes.encode('utf-8', 'replace')
+                print
+            print "\nTitle   : " + record.title.encode('utf-8', 'replace')
+            print "Username: " + record.user.encode('utf-8', 'replace')
+            print "Password: " + record.passwd.encode('utf-8', 'replace')
+            
+
+    def complete_show(self, text, line, begidx, endidx):
+    
+        if not text:
+            completions = [record.title for record in self.vault.records]
+        else:
+            fulltext = line[5:]
+            lastspace = fulltext.rfind(' ')
+            if lastspace == -1:
+                completions = [record.title for record in self.vault.records if record.title.upper().startswith(text.upper())]
+            else:
+                completions = [record.title[lastspace+1:] for record in self.vault.records if record.title.upper().startswith(fulltext.upper())]
+
+        completions.sort(lambda e1, e2: cmp(e1.title, e2.title))
+        return completions
+
+    def find_titles(self, regexp):
+        "Finds titles matching a regular expression. (Case insensitive)"
+        matches = []
+        pat = re.compile(regexp, re.IGNORECASE)
+        for record in self.vault.records:
+            if pat.match(record.title) != None:
+                matches.append(record)
+
+        if len(matches) == 0:
+            return None
+        else:
+            return matches
 
 
 def main(argv):
 
-	# Options
-	usage = "usage: %prog [options] [Vault.psafe3]"
-	parser = OptionParser(usage=usage)
-	parser.add_option("-l", "--ls", dest="do_ls", default=False, action="store_true", help="list contents of vault")
-	parser.add_option("-s", "--show", dest="do_show", default=None, action="store", type="string", help="show entries matching REGEX", metavar="REGEX")
-	parser.add_option("-i", "--interactive", dest="interactive", default=False, action="store_true", help="use command line interface")
-	(options, args) = parser.parse_args()
+    # Options
+    usage = "usage: %prog [options] [Vault.psafe3]"
+    parser = OptionParser(usage=usage)
+    parser.add_option("-l", "--ls", dest="do_ls", default=False, action="store_true", help="list contents of vault")
+    parser.add_option("-s", "--show", dest="do_show", default=None, action="store", type="string", help="show entries matching REGEX", metavar="REGEX")
+    parser.add_option("-i", "--interactive", dest="interactive", default=False, action="store_true", help="use command line interface")
+    (options, args) = parser.parse_args()
 
-	interactiveConsole = InteractiveConsole()
+    interactiveConsole = InteractiveConsole()
 
-	if (len(args) < 1):
-		if (config.recentvaults):
-			interactiveConsole.vault_file_name = config.recentvaults[0]
-			print "No Vault specified, using " + interactiveConsole.vault_file_name
-		else:
-			print "No Vault specified, and none found in config."
-			sys.exit(2)
-	elif (len(args) > 1):
-		print "More than one Vault specified"
-		sys.exit(2)
-	else:
-		interactiveConsole.vault_file_name = args[0]
+    if (len(args) < 1):
+        if (config.recentvaults):
+            interactiveConsole.vault_file_name = config.recentvaults[0]
+            print "No Vault specified, using " + interactiveConsole.vault_file_name
+        else:
+            print "No Vault specified, and none found in config."
+            sys.exit(2)
+    elif (len(args) > 1):
+        print "More than one Vault specified"
+        sys.exit(2)
+    else:
+        interactiveConsole.vault_file_name = args[0]
 
-	interactiveConsole.open_vault()
-	if options.do_ls:
-		interactiveConsole.do_ls("")
-	elif options.do_show:
-		interactiveConsole.do_show(options.do_show)
-	else:
-		interactiveConsole.cmdloop()
+    interactiveConsole.open_vault()
+    if options.do_ls:
+        interactiveConsole.do_ls("")
+    elif options.do_show:
+        interactiveConsole.do_show(options.do_show)
+    else:
+        interactiveConsole.cmdloop()
 
-	sys.exit(0)
-			
+    sys.exit(0)
+            
 
 main(sys.argv[1:])
 
