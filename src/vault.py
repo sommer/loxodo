@@ -270,6 +270,12 @@ class Vault(object):
         last_mod = property(_get_last_mod, _set_last_mod)
         url = property(_get_url, _set_url)
 
+        def __cmp__(self, other):
+            """
+            Compare Based on Group, then by Title
+            """
+            return cmp(self._group+self._title, other._group+other._title)
+
     @staticmethod
     def _stretch_password(password, salt, iterations):
         """
@@ -447,6 +453,7 @@ class Vault(object):
         if (self.f_hmac != my_hmac):
             raise self.VaultFormatError("File integrity check failed")
 
+        self.records.sort()
         filehandle.close()
 
     def write_to_file(self, filename, password):
