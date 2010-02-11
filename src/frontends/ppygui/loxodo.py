@@ -34,7 +34,7 @@ class VaultFrame(gui.CeFrame):
         
         sizer = gui.VBox()
 
-        self.list = gui.Table(self, columns=["Title", "User", "Group"])
+        self.list = gui.Table(self, columns=["Group", "Title", "User"])
         self.list.bind(itemactivated=self._on_item_activated)
         self.list.adjust_all()
 
@@ -57,7 +57,7 @@ class VaultFrame(gui.CeFrame):
 
         self.list.redraw = False
         for record in self.vault.records:
-            self.list.rows.append([record.title, record.user, record.group])
+            self.list.rows.append([record.group, record.title, record.user ])
         self.list.redraw = True
         self.list.adjust_all()
 
