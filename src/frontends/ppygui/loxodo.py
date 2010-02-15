@@ -77,8 +77,7 @@ class VaultFrame(gui.CeFrame):
         self._on_edit(ev)
 
     def _on_exit(self, ev):
-        #APPLICATION.quit()
-        pass
+        sys.exit()
 
 class RecordFrame(gui.CeFrame):
     def __init__(self):
@@ -138,8 +137,7 @@ class RecordFrame(gui.CeFrame):
         self.destroy()
 
     def _on_exit(self, ev):
-        #APPLICATION.quit()
-        pass
+        sys.exit()
 
 class LoadFrame(gui.CeFrame):
     def __init__(self):
@@ -183,8 +181,7 @@ class LoadFrame(gui.CeFrame):
         #APPLICATION.mainframe = vaultframe
 
     def _on_exit(self, ev):
-        #APPLICATION.quit()
-        pass
+        sys.exit()
 
 APPLICATION = None
         
