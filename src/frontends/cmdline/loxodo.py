@@ -54,9 +54,7 @@ class InteractiveConsole(cmd.Cmd):
         try:
             self.vault_password = getpass("Vault password: ")
         except EOFError:
-            print ""
-            print ""
-            print "Bye."
+            print "\n\nBye."
             raise RuntimeError("No password given")
         try:
             self.vault = Vault(self.vault_password, filename=self.vault_file_name)
@@ -70,8 +68,7 @@ class InteractiveConsole(cmd.Cmd):
         except Vault.VaultFormatError:
             print "Vault integrity check failed."
             raise
-        print "... done."
-        print ""
+        print "... Done.\n"
 
 
     def postloop(self):
@@ -89,8 +86,7 @@ class InteractiveConsole(cmd.Cmd):
             cmd.Cmd.do_help(self, line)
             return
         
-        print
-        print "Commands:"
+        print "\nCommands:"
         print "  ".join(("ls", "show", "quit"))
         print
 
@@ -188,7 +184,7 @@ Username : %s""" % (record.group.encode('utf-8', 'replace'),
         return completions
 
     def find_titles(self, regexp):
-        "Finds titles matching a regular expression. (Case insensitive)"
+        "Finds titles, username, group, or combination of all 3 matching a regular expression. (Case insensitive)"
         matches = []
         pat = re.compile(regexp, re.IGNORECASE)
         for record in self.vault.records:
