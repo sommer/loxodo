@@ -194,6 +194,12 @@ Username : %s""" % (record.group.encode('utf-8', 'replace'),
         for record in self.vault.records:
             if pat.match(record.title) != None:
                 matches.append(record)
+            elif pat.match(record.user) != None:
+                matches.append(record)
+            elif pat.match(record.group) != None:
+                matches.append(record)
+            elif pat.match(record.group+"."+record.title+" ["+record.user+"]") != None:
+                matches.append(record)
 
         if len(matches) == 0:
             return None
