@@ -20,3 +20,6 @@ Quickstart:
 ./setup.py py2exe
 	creates a stand-alone .exe (Windows)
 
+./loxodo.py -i
+	runs Loxodo in CLI Interactive mode
+
