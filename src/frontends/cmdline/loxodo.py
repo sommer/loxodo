@@ -40,6 +40,7 @@ class InteractiveConsole(cmd.Cmd):
         self.vault = None
         self.vault_file_name = None
         self.vault_password = None
+        self.vault_modified = False
         
         cmd.Cmd.__init__(self)
         if sys.platform == "darwin":
@@ -87,14 +88,21 @@ class InteractiveConsole(cmd.Cmd):
             return
         
         print "\nCommands:"
-        print "  ".join(("ls", "show", "quit"))
+        print "  ".join(("ls", "show", "quit", "add", "save"))
         print
 
     def do_quit(self, line):
         """
         Exits interactive mode.
         """
+        self.do_save();
         return True
+    
+    def do_save(self, line=None):
+        if self.vault_modified and self.vault_file_name and self.vault_password:
+            self.vault.write_to_file(self.vault_file_name, self.vault_password)
+            self.vault_modified = False
+            print "Changes Saved"
 
 
     def do_EOF(self, line):
@@ -103,6 +111,35 @@ class InteractiveConsole(cmd.Cmd):
         """
         return True
     
+    def do_add(self, line):
+        """
+        Adds a user to the vault
+        
+        Example: add USERNAME [TITLE, [GROUP]]
+        """
+        if not line:
+            cmd.Cmd.do_help(self, "add")
+            return
+            
+        line = line.split(" ")
+        entry = self.vault.Record.create()
+        entry.user = line[0]
+        if len(line) >= 2:
+            entry.title = line[1]
+        if len(line) >= 3:
+            entry.group = line[2]
+            
+        passwd = getpass("Password: ")
+        passwd2 = getpass("Re-Type Password: ")
+        if passwd != passwd2:
+            print "Passwords don't match"
+            return
+        
+        entry.passwd = passwd
+        
+        self.vault.records.append(entry)
+        self.vault_modified = True
+        print "User Added, but not saved"
     
     def do_ls(self, line):
         """
