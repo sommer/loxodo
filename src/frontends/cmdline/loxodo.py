@@ -24,6 +24,12 @@ from getpass import getpass
 import readline
 import cmd
 import re
+try:
+    import pygtk
+    import gtk
+except ImportError:
+    pygtk = None
+    gtk = None
 
 from ...vault import Vault
 from ...config import config
@@ -123,7 +129,7 @@ class InteractiveConsole(cmd.Cmd):
         for record in vault_records:
             print record.title.encode('utf-8', 'replace') + " [" + record.user.encode('utf-8', 'replace') + "]"
             
-    def do_show(self, line):
+    def do_show(self, line, echo=True, passwd=False):
         """
         Show the specified entry (including its password).
         A case insenstive search of titles is done, entries can also be specified as regular expressions.
@@ -139,18 +145,31 @@ class InteractiveConsole(cmd.Cmd):
             return
 
         for record in matches:
-            print """
+            if echo is True:
+                print """
 %s.%s
 Username : %s
 Password : %s""" % (record.group.encode('utf-8', 'replace'),
-                   record.title.encode('utf-8', 'replace'),
-                   record.user.encode('utf-8', 'replace'),
-                   record.passwd.encode('utf-8', 'replace'))
+                    record.title.encode('utf-8', 'replace'),
+                    record.user.encode('utf-8', 'replace'),
+                    record.passwd.encode('utf-8', 'replace'))
+            else:
+                print """
+%s.%s
+Username : %s""" % (record.group.encode('utf-8', 'replace'),
+                    record.title.encode('utf-8', 'replace'),
+                    record.user.encode('utf-8', 'replace'))
+                
             
             if record.notes.strip():
                 print "Notes    :\n\t :", record.notes.encode('utf-8', 'replace').replace("\n", "\n\t : "), "\n"
                 
             print ""
+            
+            if pygtk is not None and gtk is not None:
+                cb = gtk.clipboard_get()
+                cb.set_text(record.passwd)
+                cb.store()
             
 
     def complete_show(self, text, line, begidx, endidx):
@@ -190,6 +209,8 @@ def main(argv):
     parser.add_option("-l", "--ls", dest="do_ls", default=False, action="store_true", help="list contents of vault")
     parser.add_option("-s", "--show", dest="do_show", default=None, action="store", type="string", help="show entries matching REGEX", metavar="REGEX")
     parser.add_option("-i", "--interactive", dest="interactive", default=False, action="store_true", help="use command line interface")
+    parser.add_option("-p", "--password", dest="passwd", default=False, action="store_true", help="Auto adds password to clipboard. (GTK Only)")
+    parser.add_option("-e", "--echo", dest="echo", default=False, action="store_true", help="Causes password to be displayed on the screen")
     (options, args) = parser.parse_args()
 
     interactiveConsole = InteractiveConsole()
@@ -211,7 +232,7 @@ def main(argv):
     if options.do_ls:
         interactiveConsole.do_ls("")
     elif options.do_show:
-        interactiveConsole.do_show(options.do_show)
+        interactiveConsole.do_show(options.do_show, options.echo, options.passwd)
     else:
         interactiveConsole.cmdloop()
 
