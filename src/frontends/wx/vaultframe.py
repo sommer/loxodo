@@ -94,6 +94,9 @@ class VaultFrame(wx.Frame):
             if record.group.lower().find(self._filterstring.lower()) >= 0:
                return True
 
+            if record.user.lower().find(self._filterstring.lower()) >= 0:
+               return True
+
             if config.search_notes:
              if record.notes.lower().find(self._filterstring.lower()) >= 0:
                 return True
@@ -321,11 +324,11 @@ class VaultFrame(wx.Frame):
         """
         col = event.GetColumn()
         if (col == 0):
-            self.list.sort_function = lambda e1, e2: cmp(e1.title, e2.title)
-        if (col == 1):
-            self.list.sort_function = lambda e1, e2: cmp(e1.user, e2.user)
-        if (col == 2):
             self.list.sort_function = lambda e1, e2: cmp(e1.group, e2.group)
+        if (col == 1):
+            self.list.sort_function = lambda e1, e2: cmp(e1.title, e2.title)
+        if (col == 2):
+            self.list.sort_function = lambda e1, e2: cmp(e1.user, e2.user)
         self.list.update_fields()
         
     def _on_list_contextmenu(self, dummy):
