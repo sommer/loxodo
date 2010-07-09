@@ -139,12 +139,18 @@ class InteractiveConsole(cmd.Cmd):
             return
 
         for record in matches:
+            print """
+%s.%s
+Username : %s
+Password : %s""" % (record.group.encode('utf-8', 'replace'),
+                   record.title.encode('utf-8', 'replace'),
+                   record.user.encode('utf-8', 'replace'),
+                   record.passwd.encode('utf-8', 'replace'))
+            
             if record.notes.strip():
-                print record.notes.encode('utf-8', 'replace')
-                print
-            print "\nTitle   : " + record.title.encode('utf-8', 'replace')
-            print "Username: " + record.user.encode('utf-8', 'replace')
-            print "Password: " + record.passwd.encode('utf-8', 'replace')
+                print "Notes    :\n\t :", record.notes.encode('utf-8', 'replace').replace("\n", "\n\t : "), "\n"
+                
+            print ""
             
 
     def complete_show(self, text, line, begidx, endidx):
