@@ -33,7 +33,7 @@ class RecordFrame(wx.Dialog):
     """
 
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent)
+        wx.Dialog.__init__(self, parent, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         wx.EVT_CLOSE(self, self._on_frame_close)
         self.Bind(wx.EVT_CHAR_HOOK, self._on_escape)
 
