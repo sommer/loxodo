@@ -50,7 +50,7 @@ class VaultFrame(wx.Frame):
             self.SetColumnWidth(0, 256)
             self.SetColumnWidth(1, 128)
             self.SetColumnWidth(2, 256)
-            self.sort_function = lambda e1, e2: cmp(e1.group, e2.group)
+            self.sort_function = lambda e1, e2: cmp(e1.group.lower(), e2.group.lower())
             self.update_fields()
 
         def OnGetItemText(self, item, col):
@@ -324,11 +324,11 @@ class VaultFrame(wx.Frame):
         """
         col = event.GetColumn()
         if (col == 0):
-            self.list.sort_function = lambda e1, e2: cmp(e1.group, e2.group)
+            self.list.sort_function = lambda e1, e2: cmp(e1.title.lower(), e2.title.lower())
         if (col == 1):
-            self.list.sort_function = lambda e1, e2: cmp(e1.title, e2.title)
+            self.list.sort_function = lambda e1, e2: cmp(e1.user.lower(), e2.user.lower())
         if (col == 2):
-            self.list.sort_function = lambda e1, e2: cmp(e1.user, e2.user)
+            self.list.sort_function = lambda e1, e2: cmp(e1.group.lower(), e2.group.lower())
         self.list.update_fields()
         
     def _on_list_contextmenu(self, dummy):
