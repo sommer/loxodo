@@ -21,22 +21,21 @@ import wx
 
 from .wxlocale import _
 
-class MergeFrame(wx.Dialog):
 
+class MergeFrame(wx.Dialog):
     """
     Displays a list of Vault Records for interactive merge of Vaults.
     """
-
     def __init__(self, parent, oldrecord_newrecord_reason_pairs):
         wx.Dialog.__init__(self, parent, -1, style=wx.DEFAULT_DIALOG_STYLE|wx.RESIZE_BORDER)
 
         self.panel = wx.Panel(self, -1)
 
         _sz_main = wx.BoxSizer(wx.VERTICAL)
-        
+
         _lb_text = wx.StaticText(self.panel, -1, _("Select the Records to merge into this Vault") + ":")
         _sz_main.Add(_lb_text)
-        
+
         self._cl_records = wx.CheckListBox(self.panel, -1)
         self._cl_records.AppendItems(['"' + newrecord.title + '" (' + reason + ')' for (oldrecord, newrecord, reason) in oldrecord_newrecord_reason_pairs])
         for i in range(len(oldrecord_newrecord_reason_pairs)):
@@ -68,9 +67,9 @@ class MergeFrame(wx.Dialog):
 
         self._vault_record = None
         self.refresh_subscriber = None
-        
+
         self.oldrecord_newrecord_reason_pairs = oldrecord_newrecord_reason_pairs
 
     def get_checked_items(self):
         return [self.oldrecord_newrecord_reason_pairs[i] for i in range(len(self.oldrecord_newrecord_reason_pairs)) if self._cl_records.IsChecked(i)]
-        
+

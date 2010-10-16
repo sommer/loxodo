@@ -20,12 +20,11 @@
 import twofish
 import operator
 
-class TwofishCBC:
 
+class TwofishCBC:
     """
     Cipher-block chaining (CBC) Twofish operation mode.
     """
-
     def __init__(self, key, init_vec=0):
         """
         Set the key to be used for en-/de-cryption and optionally specify an initialization vector (aka seed/salt).
@@ -75,6 +74,7 @@ class TwofishCBC:
                            )
                        )
 
+
 def test_twofish_cbc():
     __testkey = "Now Testing Crypto-Functions...."
     __testivc = "Initialization V"
@@ -83,4 +83,6 @@ def test_twofish_cbc():
     assert TwofishCBC(__testkey, __testivc).decrypt(__testenc) == __testdec
     assert TwofishCBC(__testkey, __testivc).encrypt(__testdec) == __testenc
 
+
 test_twofish_cbc()
+

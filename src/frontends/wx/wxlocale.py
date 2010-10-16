@@ -24,6 +24,7 @@ from ...config import config
 _ = wx.GetTranslation
 LOXODO_LOCALE = None
 
+
 def setup_wx_locale():
     """
     Set up internationalization support.
@@ -49,3 +50,4 @@ def setup_wx_locale():
         LOXODO_LOCALE.AddCatalog(domain)
     except:
         print "Warning: Setting up internationalization support failed. Continuing anyway."
+

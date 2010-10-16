@@ -19,12 +19,11 @@
 
 import twofish
 
-class TwofishECB:
 
+class TwofishECB:
     """
     Electronic codebook (ECB) Twofish operation mode.
     """
-
     def __init__(self, key):
         """
         Set the key to be used for en-/de-cryption.
@@ -56,6 +55,7 @@ class TwofishECB:
             ciphertext = ciphertext[16:]
         return plaintext
 
+
 def test_twofish_ecb():
     __testkey = "Now Testing Crypto-Functions...."
     __testenc = "Passing nonsense through crypt-API, will then do assertion check"
@@ -63,4 +63,6 @@ def test_twofish_ecb():
     assert TwofishECB(__testkey).decrypt(__testenc) == __testdec
     assert TwofishECB(__testkey).encrypt(__testdec) == __testenc
 
+
 test_twofish_ecb()
+

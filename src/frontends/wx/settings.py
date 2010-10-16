@@ -26,12 +26,11 @@ import wx
 from .wxlocale import _
 from ...config import config
 
-class Settings(wx.Dialog):
 
+class Settings(wx.Dialog):
     """
     Displays (and lets the user edit) a single Vault Record.
     """
-
     def __init__(self, parent):
         wx.Dialog.__init__(self, parent)
         wx.EVT_CLOSE(self, self._on_frame_close)
@@ -43,7 +42,6 @@ class Settings(wx.Dialog):
         _sz_fields = wx.FlexGridSizer(5, 2, 5, 5)
         _sz_fields.AddGrowableCol(1)
         _sz_fields.AddGrowableRow(5)
-        
 
         self._search_notes = self._add_a_checkbox(_sz_fields,_("Search inside notes") + ":")
         self._search_passwd = self._add_a_checkbox(_sz_fields,_("Search inside passwords") + ":")
@@ -58,8 +56,6 @@ class Settings(wx.Dialog):
 
         _ln_line = wx.StaticLine(self.panel, -1, size=(20, -1), style=wx.LI_HORIZONTAL)
         _sz_main.Add(_ln_line, 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.RIGHT|wx.TOP, 5)
-
-
 
         btnsizer = wx.StdDialogButtonSizer()
         btn = wx.Button(self.panel, wx.ID_CANCEL)
@@ -83,9 +79,8 @@ class Settings(wx.Dialog):
         self.Fit()
         self.SetMinSize(self.GetSize())
 
-        self.set_initial_focus()  
+        self.set_initial_focus()
         self.update_fields()
-
 
     def _add_a_checkbox(self, parent_sizer, label, extrastyle=0):
         _label = wx.StaticText(self.panel, -1, label, style=wx.ALIGN_RIGHT)
@@ -93,7 +88,7 @@ class Settings(wx.Dialog):
         control =        wx.CheckBox(self.panel,-1)
         parent_sizer.Add(control, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.ALL|wx.EXPAND, 5)
         return control
-    
+
     def _add_a_spincontrol(self, parent_sizer, label, min, max, extrastyle=0):
         _label = wx.StaticText(self.panel, -1, label, style=wx.ALIGN_RIGHT)
         parent_sizer.Add(_label, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5)
@@ -130,7 +125,6 @@ class Settings(wx.Dialog):
         """
         Update source from fields
         """
-        
         config.pwlength = self._sc_length.GetValue()
         config.reduction = self._cb_reduction.GetValue()
         config.search_notes = self._search_notes.GetValue()
@@ -150,7 +144,6 @@ class Settings(wx.Dialog):
         """
         self._apply_changes(evt)
         self.EndModal(wx.ID_OK);
-        
 
     def _on_frame_close(self, dummy):
         """
@@ -162,7 +155,6 @@ class Settings(wx.Dialog):
         """
         Event handler: Fires when user presses a key
         """
-
         # If "Escape" was pressed, hide the frame
         if evt.GetKeyCode() == wx.WXK_ESCAPE:
             self.EndModal(wx.ID_CANCEL);
@@ -173,6 +165,4 @@ class Settings(wx.Dialog):
 
     def set_initial_focus(self):
         self._sc_length.SetFocus()
-
-
 

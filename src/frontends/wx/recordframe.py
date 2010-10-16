@@ -26,12 +26,11 @@ import wx
 from .wxlocale import _
 from ...config import config
 
-class RecordFrame(wx.Dialog):
 
+class RecordFrame(wx.Dialog):
     """
     Displays (and lets the user edit) a single Vault Record.
     """
-
     def __init__(self, parent):
         wx.Dialog.__init__(self, parent, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         wx.EVT_CLOSE(self, self._on_frame_close)
@@ -76,10 +75,9 @@ class RecordFrame(wx.Dialog):
         self.Fit()
         self.SetMinSize(self.GetSize())
 
-        self.set_initial_focus()  
+        self.set_initial_focus()
 
         self._vault_record = None
-
 
     def _add_a_textcontrol(self, parent_sizer, label, default_value, extrastyle=0):
         _label = wx.StaticText(self.panel, -1, label, style=wx.ALIGN_RIGHT)
@@ -104,7 +102,6 @@ class RecordFrame(wx.Dialog):
         r_generate = wx.Button(self.panel, wx.ID_REPLACE, _("generate"))
         wx.EVT_BUTTON(self, wx.ID_REPLACE, self._on_generate_passwd)
         r_container.Add(r_generate, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.SHRINK|wx.LEFT, 10)
-
         return (r_masked, r_shown, r_toggle)
 
     def _add_a_textbox(self, parent_sizer, label, default_value):
@@ -163,7 +160,7 @@ class RecordFrame(wx.Dialog):
         """
         self._apply_changes(evt)
         self.EndModal(wx.ID_OK);
-        
+
     def _on_toggle_passwd_mask(self, dummy):
         _tmp = self._tc_passwd
         _passwd = _tmp.GetValue()
@@ -174,8 +171,8 @@ class RecordFrame(wx.Dialog):
         self._tc_passwd.GetParent().Layout()
         self._tc_passwd.SetValue(_passwd)
         if (self._tc_passwd_alt.FindFocus() == self._tc_passwd_alt):
-            self._tc_passwd.SetFocus()        
-   
+            self._tc_passwd.SetFocus()
+
     def _on_generate_passwd(self, dummy):
         _pwd = self.generate_password(alphabet=config.alphabet,pwd_length=config.pwlength,allow_reduction=config.reduction)
         self._tc_passwd.SetValue(_pwd)
@@ -192,28 +189,26 @@ class RecordFrame(wx.Dialog):
 
     @staticmethod
     def generate_password(alphabet="abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_", pwd_length=8, allow_reduction=False):
-    
         # remove some easy-to-mistake characters
         if allow_reduction:
             for _chr in "0OjlI1":
                 alphabet = alphabet.replace(_chr, "")
-    
+
         # iteratively pick one character from this alphabet to assemble password
         last_chr = "x"
         pwd = ""
         for dummy in range(pwd_length):
-    
             # temporarily reduce alphabet to avoid easy-to-mistake character pairs
             alphabet2 = alphabet
             if allow_reduction:
                 for _chr in ('cl', 'mn', 'nm', 'nn', 'rn', 'vv', 'VV'):
                     if last_chr == _chr[0]:
                         alphabet2 = alphabet.replace(_chr[1],"")
-    
+
             _chr = alphabet2[int(len(alphabet2) / 256.0 * ord(RecordFrame._urandom(1)))]
             pwd += _chr
             last_chr = _chr
-    
+
         return pwd
 
     def _on_frame_close(self, dummy):
@@ -226,7 +221,6 @@ class RecordFrame(wx.Dialog):
         """
         Event handler: Fires when user presses a key
         """
-
         # If "Escape" was pressed, hide the frame
         if evt.GetKeyCode() == wx.WXK_ESCAPE:
             self.EndModal(wx.ID_CANCEL);
@@ -247,3 +241,4 @@ class RecordFrame(wx.Dialog):
         return self._vault_record
 
     vault_record = property(_get_vault_record, _set_vault_record)
+

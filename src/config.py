@@ -21,25 +21,22 @@ import os
 import platform
 from ConfigParser import SafeConfigParser
 
-class Config(object):
 
+class Config(object):
     """
     Manages the configuration file
     """
-
     def __init__(self):
         """
         DEFAULT VALUES
         """
-
         self._basescript = None
         self.recentvaults = []
-        self.pwlength = 10;
+        self.pwlength = 10
         self.reduction = False
         self.search_notes = False
         self.search_passwd = False
         self.alphabet = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_"
-
 
         self._fname = self.get_config_filename()
         self._parser = SafeConfigParser()
@@ -55,23 +52,22 @@ class Config(object):
                 break
             self.recentvaults.append(self._parser.get("base", "recentvaults" + str(num)))
 
+        if self._parser.has_option("base", "alphabet"):
+            self.alphabet = int(self._parser.get("base", "alphabet"))
 
-        if self._parser.has_option("base","alphabet"):
-            self.alphabet = int(self._parser.get("base","alphabet"))
+        if self._parser.has_option("base", "pwlength"):
+            self.pwlength = int(self._parser.get("base", "pwlength"))
 
-        if self._parser.has_option("base","pwlength"):
-            self.pwlength = int(self._parser.get("base","pwlength"))
-
-        if self._parser.has_option("base","alphabetreduction"):
-            if self._parser.get("base","alphabetreduction") == "True":
+        if self._parser.has_option("base", "alphabetreduction"):
+            if self._parser.get("base", "alphabetreduction") == "True":
                 self.reduction = True
 
-        if self._parser.has_option("base","search_notes"):
-            if self._parser.get("base","search_notes") == "True":
+        if self._parser.has_option("base", "search_notes"):
+            if self._parser.get("base", "search_notes") == "True":
                 self.search_notes = True
 
-        if self._parser.has_option("base","search_passwd"):
-            if self._parser.get("base","search_passwd") == "True":
+        if self._parser.has_option("base", "search_passwd"):
+            if self._parser.get("base", "search_passwd") == "True":
                 self.search_passwd = True
 
         if not os.path.exists(self._fname):
@@ -97,10 +93,10 @@ class Config(object):
             if (len(_saved_recentvaults) >= 10):
                 break
 
-        self._parser.set("base","pwlength",str(self.pwlength));
-        self._parser.set("base","alphabetreduction",str(self.reduction));
-        self._parser.set("base","search_notes",str(self.search_notes));
-        self._parser.set("base","search_passwd",str(self.search_passwd));
+        self._parser.set("base", "pwlength", str(self.pwlength))
+        self._parser.set("base", "alphabetreduction", str(self.reduction))
+        self._parser.set("base", "search_notes", str(self.search_notes))
+        self._parser.set("base", "search_passwd", str(self.search_passwd))
         filehandle = open(self._fname, 'w')
         self._parser.write(filehandle)
         filehandle.close()
@@ -120,13 +116,13 @@ class Config(object):
 
         # On Microsoft Windows, config files go to $APPDATA/foo/
         if platform.system() in ("Windows", "Microsoft"):
-            if (os.environ.has_key("APPDATA")):
+            if ("APPDATA" in os.environ):
                 base_path = os.environ["APPDATA"]
                 if os.path.isdir(base_path):
                     return os.path.join(base_path, base_fname, base_fname + ".ini")
 
         # Allow config directory override as per freedesktop.org XDG Base Directory Specification
-        if (os.environ.has_key("XDG_CONFIG_HOME")):
+        if ("XDG_CONFIG_HOME" in os.environ):
             base_path = os.environ["XDG_CONFIG_HOME"]
             if os.path.isdir(base_path):
                 return os.path.join(base_path, base_fname, base_fname + ".ini")
@@ -143,5 +139,6 @@ class Config(object):
 
         # Final fallback is writing to the current working directory
         return base_fname + ".ini"
+
 
 config = Config()

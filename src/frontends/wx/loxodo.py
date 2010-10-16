@@ -23,6 +23,7 @@ from .wxlocale import _
 from .wxlocale import setup_wx_locale
 from .loadframe import LoadFrame
 
+
 def main():
     app = wx.PySimpleApp(0)
     setup_wx_locale()
@@ -32,4 +33,6 @@ def main():
     mainframe.Show()
     app.MainLoop()
 
+
 main()
+

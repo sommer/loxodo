@@ -30,14 +30,12 @@ from .twofish.twofish_ecb import TwofishECB
 from .twofish.twofish_cbc import TwofishCBC
 
 class Vault(object):
-
     """
     Represents a collection of password Records in PasswordSafe V3 format.
 
     The on-disk represenation of the Vault is described in the following file:
     http://passwordsafe.svn.sourceforge.net/viewvc/passwordsafe/trunk/pwsafe/pwsafe/docs/formatV3.txt?revision=2139
     """
-
     def __init__(self, password, filename=None):
         self.f_tag = None
         self.f_salt = None
@@ -66,16 +64,14 @@ class Vault(object):
         pass
 
     class Field(object):
-
         """
         Contains the raw, on-disk representation of a record's field.
         """
-
         def __init__(self, raw_type, raw_len, raw_value):
             self.raw_type = raw_type
             self.raw_len = raw_len
             self.raw_value = raw_value
-            
+
         def is_equal(self, field):
             """
             Return True if this Field and the given one are of the same type and both contain the same value.
@@ -83,11 +79,9 @@ class Vault(object):
             return self.raw_type == field.raw_type and self.raw_value == field.raw_value
 
     class Header(object):
-
         """
         Contains the fields of a Vault header.
         """
-
         def __init__(self):
             self.raw_fields = {}
 
@@ -95,11 +89,9 @@ class Vault(object):
             self.raw_fields[raw_field.raw_type] = raw_field
 
     class Record(object):
-
         """
         Contains the fields of an individual password record.
         """
-
         def __init__(self):
             self.raw_fields = {}
             self._uuid = None
@@ -110,7 +102,7 @@ class Vault(object):
             self._passwd = ""
             self._last_mod = 0
             self._url = ""
-            
+
         @staticmethod
         def create():
             record = Vault.Record()
@@ -148,7 +140,7 @@ class Vault(object):
         def _set_uuid(self, value):
             self._uuid = value
             raw_id = 0x01
-            if (not self.raw_fields.has_key(raw_id)):
+            if (raw_id not in self.raw_fields):
                 self.raw_fields[raw_id] = Vault.Field(raw_id, 0, "")
             self.raw_fields[raw_id].raw_value = value.bytes_le
             self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
@@ -160,7 +152,7 @@ class Vault(object):
         def _set_group(self, value):
             self._group = value
             raw_id = 0x02
-            if (not self.raw_fields.has_key(raw_id)):
+            if (raw_id not in self.raw_fields):
                 self.raw_fields[raw_id] = Vault.Field(raw_id, len(value), value)
             self.raw_fields[raw_id].raw_value = value.encode('utf_8', 'replace')
             self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
@@ -172,7 +164,7 @@ class Vault(object):
         def _set_title(self, value):
             self._title = value
             raw_id = 0x03
-            if (not self.raw_fields.has_key(raw_id)):
+            if (raw_id not in self.raw_fields):
                 self.raw_fields[raw_id] = Vault.Field(raw_id, len(value), value)
             self.raw_fields[raw_id].raw_value = value.encode('utf_8', 'replace')
             self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
@@ -184,7 +176,7 @@ class Vault(object):
         def _set_user(self, value):
             self._user = value
             raw_id = 0x04
-            if (not self.raw_fields.has_key(raw_id)):
+            if (raw_id not in self.raw_fields):
                 self.raw_fields[raw_id] = Vault.Field(raw_id, len(value), value)
             self.raw_fields[raw_id].raw_value = value.encode('utf_8', 'replace')
             self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
@@ -196,7 +188,7 @@ class Vault(object):
         def _set_notes(self, value):
             self._notes = value
             raw_id = 0x05
-            if (not self.raw_fields.has_key(raw_id)):
+            if (raw_id not in self.raw_fields):
                 self.raw_fields[raw_id] = Vault.Field(raw_id, len(value), value)
             self.raw_fields[raw_id].raw_value = value.encode('utf_8', 'replace')
             self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
@@ -208,7 +200,7 @@ class Vault(object):
         def _set_passwd(self, value):
             self._passwd = value
             raw_id = 0x06
-            if (not self.raw_fields.has_key(raw_id)):
+            if (raw_id not in self.raw_fields):
                 self.raw_fields[raw_id] = Vault.Field(raw_id, len(value), value)
             self.raw_fields[raw_id].raw_value = value.encode('utf_8', 'replace')
             self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
@@ -221,7 +213,7 @@ class Vault(object):
             assert type(value) == int
             self._last_mod = value
             raw_id = 0x0c
-            if (not self.raw_fields.has_key(raw_id)):
+            if (raw_id not in self.raw_fields):
                 self.raw_fields[raw_id] = Vault.Field(raw_id, 0, "0")
             self.raw_fields[raw_id].raw_value = struct.pack("<L", value)
             self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
@@ -232,7 +224,7 @@ class Vault(object):
         def _set_url(self, value):
             self._url = value
             raw_id = 0x0d
-            if (not self.raw_fields.has_key(raw_id)):
+            if (raw_id not in self.raw_fields):
                 self.raw_fields[raw_id] = Vault.Field(raw_id, len(value), value)
             self.raw_fields[raw_id].raw_value = value.encode('utf_8', 'replace')
             self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
@@ -240,12 +232,12 @@ class Vault(object):
 
         def is_corresponding(self, record):
             """
-            Return True if Records are the same, based on either UUIDs (if available) or title 
+            Return True if Records are the same, based on either UUIDs (if available) or title
             """
             if not self.uuid or not record.uuid:
                 return self.title == record.title
             return self.uuid == record.uuid
-                    
+
         def is_newer_than(self, record):
             """
             Return True if this Record's last modifed date is later than the given one's.
@@ -352,10 +344,9 @@ class Vault(object):
     def create(password, filename):
         vault = Vault(password)
         vault.write_to_file(filename, password)
-        pass
 
     def _create_empty(self, password):
-        
+
         assert type(password) != unicode
 
         self.f_tag = 'PWS3'
@@ -373,7 +364,7 @@ class Vault(object):
         key_l = cipher.decrypt(self.f_b3) + cipher.decrypt(self.f_b4)
 
         self.f_iv = Vault._urandom(16)
-        
+
         hmac_checker = HMAC(key_l, "", hashlib.sha256)
         cipher = TwofishCBC(key_k, self.f_iv)
 
@@ -385,9 +376,8 @@ class Vault(object):
         """
         Initialize all class members by loading the contents of a Vault stored in the given file.
         """
-
         assert type(password) != unicode
-        
+
         filehandle = file(filename, 'rb')
 
         # read boilerplate
@@ -444,7 +434,6 @@ class Vault(object):
                 hmac_checker.update(field.raw_value)
                 current_record.add_raw_field(field)
 
-
         # read HMAC
 
         self.f_hmac = filehandle.read(32)  # HMAC: used to verify Vault's integrity
@@ -460,9 +449,8 @@ class Vault(object):
         """
         Store contents of this Vault into a file.
         """
-
         assert type(password) != unicode
-        
+
         _last_save = struct.pack("<L", int(time.time()))
         self.header.raw_fields[0x04] = self.Field(0x04, len(_last_save), _last_save)
         _what_saved = "Loxodo 0.0-git".encode("utf_8", "replace")
@@ -531,3 +519,4 @@ class Vault(object):
         except OSError:
             pass
         os.rename(tmpfilename, filename)
+

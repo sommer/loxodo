@@ -27,18 +27,15 @@ from .recordframe import RecordFrame
 from .mergeframe import MergeFrame
 from .settings import Settings
 
-class VaultFrame(wx.Frame):
 
+class VaultFrame(wx.Frame):
     """
     Displays (and lets the user edit) the Vault.
     """
-
     class VaultListCtrl(wx.ListCtrl):
-
         """
         wx.ListCtrl that contains the contents of a Vault.
         """
-
         def __init__(self, *args, **kwds):
             wx.ListCtrl.__init__(self, *args, **kwds)
             self.vault = None
@@ -59,11 +56,10 @@ class VaultFrame(wx.Frame):
 
             Overrides the base classes' method.
             """
-
             # Workaround for obscure wxPython behaviour that leads to an empty wx.ListCtrl sometimes calling OnGetItemText
             if (item < 0) or (item >= len(self.displayed_entries)):
               return "--"
-            
+
             if (col == 0):
                 return self.displayed_entries[item].title
             if (col == 1):
@@ -330,7 +326,7 @@ class VaultFrame(wx.Frame):
         if (col == 2):
             self.list.sort_function = lambda e1, e2: cmp(e1.group.lower(), e2.group.lower())
         self.list.update_fields()
-        
+
     def _on_list_contextmenu(self, dummy):
         self.PopupMenu(self._recordmenu)
 
@@ -338,17 +334,16 @@ class VaultFrame(wx.Frame):
         """
         Event handler: Fires when user chooses this menu item.
         """
-
-        gpl_v2 = """This program is free software; you can redistribute it and/or modify it under the 
-terms of the GNU General Public License as published by the Free Software Foundation; 
+        gpl_v2 = """This program is free software; you can redistribute it and/or modify it under the
+terms of the GNU General Public License as published by the Free Software Foundation;
 either version 2 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
-without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with this program; 
-if not, write to the Free Software Foundation, Inc., 
+You should have received a copy of the GNU General Public License along with this program;
+if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA."""
 
         developers = (
@@ -369,8 +364,8 @@ if not, write to the Free Software Foundation, Inc.,
         about.SetLicense(gpl_v2)
         about.SetDevelopers(developers)
         wx.AboutBox(about)
-     
-    def _on_settings(self,dummy):
+
+    def _on_settings(self, dummy):
         """
         Event handler: Fires when user chooses this menu item.
         """
@@ -378,11 +373,11 @@ if not, write to the Free Software Foundation, Inc.,
         settings.ShowModal()
         settings.Destroy()
         self.list.update_fields()
- 
+
     def _on_change_password(self, dummy):
-        
-        # FIXME: choose new SALT, B1-B4, IV values on password change? Conflicting Specs! 
-        
+
+        # FIXME: choose new SALT, B1-B4, IV values on password change? Conflicting Specs!
+
         dial = wx.PasswordEntryDialog(self,
                                 _("New password"),
                                 _("Change Vault Password")
@@ -411,7 +406,7 @@ if not, write to the Free Software Foundation, Inc.,
             dial.ShowModal()
             dial.Destroy()
             return
-        
+
         self.vault_password = password_new
         self.statusbar.SetStatusText(_('Changed Vault password'), 0)
         self.mark_modified()
@@ -423,7 +418,7 @@ if not, write to the Free Software Foundation, Inc.,
             return
         filename = dialog.GetPath()
         dialog.Destroy()
-        
+
         dial = wx.PasswordEntryDialog(self,
                                 _("Password"),
                                 _("Open Vault...")
@@ -433,7 +428,7 @@ if not, write to the Free Software Foundation, Inc.,
         dial.Destroy()
         if retval != wx.ID_OK:
             return
-        
+
         merge_vault = None
         try:
             merge_vault = Vault(password, filename=filename)
@@ -467,7 +462,6 @@ if not, write to the Free Software Foundation, Inc.,
 
         oldrecord_newrecord_reason_pairs = []  # list of (oldrecord, newrecord, reason) tuples to merge
         for record in merge_vault.records:
-            
             # check if corresponding record exists in current Vault
             my_record = None
             for record2 in self.vault.records:
@@ -479,13 +473,11 @@ if not, write to the Free Software Foundation, Inc.,
             if not my_record:
                 oldrecord_newrecord_reason_pairs.append((None, record, _("new")))
                 continue
-            
+
             # record is more recent
             if record.is_newer_than(my_record):
                 oldrecord_newrecord_reason_pairs.append((my_record, record, _('updates "%s"') % my_record.title))
                 continue
-                            
-            pass
 
         dial = MergeFrame(self, oldrecord_newrecord_reason_pairs)
         retval = dial.ShowModal()
@@ -493,14 +485,13 @@ if not, write to the Free Software Foundation, Inc.,
         dial.Destroy()
         if retval != wx.ID_OK:
             return
-        
+
         for (oldrecord, newrecord, reason) in oldrecord_newrecord_reason_pairs:
             if oldrecord:
                 oldrecord.merge(newrecord)
             else:
                 self.vault.records.append(newrecord)
         self.mark_modified()
-
 
     def _on_exit(self, dummy):
         """
@@ -528,7 +519,7 @@ if not, write to the Free Software Foundation, Inc.,
         Event handler: Fires when user chooses this menu item.
         """
         entry = self.vault.Record.create()
-        
+
         recordframe = RecordFrame(self)
         recordframe.vault_record = entry
         if recordframe.ShowModal() != wx.ID_CANCEL:
@@ -623,7 +614,6 @@ if not, write to the Free Software Foundation, Inc.,
         """
         Event handler: Fires when user presses a key in self._searchbox
         """
-
         # If "Enter" was pressed, ignore key and copy password of first match
         if evt.GetKeyCode() == wx.WXK_RETURN:
             self._on_copy_password(None)
@@ -633,7 +623,7 @@ if not, write to the Free Software Foundation, Inc.,
         if evt.GetKeyCode() == wx.WXK_ESCAPE:
             self._on_search_cancel(None)
             return
-        
+
         # If "Up" or "Down" was pressed, ignore key and focus self.list
         if evt.GetKeyCode() in (wx.WXK_UP, wx.WXK_DOWN):
             self.list.SetFocus()
@@ -641,3 +631,4 @@ if not, write to the Free Software Foundation, Inc.,
 
         # Ignore all other keys
         evt.Skip()
+

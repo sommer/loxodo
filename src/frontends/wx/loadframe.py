@@ -26,12 +26,11 @@ from .vaultframe import VaultFrame
 from ...vault import Vault
 from ...config import config
 
-class LoadFrame(wx.Frame):
 
+class LoadFrame(wx.Frame):
     """
     Displays the "welcome" dialog which lets the user open a Vault.
     """
-
     def __init__(self, *args, **kwds):
         # begin wxGlade: ChooseVaultFrame.__init__
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
@@ -51,7 +50,6 @@ class LoadFrame(wx.Frame):
         sizer_3 = wx.BoxSizer(wx.VERTICAL)
 
         sizer_3.Add(self.bitmap_1, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5)
-
         sizer_3.Add(self._fb_filename, 0, wx.EXPAND|wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.RIGHT, 5)
 
         sizer_5 = wx.BoxSizer(wx.HORIZONTAL)
@@ -96,7 +94,7 @@ class LoadFrame(wx.Frame):
 
         Vault.create(password, filename=filename)
         self._fb_filename.SetValue(filename)
-        
+
         dial = wx.MessageDialog(self,
                                 _('A new Vault has been created using the given password. You can now proceed to open the Vault.'),
                                 _('Vault Created'),
@@ -106,7 +104,6 @@ class LoadFrame(wx.Frame):
         dial.Destroy()
         self._tc_passwd.SetFocus()
         self._tc_passwd.SelectAll()
-    
 
     def _on_open(self, dummy):
         try:

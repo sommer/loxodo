@@ -35,22 +35,20 @@ from ...vault import Vault
 from ...config import config
 
 class InteractiveConsole(cmd.Cmd):
-    
+
     def __init__(self):
         self.vault = None
         self.vault_file_name = None
         self.vault_password = None
         self.vault_modified = False
-        
+
         cmd.Cmd.__init__(self)
         if sys.platform == "darwin":
             readline.parse_and_bind('bind ^I rl_complete')
         self.intro = 'Ready for commands. Type "help" or "help <command>" for help, type "quit" to quit.'
         self.prompt = "[none]> "
 
-        
     def open_vault(self):
-
         print "Opening " + self.vault_file_name + "..."
         try:
             self.vault_password = getpass("Vault password: ")
@@ -71,10 +69,8 @@ class InteractiveConsole(cmd.Cmd):
             raise
         print "... Done.\n"
 
-
     def postloop(self):
         print
-
 
     def emptyline(self):
         pass
@@ -86,7 +82,7 @@ class InteractiveConsole(cmd.Cmd):
         if line:
             cmd.Cmd.do_help(self, line)
             return
-        
+
         print "\nCommands:"
         print "  ".join(("ls", "show", "quit", "add", "save"))
         print
@@ -95,32 +91,31 @@ class InteractiveConsole(cmd.Cmd):
         """
         Exits interactive mode.
         """
-        self.do_save();
+        self.do_save()
         return True
-    
+
     def do_save(self, line=None):
         if self.vault_modified and self.vault_file_name and self.vault_password:
             self.vault.write_to_file(self.vault_file_name, self.vault_password)
             self.vault_modified = False
             print "Changes Saved"
 
-
     def do_EOF(self, line):
         """
         Exits interactive mode.
         """
         return True
-    
+
     def do_add(self, line):
         """
         Adds a user to the vault
-        
+
         Example: add USERNAME [TITLE, [GROUP]]
         """
         if not line:
             cmd.Cmd.do_help(self, "add")
             return
-            
+
         line = line.split(" ")
         entry = self.vault.Record.create()
         entry.user = line[0]
@@ -128,19 +123,19 @@ class InteractiveConsole(cmd.Cmd):
             entry.title = line[1]
         if len(line) >= 3:
             entry.group = line[2]
-            
+
         passwd = getpass("Password: ")
         passwd2 = getpass("Re-Type Password: ")
         if passwd != passwd2:
             print "Passwords don't match"
             return
-        
+
         entry.passwd = passwd
-        
+
         self.vault.records.append(entry)
         self.vault_modified = True
         print "User Added, but not saved"
-    
+
     def do_ls(self, line):
         """
         Show contents of this Vault. If an argument is added a case insensitive
@@ -148,32 +143,31 @@ class InteractiveConsole(cmd.Cmd):
         """
         if not self.vault:
             raise RuntimeError("No vault opened")
-    
-        if line != None:
+
+        if line is not None:
             vault_records = self.find_titles(line)
         else:
             vault_records = self.vault.records[:]
             vault_records.sort(lambda e1, e2: cmp(e1.title, e2.title))
 
-        if vault_records == None:
+        if vault_records is None:
             print "No matches found."
             return
 
         for record in vault_records:
             print record.title.encode('utf-8', 'replace') + " [" + record.user.encode('utf-8', 'replace') + "]"
-            
+
     def do_show(self, line, echo=True, passwd=False):
         """
         Show the specified entry (including its password).
         A case insenstive search of titles is done, entries can also be specified as regular expressions.
         """
-
         if not self.vault:
             raise RuntimeError("No vault opened")
 
         matches = self.find_titles(line)
 
-        if matches == None:
+        if matches is None:
             print 'No entry found for "%s"' % line
             return
 
@@ -192,21 +186,18 @@ Password : %s""" % (record.group.encode('utf-8', 'replace'),
 Username : %s""" % (record.group.encode('utf-8', 'replace'),
                     record.title.encode('utf-8', 'replace'),
                     record.user.encode('utf-8', 'replace'))
-                
-            
+
             if record.notes.strip():
                 print "Notes    :\n\t :", record.notes.encode('utf-8', 'replace').replace("\n", "\n\t : "), "\n"
-                
+
             print ""
-            
+
             if pygtk is not None and gtk is not None:
                 cb = gtk.clipboard_get()
                 cb.set_text(record.passwd)
                 cb.store()
-            
 
     def complete_show(self, text, line, begidx, endidx):
-    
         if not text:
             completions = [record.title for record in self.vault.records]
         else:
@@ -225,13 +216,13 @@ Username : %s""" % (record.group.encode('utf-8', 'replace'),
         matches = []
         pat = re.compile(regexp, re.IGNORECASE)
         for record in self.vault.records:
-            if pat.match(record.title) != None:
+            if pat.match(record.title) is not None:
                 matches.append(record)
-            elif pat.match(record.user) != None:
+            elif pat.match(record.user) is not None:
                 matches.append(record)
-            elif pat.match(record.group) != None:
+            elif pat.match(record.group) is not None:
                 matches.append(record)
-            elif pat.match(record.group+"."+record.title+" ["+record.user+"]") != None:
+            elif pat.match(record.group+"."+record.title+" ["+record.user+"]") is not None:
                 matches.append(record)
 
         if len(matches) == 0:
@@ -241,7 +232,6 @@ Username : %s""" % (record.group.encode('utf-8', 'replace'),
 
 
 def main(argv):
-
     # Options
     usage = "usage: %prog [options] [Vault.psafe3]"
     parser = OptionParser(usage=usage)
@@ -276,7 +266,7 @@ def main(argv):
         interactiveConsole.cmdloop()
 
     sys.exit(0)
-            
+
 
 main(sys.argv[1:])
 
