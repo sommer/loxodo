@@ -49,7 +49,10 @@ class InteractiveConsole(cmd.Cmd):
         self.prompt = "[none]> "
 
     def open_vault(self):
-        print "Opening " + self.vault_file_name + "..."
+        vault_action = "Opening"
+        if not os.path.isfile(self.vault_file_name):
+            vault_action = "Creating"
+        print "%s %s ..." % (vault_action, self.vault_file_name)
         try:
             self.vault_password = getpass("Vault password: ")
         except EOFError:
