@@ -52,7 +52,10 @@ class Vault(object):
         if not filename:
             self._create_empty(password)
         else:
-            self._read_from_file(filename, password)
+            if not os.path.isfile(filename):
+                self._create_empty(password)
+            else:
+                self._read_from_file(filename, password)
 
     class BadPasswordError(RuntimeError):
         pass
