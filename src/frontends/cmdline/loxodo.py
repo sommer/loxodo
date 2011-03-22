@@ -24,12 +24,6 @@ from getpass import getpass
 import readline
 import cmd
 import re
-try:
-    import pygtk
-    import gtk
-except ImportError:
-    pygtk = None
-    gtk = None
 
 from ...vault import Vault
 from ...config import config
@@ -192,10 +186,13 @@ Username : %s""" % (record.group.encode('utf-8', 'replace'),
 
             print ""
 
-            if pygtk is not None and gtk is not None:
-                cb = gtk.clipboard_get()
-                cb.set_text(record.passwd)
-                cb.store()
+            if self.pygtk is not None and self.gtk is not None:
+                try:
+                    cb = self.gtk.clipboard_get()
+                    cb.set_text(record.passwd)
+                    cb.store()
+                except:
+                    pass
 
     def complete_show(self, text, line, begidx, endidx):
         if not text:
@@ -240,6 +237,7 @@ def main(argv):
     parser.add_option("-i", "--interactive", dest="interactive", default=False, action="store_true", help="use command line interface")
     parser.add_option("-p", "--password", dest="passwd", default=False, action="store_true", help="Auto adds password to clipboard. (GTK Only)")
     parser.add_option("-e", "--echo", dest="echo", default=False, action="store_true", help="Causes password to be displayed on the screen")
+    parser.add_option("-c", "--console_only", dest="console", default=False, action="store_true", help="disable interaction with clipboard")
     (options, args) = parser.parse_args()
 
     interactiveConsole = InteractiveConsole()
@@ -256,6 +254,17 @@ def main(argv):
         sys.exit(2)
     else:
         interactiveConsole.vault_file_name = args[0]
+
+    interactiveConsole.pygtk = None
+    interactiveConsole.gtk = None
+    if not options.console:
+        try:
+            import pygtk
+            import gtk
+            interactiveConsole.pygtk = pygtk
+            interactiveConsole.gtk = gtk
+        except ImportError:
+            pass
 
     interactiveConsole.open_vault()
     if options.do_ls:
