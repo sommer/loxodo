@@ -343,9 +343,9 @@ class InteractiveConsole(cmd.Cmd):
 
         if new_record['url'] == ".":
             new_record['url'] = ""
-        if new_record['notes'] == "":
-            new_record['notes'] = record.notes
-        if new_record['notes'] != record.notes:
+        if new_record['url'] == "":
+            new_record['url'] = record.url
+        if new_record['url'] != record.url:
             _vault_modified = True
 
         if _vault_modified == True:
@@ -358,7 +358,7 @@ class InteractiveConsole(cmd.Cmd):
 
             self.vault.records = nonmatch_records
             self.vault.records.append(record)
-            print "Entry Modified, but vaultnot yet saved"
+            print "Entry Modified, but vault not yet saved"
             self.vault_modified = True
 
         self.set_prompt()
@@ -383,12 +383,14 @@ class InteractiveConsole(cmd.Cmd):
             print "No matches found."
             return
 
+        print ""
         print "[group.title] username"
         print "----------------------"
         for record in vault_records:
             print "[%s.%s] %s " % (record.group.encode('utf-8', 'replace'),
                                    record.title.encode('utf-8', 'replace'), 
                                    record.user.encode('utf-8', 'replace')) 
+        print ""
 
     def do_uuid(self, line=None):
         """
@@ -448,6 +450,9 @@ Username : %s""" % (record.group.encode('utf-8', 'replace'),
 
             if record.notes.strip():
                 print "Notes    : %s" % record.notes.encode('utf-8', 'replace')
+
+            if record.url:
+                print "URL      : %s" % record.url.encode('utf-8', 'replace')
 
             print ""
 
