@@ -91,18 +91,11 @@ class InteractiveConsole(cmd.Cmd):
             return
 
         print "\nCommands:"
-        print "  ".join(("ls", "show", "quit", "add", "save", "echo", "uuid", "mod"))
+        print "  ".join(("ls", "show", 'add', 'mod', 'del', "save", 'quit', 'echo', 'uuid'))
         print
         print "echo is %s" % self.echo
         print "uuid is %s" % self.uuid
         print
-
-    def do_exit(self, line):
-        """
-        Exits interactive mode.
-        """
-        self.do_save()
-        return True
 
     def do_quit(self, line):
         """
@@ -127,34 +120,29 @@ class InteractiveConsole(cmd.Cmd):
         """
         return True
 
-    def do_add(self, line):
+    def do_add(self, line=None):
         """
-        Adds a user to the vault
-
-        Example: add USERNAME [TITLE [GROUP]]
+        Adds an entry to the vault
         """
-        if not line:
-            cmd.Cmd.do_help(self, "add")
-            return
-
-        line = line.split(" ")
         entry = self.vault.Record.create()
-        entry.user = line[0].strip()
-        if len(line) >= 2:
-            entry.title = line[1].strip()
-            if len(line) >= 3:
-                entry.group = line[2].strip()
-        else:
+        while True:
             entry.title = getpass._raw_input('Entry\'s title: ')
-            entry.group = getpass._raw_input('Entry\'s group: ')
-            entry.notes = getpass._raw_input('Entry\'s notes: ')
-            entry.url = getpass._raw_input('Entry\'s url: ')
+            if entry.title == "":
+                accept_empty = getpass._raw_input("Entry is empty. Enter Y to accept ")
+                if accept_empty.lower() == 'y':
+                    break
+            else:
+                break
+        entry.group = getpass._raw_input('Entry\'s group: ')
+        entry.user = getpass._raw_input('Username: ')
+        entry.notes = getpass._raw_input('Entry\'s notes: ')
+        entry.url = getpass._raw_input('Entry\'s url: ')
 
         entry.passwd = self.prompt_password()
 
         self.vault.records.append(entry)
         self.vault_modified = True
-        print "User Added, but not yet saved"
+        print "Entry Added, but vault not yet saved"
         self.set_prompt()
 
     def prompt_password(self, old_password=None):
@@ -167,11 +155,22 @@ class InteractiveConsole(cmd.Cmd):
             passwd = getpass.getpass("%sPassword: " % message)
             if passwd == "":
                 from src.random_password import random_password
+                #TODO(climent): move the options to the config file
+                password_policy = {'L': True, 'R': True, 'U': True, 'l': True, '2': True, 's': True, 'S': True}
                 while True:
-                    passwd = random_password().generate_password()
+                    passwd = random_password().generate_password(password_policy)
                     created_random_password = True        
                     print "Generated password: %s" % passwd
-                    accept_password = getpass._raw_input('Enter [y] to accept, [ENTER] for random ')
+                    while True:
+                        accept_password = getpass._raw_input('Enter [y] to accept, [ENTER] for random ')
+                        if accept_password in password_policy:
+                            if password_policy[accept_password] is True:
+                                password_policy[accept_password] = False
+                            else:
+                                password_policy[accept_password] = True
+                            print password_policy
+                        else:
+                            break
                     if accept_password.lower() == "y":
                         break
                 break
@@ -193,11 +192,57 @@ class InteractiveConsole(cmd.Cmd):
                     break
         return passwd
 
+    def do_del(self, line=None):
+        """
+        Delete an entry from the vault.
+        """
+        if not self.vault:
+            raise RuntimeError("No vault opened")
+
+        vault_records = None
+        match_records = None
+        nomatch_records = None
+
+        uuid = None
+        title = None
+        user = None
+        group = None
+
+        uuid_regexp = '^[a-f0-9]{8}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{12}$'
+        pattern = re.compile(uuid_regexp, re.IGNORECASE)
+
+        if pattern.search(line) is not None:
+            uuid = line
+        
+        match_records, nonmatch_records = self.mod_titles(title=title, uuid=uuid, user=user, group=group)
+            
+        if match_records is None:
+            print "No matches found."
+            return
+
+        if len(match_records) > 1:
+            print "Too many records matched your search criteria"
+            for record in match_records:
+                print "%s [%s] " % (record.title.encode('utf-8', 'replace'), record.user.encode('utf-8', 'replace')) 
+                return
+
+        if len(match_records) == 1:
+            print "Deleting the following record:"
+            self.do_show(str(match_records[0].uuid))
+            confirm_delete = getpass._raw_input("Confirm you want to delete the record [YES]: ")
+            if confirm_delete.lower() == 'yes':
+                self.vault.records = nonmatch_records
+                print "Entry Deleted, but vault not yet saved"
+                self.vault_modified = True
+
+        self.set_prompt()
+
+        print ""
+
     def do_mod(self, line=None):
         """
         Modify an entry from the vault.
         """
-        pass
         if not self.vault:
             raise RuntimeError("No vault opened")
         
@@ -313,7 +358,7 @@ class InteractiveConsole(cmd.Cmd):
 
             self.vault.records = nonmatch_records
             self.vault.records.append(record)
-            print "User Modified, but not yet saved"
+            print "Entry Modified, but vaultnot yet saved"
             self.vault_modified = True
 
         self.set_prompt()
@@ -338,8 +383,12 @@ class InteractiveConsole(cmd.Cmd):
             print "No matches found."
             return
 
+        print "[group.title] username"
+        print "----------------------"
         for record in vault_records:
-            print "%s [%s] " % (record.title.encode('utf-8', 'replace'), record.user.encode('utf-8', 'replace')) 
+            print "[%s.%s] %s " % (record.group.encode('utf-8', 'replace'),
+                                   record.title.encode('utf-8', 'replace'), 
+                                   record.user.encode('utf-8', 'replace')) 
 
     def do_uuid(self, line=None):
         """
@@ -398,7 +447,7 @@ Username : %s""" % (record.group.encode('utf-8', 'replace'),
                 print "Password : %s" % record.passwd.encode('utf-8', 'replace')
 
             if record.notes.strip():
-                print "Notes    :\n\t :", record.notes.encode('utf-8', 'replace').replace("\n", "\n\t : "), "\n"
+                print "Notes    : %s" % record.notes.encode('utf-8', 'replace')
 
             print ""
 
@@ -469,6 +518,8 @@ Username : %s""" % (record.group.encode('utf-8', 'replace'),
                 matches.append(record)
             elif pat.match(record.group) is not None:
                 matches.append(record)
+            elif pat.match(str(record.uuid)) is not None:
+                matches.append(record)
             elif pat.match("%s.%s [%s]" % (record.group, record.title, record.user)) is not None:
                 matches.append(record)
 
@@ -486,9 +537,9 @@ def main(argv):
     parser.add_option("-s", "--show", dest="do_show", default=None, action="store", type="string", help="show entries matching REGEX", metavar="REGEX")
     parser.add_option("-i", "--interactive", dest="interactive", default=False, action="store_true", help="use command line interface")
     parser.add_option("-c", "--console_only", dest="console", default=False, action="store_true", help="disable interaction with clipboard")
-    parser.add_option("-p", "--password", dest="passwd", default=False, action="store_true", help="Auto adds password to clipboard. (GTK Only)")
-    parser.add_option("-e", "--echo", dest="echo", default=False, action="store_true", help="Causes password to be displayed on the screen")
-    parser.add_option("-u", "--uuid", dest="uuid", default=False, action="store_true", help="Causes loxodo to show and use uuid for processing passwords")
+    parser.add_option("-p", "--password", dest="passwd", default=False, action="store_true", help="auto adds password to clipboard. (GTK Only)")
+    parser.add_option("-e", "--echo", dest="echo", default=False, action="store_true", help="passwords are displayed on the screen")
+    parser.add_option("-u", "--uuid", dest="uuid", default=False, action="store_true", help="show uuid while processing passwords")
     (options, args) = parser.parse_args()
 
     interactiveConsole = InteractiveConsole()
