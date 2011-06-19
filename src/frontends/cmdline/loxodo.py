@@ -396,11 +396,17 @@ class InteractiveConsole(cmd.Cmd):
 
         print ""
         print "[group.title] username"
+        print "URL: url"
+        print "Notes: notes"
         print "----------------------"
         for record in vault_records:
-            print "[%s.%s] %s " % (record.group.encode('utf-8', 'replace'),
+            print "[%s.%s] %s" % (record.group.encode('utf-8', 'replace'),
                                    record.title.encode('utf-8', 'replace'), 
-                                   record.user.encode('utf-8', 'replace')) 
+                                   record.user.encode('utf-8', 'replace'))
+            print "URL: %s" % (record.url.encode('utf-8', 'replace'))
+            print "Notes: %s" % (record.notes.encode('utf-8', 'replace'))
+            print "-"*10
+                                   
         print ""
 
     def do_uuid(self, line=None):
@@ -466,14 +472,6 @@ Username : %s""" % (record.group.encode('utf-8', 'replace'),
                 print "URL      : %s" % record.url.encode('utf-8', 'replace')
 
             print ""
-
-            if self.pygtk and self.gtk:
-                try:
-                    cb = self.gtk.clipboard_get()
-                    cb.set_text(record.passwd)
-                    cb.store()
-                except:
-                    pass
 
     def complete_show(self, text, line, begidx, endidx):
         if not text:
