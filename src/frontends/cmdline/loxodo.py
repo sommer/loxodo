@@ -24,12 +24,6 @@ from getpass import getpass
 import readline
 import cmd
 import re
-try:
-    import pygtk
-    import gtk
-except ImportError:
-    pygtk = None
-    gtk = None
 
 from ...vault import Vault
 from ...config import config
@@ -47,6 +41,17 @@ class InteractiveConsole(cmd.Cmd):
             readline.parse_and_bind('bind ^I rl_complete')
         self.intro = 'Ready for commands. Type "help" or "help <command>" for help, type "quit" to quit.'
         self.prompt = "[none]> "
+
+    def create_vault(self):
+        print "Creating " + self.vault_file_name + "..."
+        try:
+            self.vault_password = getpass("Vault password: ")
+        except EOFError:
+            print "\n\nBye."
+            raise RuntimeError("No password given")
+
+        Vault.create(self.vault_password, filename=self.vault_file_name)
+        print "... Done.\n"
 
     def open_vault(self):
         print "Opening " + self.vault_file_name + "..."
@@ -240,6 +245,7 @@ def main(argv):
     parser.add_option("-i", "--interactive", dest="interactive", default=False, action="store_true", help="use command line interface")
     parser.add_option("-p", "--password", dest="passwd", default=False, action="store_true", help="Auto adds password to clipboard. (GTK Only)")
     parser.add_option("-e", "--echo", dest="echo", default=False, action="store_true", help="Causes password to be displayed on the screen")
+    parser.add_option("-n", "--new", dest="create_new_vault", default=False, action="store_true", help="Create and initialize new Vault.")
     (options, args) = parser.parse_args()
 
     interactiveConsole = InteractiveConsole()
@@ -257,13 +263,16 @@ def main(argv):
     else:
         interactiveConsole.vault_file_name = args[0]
 
-    interactiveConsole.open_vault()
-    if options.do_ls:
-        interactiveConsole.do_ls("")
-    elif options.do_show:
-        interactiveConsole.do_show(options.do_show, options.echo, options.passwd)
+    if options.create_new_vault:
+        interactiveConsole.create_vault()
     else:
-        interactiveConsole.cmdloop()
+        interactiveConsole.open_vault()
+        if options.do_ls:
+            interactiveConsole.do_ls("")
+        elif options.do_show:
+            interactiveConsole.do_show(options.do_show, options.echo, options.passwd)
+        else:
+            interactiveConsole.cmdloop()
 
     sys.exit(0)
 
