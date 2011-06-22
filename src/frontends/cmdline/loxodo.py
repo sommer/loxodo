@@ -110,7 +110,7 @@ class InteractiveConsole(cmd.Cmd):
             return
 
         print "\nCommands:"
-        print "  ".join(("ls", "show", 'add', 'mod', 'del', "save", 'quit', 'echo', 'uuid', 'vi', 'tab'))
+        print "  ".join(("ls", "show", 'add', 'mod', 'del', "save", 'quit', 'echo', 'uuid', 'vi', 'tab', 'export'))
         print
         print "echo is %s" % self.echo
         print "uuid is %s" % self.uuid
@@ -171,6 +171,9 @@ class InteractiveConsole(cmd.Cmd):
         self.vault.records.append(entry)
         self.vault_modified = True
         print "Entry Added, but vault not yet saved"
+
+    def do_export(self, line=None):
+        print "Exporting file " + self.vault_file_name + "..."
 
     def prompt_password(self, old_password=None):
         created_random_password = False
@@ -586,13 +589,15 @@ def main(argv):
     usage = "usage: %prog [options] [Vault.psafe3]"
     parser = OptionParser(usage=usage)
     parser.add_option("-l", "--ls", dest="do_ls", default=False, action="store_true", help="list contents of vault")
-    parser.add_option("-s", "--show", dest="do_show", default=None, action="store", type="string", help="show entries matching REGEX", metavar="REGEX")
-    parser.add_option("-i", "--interactive", dest="interactive", default=False, action="store_true", help="use command line interface")
+    parser.add_option("-s", "--show", dest="do_show", default=None, action="store", type="string", help="Show entries matching REGEX", metavar="REGEX")
+    parser.add_option("-i", "--interactive", dest="interactive", default=False, action="store_true", help="Use command line interface")
     parser.add_option("-n", "--new", dest="create_new_vault", default=False, action="store_true", help="Create and initialize new Vault.")
-    parser.add_option("-c", "--console_only", dest="console", default=False, action="store_true", help="disable interaction with clipboard")
-    parser.add_option("-p", "--password", dest="passwd", default=False, action="store_true", help="auto adds password to clipboard. (GTK Only)")
-    parser.add_option("-e", "--echo", dest="echo", default=False, action="store_true", help="passwords are displayed on the screen")
-    parser.add_option("-u", "--uuid", dest="uuid", default=False, action="store_true", help="show uuid while processing passwords")
+    parser.add_option("-c", "--console_only", dest="console", default=False, action="store_true", help="Disable interaction with clipboard")
+    parser.add_option("-p", "--password", dest="passwd", default=False, action="store_true", help="Auto adds password to clipboard. (GTK Only)")
+    parser.add_option("-e", "--echo", dest="echo", default=False, action="store_true", help="Passwords are displayed on the screen")
+    parser.add_option("-u", "--uuid", dest="uuid", default=False, action="store_true", help="Show uuid while processing passwords")
+    parser.add_option("-x", "--export", dest="export", default=False, action="store_true", help="Export database to csv")
+
 
     (options, args) = parser.parse_args()
 
@@ -619,6 +624,8 @@ def main(argv):
             interactiveConsole.do_ls("")
         elif options.do_show:
             interactiveConsole.do_show(options.do_show, options.echo, options.passwd)
+        elif options.export:
+			interactiveConsole.do_export()
         else:
             interactiveConsole.uuid = options.uuid
             interactiveConsole.echo = options.echo
