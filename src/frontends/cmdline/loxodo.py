@@ -46,7 +46,7 @@ class InteractiveConsole(cmd.Cmd):
     def create_vault(self):
         print "Creating " + self.vault_file_name + "..."
         try:
-            self.vault_password = getpass("Vault password: ")
+            self.vault_password = getpass.getpass("Vault password: ")
         except EOFError:
             print "\n\nBye."
             raise RuntimeError("No password given")
