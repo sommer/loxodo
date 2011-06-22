@@ -37,6 +37,9 @@ class InteractiveConsole(cmd.Cmd):
         self.vault_modified = False
         self.vault_status = ""
 
+        self.vi = False
+        self.tabcomp = True
+
         cmd.Cmd.__init__(self)
         if sys.platform == "darwin":
             readline.parse_and_bind('bind ^I rl_complete')
@@ -75,7 +78,6 @@ class InteractiveConsole(cmd.Cmd):
             raise RuntimeError("No password given")
         try:
             self.vault = Vault(self.vault_password, filename=self.vault_file_name)
-            self.set_prompt()
         except Vault.BadPasswordError:
             print "Bad password."
             raise
@@ -90,6 +92,12 @@ class InteractiveConsole(cmd.Cmd):
     def postloop(self):
         print
 
+    def postcmd(self, stop, line):
+		if stop == True:
+			return True
+
+		self.set_prompt()
+
     def emptyline(self):
         pass
 
@@ -102,10 +110,13 @@ class InteractiveConsole(cmd.Cmd):
             return
 
         print "\nCommands:"
-        print "  ".join(("ls", "show", 'add', 'mod', 'del', "save", 'quit', 'echo', 'uuid'))
+        print "  ".join(("ls", "show", 'add', 'mod', 'del', "save", 'quit', 'echo', 'uuid', 'vi', 'tab'))
         print
         print "echo is %s" % self.echo
         print "uuid is %s" % self.uuid
+        print
+        print "vi editing mode is %s" % self.vi
+        print "tab completition is %s" % self.tabcomp
         print
 
     def do_quit(self, line):
@@ -123,7 +134,6 @@ class InteractiveConsole(cmd.Cmd):
             self.vault.write_to_file(self.vault_file_name, self.vault_password)
             self.vault_modified = False
             print "Changes Saved"
-        self.set_prompt()
 
     def do_EOF(self, line):
         """
@@ -154,7 +164,6 @@ class InteractiveConsole(cmd.Cmd):
         self.vault.records.append(entry)
         self.vault_modified = True
         print "Entry Added, but vault not yet saved"
-        self.set_prompt()
 
     def prompt_password(self, old_password=None):
         created_random_password = False
@@ -245,8 +254,6 @@ class InteractiveConsole(cmd.Cmd):
                 self.vault.records = nonmatch_records
                 print "Entry Deleted, but vault not yet saved"
                 self.vault_modified = True
-
-        self.set_prompt()
 
         print ""
 
@@ -372,8 +379,6 @@ class InteractiveConsole(cmd.Cmd):
             print "Entry Modified, but vault not yet saved"
             self.vault_modified = True
 
-        self.set_prompt()
-
         print ""
 
     def do_ls(self, line):
@@ -428,6 +433,32 @@ class InteractiveConsole(cmd.Cmd):
         else:
             self.echo = False
         print "echo is %s" % self.echo
+
+    def do_vi(self, line=None):
+		"""
+		Set vi editing mode for commandline
+		"""
+		if self.vi == False:
+			self.vi = True
+			readline.parse_and_bind('set editing-mode vi')
+		else:
+			self.vi = False
+			readline.parse_and_bind('set editing-mode emacs')
+
+		print "Vi Editing mode is %s" % self.vi
+
+    def do_tab(self, line=None):
+		"""
+		Enable Tab completition for cmd interface
+		"""
+		if self.tabcomp == False:
+			self.tabcomp = True
+			readline.parse_and_bind('tab: complete')
+		else:
+			self.tabcomp = False
+			readline.parse_and_bind('tab: noncomplete')
+
+		print "TAB completition mode is %s" % self.tabcomp
 
     def do_show(self, line, echo=True, passwd=False, uuid=False):
         """
@@ -584,6 +615,7 @@ def main(argv):
         else:
             interactiveConsole.uuid = options.uuid
             interactiveConsole.echo = options.echo
+            interactiveConsole.set_prompt()
             interactiveConsole.cmdloop()
 
     sys.exit(0)
