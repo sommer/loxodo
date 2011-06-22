@@ -4,7 +4,7 @@
 ## Copyrights
 ## ==========
 ##
-## This code is a derived from an implementation by Dr Brian Gladman 
+## This code is a derived from an implementation by Dr Brian Gladman
 ## (gladman@seven77.demon.co.uk) which is subject to the following license.
 ## This Python implementation is not subject to any other license.
 ##
@@ -40,7 +40,7 @@ block_size = 16
 key_size = 32
 
 class Twofish:
-    
+
     def __init__(self, key=None):
         """Twofish."""
 
@@ -50,7 +50,7 @@ class Twofish:
 
     def set_key(self, key):
         """Init."""
-        
+
         key_len = len(key)
         if key_len not in [16, 24, 32]:
             # XXX: add padding?
@@ -61,9 +61,9 @@ class Twofish:
         if key_len > 32:
             # XXX: prune?
             raise KeyError, "key_len > 32"
-        
+
         self.context = TWI()
-        
+
         key_word32 = [0] * 32
         i = 0
         while key:
@@ -73,25 +73,25 @@ class Twofish:
 
         set_key(self.context, key_word32, key_len)
 
-        
+
     def decrypt(self, block):
         """Decrypt blocks."""
-        
+
         if len(block) % 16:
             raise ValueError, "block size must be a multiple of 16"
 
         plaintext = ''
-        
+
         while block:
             a, b, c, d = struct.unpack("<4L", block[:16])
             temp = [a, b, c, d]
             decrypt(self.context, temp)
             plaintext += struct.pack("<4L", *temp)
             block = block[16:]
-            
+
         return plaintext
 
-        
+
     def encrypt(self, block):
         """Encrypt blocks."""
 
@@ -99,32 +99,32 @@ class Twofish:
             raise ValueError, "block size must be a multiple of 16"
 
         ciphertext = ''
-        
+
         while block:
             a, b, c, d = struct.unpack("<4L", block[0:16])
             temp = [a, b, c, d]
             encrypt(self.context, temp)
             ciphertext += struct.pack("<4L", *temp)
             block = block[16:]
-            
+
         return ciphertext
 
 
     def get_name(self):
         """Return the name of the cipher."""
-        
+
         return "Twofish"
 
 
     def get_block_size(self):
         """Get cipher block size in bytes."""
-        
+
         return 16
 
-    
+
     def get_key_size(self):
         """Get cipher key size in bytes."""
-        
+
         return 32
 
 
@@ -195,7 +195,7 @@ def gen_qtab(pkey):
     for i in xrange(256):
         pkey.q_tab[0][i] = qp(0, i)
         pkey.q_tab[1][i] = qp(1, i)
-        
+
 def gen_mtab(pkey):
     for i in xrange(256):
         f01 = pkey.q_tab[1][i]
@@ -253,8 +253,8 @@ def h_fun(pkey, x, key):
         b0 = pkey.q_tab[0][pkey.q_tab[0][b0] ^ byte(key[1], 0)] ^ byte(key[0], 0);
         b1 = pkey.q_tab[0][pkey.q_tab[1][b1] ^ byte(key[1], 1)] ^ byte(key[0], 1);
         b2 = pkey.q_tab[1][pkey.q_tab[0][b2] ^ byte(key[1], 2)] ^ byte(key[0], 2);
-        b3 = pkey.q_tab[1][pkey.q_tab[1][b3] ^ byte(key[1], 3)] ^ byte(key[0], 3);      
-    return pkey.m_tab[0][b0] ^ pkey.m_tab[1][b1] ^ pkey.m_tab[2][b2] ^ pkey.m_tab[3][b3];   
+        b3 = pkey.q_tab[1][pkey.q_tab[1][b3] ^ byte(key[1], 3)] ^ byte(key[0], 3);
+    return pkey.m_tab[0][b0] ^ pkey.m_tab[1][b1] ^ pkey.m_tab[2][b2] ^ pkey.m_tab[3][b3];
 
 def mds_rem(p0, p1):
     i, t, u = 0, 0, 0
@@ -290,11 +290,11 @@ def set_key(pkey, in_key, key_len):
     for i in xrange(pkey.k_len):
         if WORD_BIGENDIAN:
             a = byteswap32(in_key[i + 1])
-            me_key[i] = a            
+            me_key[i] = a
             b = byteswap32(in_key[i + i + 1])
         else:
             a = in_key[i + i]
-            me_key[i] = a            
+            me_key[i] = a
             b = in_key[i + i + 1]
         mo_key[i] = b
         pkey.s_key[pkey.k_len - i - 1] = mds_rem(a, b);
@@ -319,20 +319,20 @@ def encrypt(pkey, in_blk):
         blk[0] = in_blk[0] ^ pkey.l_key[0];
         blk[1] = in_blk[1] ^ pkey.l_key[1];
         blk[2] = in_blk[2] ^ pkey.l_key[2];
-        blk[3] = in_blk[3] ^ pkey.l_key[3];        
+        blk[3] = in_blk[3] ^ pkey.l_key[3];
 
     for i in xrange(8):
-        t1 = ( pkey.mk_tab[0][byte(blk[1],3)] ^ pkey.mk_tab[1][byte(blk[1],0)] ^ pkey.mk_tab[2][byte(blk[1],1)] ^ pkey.mk_tab[3][byte(blk[1],2)] ); 
+        t1 = ( pkey.mk_tab[0][byte(blk[1],3)] ^ pkey.mk_tab[1][byte(blk[1],0)] ^ pkey.mk_tab[2][byte(blk[1],1)] ^ pkey.mk_tab[3][byte(blk[1],2)] );
         t0 = ( pkey.mk_tab[0][byte(blk[0],0)] ^ pkey.mk_tab[1][byte(blk[0],1)] ^ pkey.mk_tab[2][byte(blk[0],2)] ^ pkey.mk_tab[3][byte(blk[0],3)] );
-        
+
         blk[2] = rotr32(blk[2] ^ ((t0 + t1 + pkey.l_key[4 * (i) + 8]) % 0x100000000), 1);
         blk[3] = rotl32(blk[3], 1) ^ ((t0 + 2 * t1 + pkey.l_key[4 * (i) + 9]) % 0x100000000);
 
-        t1 = ( pkey.mk_tab[0][byte(blk[3],3)] ^ pkey.mk_tab[1][byte(blk[3],0)] ^ pkey.mk_tab[2][byte(blk[3],1)] ^ pkey.mk_tab[3][byte(blk[3],2)] ); 
+        t1 = ( pkey.mk_tab[0][byte(blk[3],3)] ^ pkey.mk_tab[1][byte(blk[3],0)] ^ pkey.mk_tab[2][byte(blk[3],1)] ^ pkey.mk_tab[3][byte(blk[3],2)] );
         t0 = ( pkey.mk_tab[0][byte(blk[2],0)] ^ pkey.mk_tab[1][byte(blk[2],1)] ^ pkey.mk_tab[2][byte(blk[2],2)] ^ pkey.mk_tab[3][byte(blk[2],3)] );
-        
+
         blk[0] = rotr32(blk[0] ^ ((t0 + t1 + pkey.l_key[4 * (i) + 10]) % 0x100000000), 1);
-        blk[1] = rotl32(blk[1], 1) ^ ((t0 + 2 * t1 + pkey.l_key[4 * (i) + 11]) % 0x100000000);         
+        blk[1] = rotl32(blk[1], 1) ^ ((t0 + 2 * t1 + pkey.l_key[4 * (i) + 11]) % 0x100000000);
 
     if WORD_BIGENDIAN:
         in_blk[0] = byteswap32(blk[2] ^ pkey.l_key[4]);
@@ -344,12 +344,12 @@ def encrypt(pkey, in_blk):
         in_blk[1] = blk[3] ^ pkey.l_key[5];
         in_blk[2] = blk[0] ^ pkey.l_key[6];
         in_blk[3] = blk[1] ^ pkey.l_key[7];
-        
+
     return
 
 def decrypt(pkey, in_blk):
     blk = [0, 0, 0, 0]
-    
+
     if WORD_BIGENDIAN:
         blk[0] = byteswap32(in_blk[0]) ^ pkey.l_key[4];
         blk[1] = byteswap32(in_blk[1]) ^ pkey.l_key[5];
@@ -359,7 +359,7 @@ def decrypt(pkey, in_blk):
         blk[0] = in_blk[0] ^ pkey.l_key[4];
         blk[1] = in_blk[1] ^ pkey.l_key[5];
         blk[2] = in_blk[2] ^ pkey.l_key[6];
-        blk[3] = in_blk[3] ^ pkey.l_key[7];    
+        blk[3] = in_blk[3] ^ pkey.l_key[7];
 
     for i in xrange(7, -1, -1):
         t1 = ( pkey.mk_tab[0][byte(blk[1],3)] ^ pkey.mk_tab[1][byte(blk[1],0)] ^ pkey.mk_tab[2][byte(blk[1],1)] ^ pkey.mk_tab[3][byte(blk[1],2)] )
@@ -372,7 +372,7 @@ def decrypt(pkey, in_blk):
         t0 = ( pkey.mk_tab[0][byte(blk[2],0)] ^ pkey.mk_tab[1][byte(blk[2],1)] ^ pkey.mk_tab[2][byte(blk[2],2)] ^ pkey.mk_tab[3][byte(blk[2],3)] )
 
         blk[0] = rotl32(blk[0], 1) ^ ((t0 + t1 + pkey.l_key[4 * (i) + 8]) % 0x100000000)
-        blk[1] = rotr32(blk[1] ^ ((t0 + 2 * t1 + pkey.l_key[4 * (i) + 9]) % 0x100000000), 1)        
+        blk[1] = rotr32(blk[1] ^ ((t0 + 2 * t1 + pkey.l_key[4 * (i) + 9]) % 0x100000000), 1)
 
     if WORD_BIGENDIAN:
         in_blk[0] = byteswap32(blk[2] ^ pkey.l_key[0]);

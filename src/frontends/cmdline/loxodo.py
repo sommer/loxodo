@@ -63,7 +63,7 @@ class InteractiveConsole(cmd.Cmd):
         else:
             self.vault_status = ""
         self.prompt = "[%s%s]> " % (os.path.basename(self.vault_file_name), self.vault_status)
-        
+
     def open_vault(self):
         vault_action = "Opening"
         if not os.path.isfile(self.vault_file_name):
@@ -93,10 +93,10 @@ class InteractiveConsole(cmd.Cmd):
         print
 
     def postcmd(self, stop, line):
-		if stop == True:
-			return True
+        if stop == True:
+            return True
 
-		self.set_prompt()
+        self.set_prompt()
 
     def emptyline(self):
         pass
@@ -119,11 +119,18 @@ class InteractiveConsole(cmd.Cmd):
         print "tab completition is %s" % self.tabcomp
         print
 
+	# This method should clear all data in self.vault.records because we
+	# can't control when will this be Garbadge collected we replace it
+	# for strange text
+    def clear_vault(self):
+        self.vault.clear_records()
+
     def do_quit(self, line):
         """
         Exits interactive mode.
         """
         self.do_save()
+        self.clear_vault()
         return True
 
     def do_save(self, line=None):
@@ -179,7 +186,7 @@ class InteractiveConsole(cmd.Cmd):
                 password_policy = {'L': True, 'R': True, 'U': True, 'l': True, '2': True, 's': True, 'S': True}
                 while True:
                     passwd = random_password().generate_password(password_policy)
-                    created_random_password = True        
+                    created_random_password = True
                     print "Generated password: %s" % passwd
                     while True:
                         accept_password = getpass._raw_input('Enter [y] to accept, [ENTER] for random ')
@@ -233,9 +240,9 @@ class InteractiveConsole(cmd.Cmd):
 
         if pattern.search(line) is not None:
             uuid = line
-        
+
         match_records, nonmatch_records = self.mod_titles(title=title, uuid=uuid, user=user, group=group)
-            
+
         if match_records is None:
             print "No matches found."
             return
@@ -243,7 +250,7 @@ class InteractiveConsole(cmd.Cmd):
         if len(match_records) > 1:
             print "Too many records matched your search criteria"
             for record in match_records:
-                print "%s [%s] " % (record.title.encode('utf-8', 'replace'), record.user.encode('utf-8', 'replace')) 
+                print "%s [%s] " % (record.title.encode('utf-8', 'replace'), record.user.encode('utf-8', 'replace'))
                 return
 
         if len(match_records) == 1:
@@ -263,7 +270,7 @@ class InteractiveConsole(cmd.Cmd):
         """
         if not self.vault:
             raise RuntimeError("No vault opened")
-        
+
         vault_records = None
         match_records = None
         nomatch_records = None
@@ -291,7 +298,7 @@ class InteractiveConsole(cmd.Cmd):
                     user = line_elements[2]
 
         match_records, nonmatch_records = self.mod_titles(title=title, uuid=uuid, user=user, group=group)
-            
+
         if match_records is None:
             print "No matches found."
             return
@@ -299,7 +306,7 @@ class InteractiveConsole(cmd.Cmd):
         if len(match_records) > 1:
             print "Too many records matched your search criteria"
             for record in match_records:
-                print "%s [%s] " % (record.title.encode('utf-8', 'replace'), record.user.encode('utf-8', 'replace')) 
+                print "%s [%s] " % (record.title.encode('utf-8', 'replace'), record.user.encode('utf-8', 'replace'))
                 return
 
         _vault_modified = False
@@ -406,12 +413,12 @@ class InteractiveConsole(cmd.Cmd):
         print "----------------------"
         for record in vault_records:
             print "[%s.%s] %s" % (record.group.encode('utf-8', 'replace'),
-                                   record.title.encode('utf-8', 'replace'), 
+                                   record.title.encode('utf-8', 'replace'),
                                    record.user.encode('utf-8', 'replace'))
             print "URL: %s" % (record.url.encode('utf-8', 'replace'))
             print "Notes: %s" % (record.notes.encode('utf-8', 'replace'))
             print "-"*10
-                                   
+
         print ""
 
     def do_uuid(self, line=None):
@@ -435,30 +442,30 @@ class InteractiveConsole(cmd.Cmd):
         print "echo is %s" % self.echo
 
     def do_vi(self, line=None):
-		"""
-		Set vi editing mode for commandline
-		"""
-		if self.vi == False:
-			self.vi = True
-			readline.parse_and_bind('set editing-mode vi')
-		else:
-			self.vi = False
-			readline.parse_and_bind('set editing-mode emacs')
+        """
+        Set vi editing mode for commandline
+        """
+        if self.vi == False:
+            self.vi = True
+            readline.parse_and_bind('set editing-mode vi')
+        else:
+            self.vi = False
+            readline.parse_and_bind('set editing-mode emacs')
 
-		print "Vi Editing mode is %s" % self.vi
+        print "Vi Editing mode is %s" % self.vi
 
     def do_tab(self, line=None):
-		"""
-		Enable Tab completition for cmd interface
-		"""
-		if self.tabcomp == False:
-			self.tabcomp = True
-			readline.parse_and_bind('tab: complete')
-		else:
-			self.tabcomp = False
-			readline.parse_and_bind('tab: noncomplete')
+        """
+        Enable Tab completition for cmd interface
+        """
+        if self.tabcomp == False:
+            self.tabcomp = True
+            readline.parse_and_bind('tab: complete')
+        else:
+            self.tabcomp = False
+            readline.parse_and_bind('tab: noncomplete')
 
-		print "TAB completition mode is %s" % self.tabcomp
+        print "TAB completition mode is %s" % self.tabcomp
 
     def do_show(self, line, echo=True, passwd=False, uuid=False):
         """

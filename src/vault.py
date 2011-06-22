@@ -136,7 +136,6 @@ class Vault(object):
             self.last_mod = int(time.time())
 
         # TODO: refactor Record._set_xyz methods to be less repetitive
-
         def _get_uuid(self):
             return self._uuid
 
@@ -447,6 +446,13 @@ class Vault(object):
 
         self.records.sort()
         filehandle.close()
+
+    def clear_records(self):
+        i = 0
+
+        while (i < len(self.records)):
+                self.records[i] = "deadbeefx0"
+                i += 1
 
     def write_to_file(self, filename, password):
         """
