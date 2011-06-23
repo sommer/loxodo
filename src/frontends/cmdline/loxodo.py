@@ -175,6 +175,9 @@ class InteractiveConsole(cmd.Cmd):
     def do_export(self, line=None):
         print "Exporting file " + self.vault_file_name + "..."
 
+        self.__open_vault__()
+        self.vault.export(self.vault_password, self.vault_file_name)
+
     def prompt_password(self, old_password=None):
         created_random_password = False
 
