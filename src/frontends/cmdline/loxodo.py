@@ -119,9 +119,9 @@ class InteractiveConsole(cmd.Cmd):
         print "tab completition is %s" % self.tabcomp
         print
 
-	# This method should clear all data in self.vault.records because we
-	# can't control when will this be Garbadge collected we replace it
-	# for strange text
+    # This method should clear all data in self.vault.records because we
+    # can't control when will this be Garbadge collected we replace it
+    # for strange text
     def clear_vault(self):
         self.vault.clear_records()
 
@@ -174,8 +174,6 @@ class InteractiveConsole(cmd.Cmd):
 
     def do_export(self, line=None):
         print "Exporting file " + self.vault_file_name + "..."
-
-        self.__open_vault__()
         self.vault.export(self.vault_password, self.vault_file_name)
 
     def prompt_password(self, old_password=None):
@@ -628,7 +626,7 @@ def main(argv):
         elif options.do_show:
             interactiveConsole.do_show(options.do_show, options.echo, options.passwd)
         elif options.export:
-			interactiveConsole.do_export()
+            interactiveConsole.do_export()
         else:
             interactiveConsole.uuid = options.uuid
             interactiveConsole.echo = options.echo
