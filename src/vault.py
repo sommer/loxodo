@@ -375,11 +375,11 @@ class Vault(object):
         self.f_hmac = hmac_checker.digest()
 
     def export(self, password, filename):
-        self._read_from_file(filename, password)
+        #self._read_from_file(filename, password)
         print "# passwordsafe version 3.0 database"
-        print "uuid    group    name    login    passwd    notes    url"
+        print "uuid,group,name,login,passwd,notes,url"
         for record in self.records:
-            print "\"" + str(record.uuid) + "," + record.group + "," + record.title + "," + record.user + "," + record.passwd + "," + record.notes + "," + reco
+            print "\"" + str(record.uuid) + "," + record.group + "," + record.title + "," + record.user + "," + record.passwd + "," + record.notes + "," + record.url
 
 
 
