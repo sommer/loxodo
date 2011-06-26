@@ -1,12 +1,13 @@
 
 Loxodo -- Password Safe V3 compatible Password Vault
 Copyright (C) 2008 Christoph Sommer <mail@christoph-sommer.de>
+Copyright (C) 2011 Adam Hamsik <adam.hamsik@chillisys.com>
 
 Loxodo lives at http://www.christoph-sommer.de/loxodo
 
 
-Quickstart:
------------
+Quickstart
+----------
 
 ./loxodo.py
 	runs Loxodo in GUI mode (if available)
@@ -23,3 +24,8 @@ Quickstart:
 ./loxodo.py -i
 	runs Loxodo in CLI Interactive mode
 
+Changelog
+---------
+
+June 2011: Add more command line options to create new vault from shell, dump database to csv
+file. Make some small improvements to cmd loop to (tab completition, vi mode).
