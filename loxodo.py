@@ -10,7 +10,7 @@ if platform.system() == "Windows" and platform.release() == "CE":
     sys.exit()
 
 # All other platforms use the Config module
-from src.config import config
+from loxodo.config import config
 
 # store base script name, taking special care if we're "frozen" using py2app or py2exe
 if hasattr(sys,"frozen") and (sys.platform != 'darwin'):
@@ -20,7 +20,7 @@ else:
 
 # If cmdline arguments were given, use the "cmdline" frontend.
 if len(sys.argv) > 1:
-    from src.frontends.cmdline import loxodo
+    from loxodo.frontends.cmdline import loxodo
     sys.exit()
 
 # In all other cases, use the "wx" frontend.    
@@ -30,7 +30,7 @@ except ImportError, e:
     print >> sys.stderr, 'Could not find wxPython, the wxWidgets Python bindings: %s' % e
     print >> sys.stderr, 'Falling back to cmdline frontend.'
     print >> sys.stderr, ''
-    from src.frontends.cmdline import loxodo
+    from loxodo.frontends.cmdline import loxodo
     sys.exit()
 
 from src.frontends.wx import loxodo
