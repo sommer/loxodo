@@ -6,7 +6,7 @@ import platform
 
 # On Windows CE, use the "ppygui" frontend.
 if platform.system() == "Windows" and platform.release() == "CE":
-    from src.frontends.ppygui import loxodo
+    from loxodo.frontends.ppygui import loxodo
     sys.exit()
 
 # All other platforms use the Config module
@@ -33,5 +33,5 @@ except ImportError, e:
     from loxodo.frontends.cmdline import loxodo
     sys.exit()
 
-from src.frontends.wx import loxodo
+from loxodo.frontends.wx import loxodo
 
