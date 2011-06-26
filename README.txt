@@ -29,3 +29,10 @@ Changelog
 
 June 2011: Add more command line options to create new vault from shell, dump database to csv
 file. Make some small improvements to cmd loop to (tab completition, vi mode).
+
+TODO
+----
+
+* It might be good to be able to merge 2 databases together.
+* Add option to add users to vault from cli entirely.
+
