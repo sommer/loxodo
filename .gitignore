@@ -1,4 +1,4 @@
 *.pyc
 .DS_Store
-Loxodo*
+Loxodo*egg*
 dist/
