@@ -36,18 +36,19 @@ class Vault(object):
     The on-disk represenation of the Vault is described in the following file:
     http://passwordsafe.svn.sourceforge.net/viewvc/passwordsafe/trunk/pwsafe/pwsafe/docs/formatV3.txt?revision=2139
 
-    Introduction of pwsafe file 3.1 version.
+    Introduction of pwsafe file 4.0 version.
     
     To be able to share one file with more than one user we need to change
     database look little bit. Way how we can support more users than one is
-    by using master/secondary passwords. During creation of database we ask
-    for master password and create db.
+    by using secondary passwords. During creation of database we ask
+    generate master password and create db. Later we ask for secondary 
+    one to encrypt master password on disk.
     
     Database with one Master password:
     TAG|SALT|ITER|H(P')|B1|B2|B3|B4|IV|HDR|R1|R2|...|Rn|EOF|HMAC
     
     During adding secondary password to database, program will ask for 
-    master/secondary passwd and store them before Database tag. Program asks 
+    secondary passwd and store them before Database tag. Program asks 
     for secondary password with which we encrypts master one and stores it in 
     |PTAG|MASTERPASSWORD| entry.
     
@@ -57,19 +58,18 @@ class Vault(object):
     PSAE means that PASSWORD is encrypted with AES
     
     Database with one secondary password:
-    |PTAG|MASTERPASSWORD|PTAG|MASTERPASSWORD|TAG|SALT|ITER|H(P')|B1|B2|B3|B4|IV|HDR|R1|R2|...|Rn|EOF|HMAC
-      1T         1P        2T        2P       MT
+    TAG|PTAG|MASTERPASSWORD|PTAG|MASTERPASSWORD|DTAG|SALT|ITER|H(P')|B1|B2|B3|B4|IV|HDR|R1|R2|...|Rn|EOF|HMAC
+      1T         1P       2T        2P        MT
     Each couple |PTAG|MASTERPASSWORD| is encrypted by different secondary 
-    password. During start application will ask for master/secondary password 
+    password. During start application will ask for secondary password 
     and try to findout version of database.
     
-    To determine if we use PSW3 version of database we read 4 start bytes and
-    try to decrypt them with given password. If result is PSW3 we are done. 
-    If result doesn't match we read bytes until we get 0xff twice 
-    (this means that we read first password tag and first master password 
-    encrypted.) NExt we read another 4 bytes and try to decrypt them to see 
-    if we can use given password to get correct 2T.
+    First 4bytes of db are used as DTAG for old v3 db it's PWS3 for new
+    multi-password enabled db it's PWS4. Then each encryption of master 
+    password is started with PTAG [PSTW, PSAE]. Then after passwords we have 
+    DTAG which marks start of actuall database data for us.
     
+    PWS4|PSTW|password Twofish|PSAE|password AES|PWDB|-> DATABASE
     
     """
     def __init__(self, password, filename=None):
