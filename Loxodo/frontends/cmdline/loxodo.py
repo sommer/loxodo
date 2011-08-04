@@ -25,7 +25,7 @@ import readline
 import cmd
 import re
 
-from ...vault import Vault
+from ...db.vault import Vault
 from ...config import config
 
 class InteractiveConsole(cmd.Cmd):
