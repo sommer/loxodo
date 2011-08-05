@@ -36,6 +36,7 @@ class InteractiveConsole(cmd.Cmd):
         self.vault_password = None
         self.vault_modified = False
         self.vault_status = ""
+        self.vault_format = "v3"
 
         self.vi = False
         self.tabcomp = True
@@ -43,7 +44,7 @@ class InteractiveConsole(cmd.Cmd):
         cmd.Cmd.__init__(self)
         if sys.platform == "darwin":
             readline.parse_and_bind('bind ^I rl_complete')
-        self.intro = 'Ready for commands. Type "help" or "help <command>" for help, type "quit" to quit.'
+        self.intro = 'Ready for commands. Type "help" or "help <command>" for help, type "quit" to quit. Database format is: '
         self.prompt = "[none]> "
 
     def create_vault(self):
@@ -54,7 +55,7 @@ class InteractiveConsole(cmd.Cmd):
             print "\n\nBye."
             raise RuntimeError("No password given")
 
-        Vault.create(self.vault_password, filename=self.vault_file_name)
+        Vault.create(self.vault_password, filename=self.vault_file_name, format=self.vault_format)
         print "... Done.\n"
 
     def set_prompt(self):
@@ -77,12 +78,12 @@ class InteractiveConsole(cmd.Cmd):
             print "\n\nBye."
             raise RuntimeError("No password given")
         try:
-            self.vault = Vault(self.vault_password, filename=self.vault_file_name)
+            self.vault = Vault(self.vault_password, filename=self.vault_file_name, format=self.vault_format)
         except Vault.BadPasswordError:
             print "Bad password."
             raise
         except Vault.VaultVersionError:
-            print "This is not a PasswordSafe V3 Vault."
+            print "This is not a PasswordSafe V3 or V4 Vault."
             raise
         except Vault.VaultFormatError:
             print "Vault integrity check failed."
@@ -118,6 +119,7 @@ class InteractiveConsole(cmd.Cmd):
         print "vi editing mode is %s" % self.vi
         print "tab completition is %s" % self.tabcomp
         print
+        print "Database format is set to %s" % self.vault_format
 
     # This method should clear all data in self.vault.records because we
     # can't control when will this be Garbadge collected we replace it
@@ -391,7 +393,7 @@ class InteractiveConsole(cmd.Cmd):
             self.vault_modified = True
 
         print ""
-
+    
     def do_ls(self, line):
         """
         Show contents of this Vault. If an argument is added a case insensitive
@@ -424,6 +426,16 @@ class InteractiveConsole(cmd.Cmd):
             print "-"*10
 
         print ""
+    
+    def do_format(self, line=None):
+        """
+        Change database format to v4
+        """
+        if self.vault_format == "v3":
+            self.vault_format = "v4"
+        else:
+            self.vault_format = "v3"
+        print "Database format used is %s" % self.vault_format
 
     def do_uuid(self, line=None):
         """
@@ -514,7 +526,7 @@ Username : %s""" % (record.group.encode('utf-8', 'replace'),
                 print "URL      : %s" % record.url.encode('utf-8', 'replace')
 
             print ""
-
+    
     def complete_show(self, text, line, begidx, endidx):
         if not text:
             completions = [record.title for record in self.vault.records]
@@ -562,7 +574,7 @@ Username : %s""" % (record.group.encode('utf-8', 'replace'),
             return None, nonmatches
         else:
             return matches, nonmatches
-
+    
     def find_titles(self, regexp):
         "Finds titles, username, group, or combination of all 3 matching a regular expression. (Case insensitive)"
         matches = []
@@ -598,7 +610,7 @@ def main(argv):
     parser.add_option("-e", "--echo", dest="echo", default=False, action="store_true", help="Passwords are displayed on the screen")
     parser.add_option("-u", "--uuid", dest="uuid", default=False, action="store_true", help="Show uuid while processing passwords")
     parser.add_option("-x", "--export", dest="export", default=False, action="store_true", help="Export database to csv")
-
+    parser.add_option("-f", "--format", dest="format", default=False, action="store", type="string", help="Change database format to v4 with multi password support options [v3, v4]")
 
     (options, args) = parser.parse_args()
 
@@ -617,6 +629,11 @@ def main(argv):
     else:
         interactiveConsole.vault_file_name = args[0]
 
+    if options.format:
+      interactiveConsole.vault_format = options.format
+    else:
+      interactiveConsole.vault_format = "v3"
+
     if options.create_new_vault:
         interactiveConsole.create_vault()
     else:
@@ -624,10 +641,11 @@ def main(argv):
         if options.do_ls:
             interactiveConsole.do_ls("")
         elif options.do_show:
-            interactiveConsole.do_show(options.do_show, options.echo, options.passwd)
+            interactiveConsole.do_show(options.do_show, options.echo, options.passwd, options.uuid)
         elif options.export:
             interactiveConsole.do_export()
         else:
+            interactiveConsole.intro +=  interactiveConsole.vault_format
             interactiveConsole.uuid = options.uuid
             interactiveConsole.echo = options.echo
             interactiveConsole.set_prompt()
