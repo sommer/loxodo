@@ -33,6 +33,9 @@ from ..twofish.twofish_cbc import TwofishCBC
 from .vaultver4 import VaultVer4
 from .vaultver3 import VaultVer3
 
+prog_version = '1.0.0-git'
+prog_name = 'Loxodo'
+
 class Vault(object):
     """
     Represents a collection of password Records in PasswordSafe V3 format.
@@ -78,6 +81,7 @@ class Vault(object):
     """
     def __init__(self, password, filename=None, format="v3"):
         self.db_ver = None
+        self.db_format = format
         self.f_tag = None
         self.f_salt = None
         self.f_iter = None
@@ -91,10 +95,10 @@ class Vault(object):
         self.header = self.Header()
         self.records = []
         if not filename:
-            self._ _empty(password, format)
+            self._create_empty(password)
         else:
             if not os.path.isfile(filename):
-                self._create_empty(password, format)
+                self._create_empty(password)
             else:
                 self._read_from_file(filename, password)
 
@@ -358,14 +362,10 @@ class Vault(object):
                 retval += struct.pack("<B", random.randint(0, 0xFF))
             return retval
     
-    def _write_field_tlv(self, cipher, field, filehandle=None):
+    def _write_field_tlv(self, cipher, field):
         """
         Write one field of a vault record using the given file handle.
         """
-        if (field is None):
-            self.db_ver.db_close()
-            return
-
         assert len(field.raw_value) == field.raw_len
 
         raw_len = struct.pack("<L", field.raw_len)
@@ -380,21 +380,18 @@ class Vault(object):
 
         data = cipher.encrypt(data)
 
-        if not filehandle:
-          self.db_ver.db_write_data(data)
-        else:
-          filehandle.write(data)
+        self.db_ver.db_write_data(data)
 
     @staticmethod
-    def create(password, filename):
-        vault = Vault(password)
+    def create(password, filename, format="v3"):
+        vault = Vault(password, filename, format)
         vault.write_to_file(filename, password)
 
-    def _create_empty(self, password, format):
+    def _create_empty(self, password):
 
         assert type(password) != unicode
 
-        if format == "v3":
+        if self.db_format == "v3":
           self.db_ver = VaultVer3()
         else:
           self.db_ver = VaultVer4()
@@ -425,7 +422,11 @@ class Vault(object):
         elif (ver4.db_test_bg_tag(tag)):
           self.db_ver = ver4
         else:
-            raise self.VaultVersionError("Not a PasswordSafe V3 and V4 compatible file")
+          raise self.VaultVersionError("Not a PasswordSafe V3 and V4 compatible file")
+
+        if self.db_format != self.db_ver.db_format:
+          print "Database version missmatch I was asked to open database with version %s and it's a %s version" % (self.db_format, self.db_ver.db_format)
+          sys.exit(1)
 
         # Open password database
         self.db_ver.db_open(filename)
@@ -477,6 +478,8 @@ class Vault(object):
 
         self.records.sort()
 
+        self.db_ver.db_close()
+    
     def clear_records(self):
         i = 0
 
@@ -490,9 +493,6 @@ class Vault(object):
         """
         assert type(password) != unicode
 
-        if self.db_ver.filename == None
-          self.db_ver.db_open(filename)
-
         _last_save = struct.pack("<L", int(time.time()))
         self.header.raw_fields[0x04] = self.Field(0x04, len(_last_save), _last_save)
         _what_saved = prog_name+" "+prog_version.encode("utf_8", "replace")
@@ -500,30 +500,17 @@ class Vault(object):
 
         # write to temporary file first
         (osfilehandle, tmpfilename) = tempfile.mkstemp('.part', os.path.basename(filename) + ".", os.path.dirname(filename), text=False)
-        filehandle = os.fdopen(osfilehandle, "wb")
 
-        # FIXME: choose new SALT, B1-B4, IV values on each file write? Conflicting Specs!
-
-        # write boilerplate
-
-        filehandle.write(self.f_tag)
-        filehandle.write(self.f_salt)
-        filehandle.write(struct.pack("<L", self.f_iter))
+        self.db_ver.db_open(tmpfilename, 'wb')
 
         stretched_password = self._stretch_password(password, self.f_salt, self.f_iter)
         self.f_sha_ps = hashlib.sha256(stretched_password).digest()
-        filehandle.write(self.f_sha_ps)
-
-        filehandle.write(self.f_b1)
-        filehandle.write(self.f_b2)
-        filehandle.write(self.f_b3)
-        filehandle.write(self.f_b4)
+        
+        self.db_ver.db_write_header(self, password)
 
         cipher = TwofishECB(stretched_password)
         key_k = cipher.decrypt(self.f_b1) + cipher.decrypt(self.f_b2)
         key_l = cipher.decrypt(self.f_b3) + cipher.decrypt(self.f_b4)
-
-        filehandle.write(self.f_iv)
 
         hmac_checker = HMAC(key_l, "", hashlib.sha256)
         cipher = TwofishCBC(key_k, self.f_iv)
@@ -531,26 +518,27 @@ class Vault(object):
         end_of_record = self.Field(0xff, 0, "")
 
         for field in self.header.raw_fields.values():
-            self._write_field_tlv(filehandle, cipher, field)
+            self._write_field_tlv(cipher, field)
             hmac_checker.update(field.raw_value)
-        self._write_field_tlv(filehandle, cipher, end_of_record)
+        self._write_field_tlv(cipher, end_of_record)
         hmac_checker.update(end_of_record.raw_value)
 
         for record in self.records:
             for field in record.raw_fields.values():
-                self._write_field_tlv(filehandle, cipher, field)
+                self._write_field_tlv(cipher, field)
                 hmac_checker.update(field.raw_value)
-            self._write_field_tlv(filehandle, cipher, end_of_record)
+            self._write_field_tlv(cipher, end_of_record)
             hmac_checker.update(end_of_record.raw_value)
 
-        self._write_field_tlv(filehandle, cipher, None)
+        self.db_ver.db_end_data()
 
         self.f_hmac = hmac_checker.digest()
-        filehandle.write(self.f_hmac)
-        filehandle.close()
+
+        self.db_ver.db_write_data(self.f_hmac)
+        self.db_ver.db_close()
 
         try:
-            tmpvault = Vault(password, filename=tmpfilename)
+            tmpvault = Vault(password, filename=tmpfilename, format=self.db_ver.db_format)
         except RuntimeError:
             os.remove(tmpfilename)
             raise self.VaultFormatError("File integrity check failed")

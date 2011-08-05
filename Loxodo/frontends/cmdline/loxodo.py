@@ -187,7 +187,7 @@ class InteractiveConsole(cmd.Cmd):
                 message = "New password. [.] for none, [..] to keep the same. [ENTER] for random\n"
             passwd = getpass.getpass("%sPassword: " % message)
             if passwd == "":
-                from src.random_password import random_password
+                from ...random_password import random_password
                 #TODO(climent): move the options to the config file
                 password_policy = {'L': True, 'R': True, 'U': True, 'l': True, '2': True, 's': True, 'S': True}
                 while True:
@@ -427,16 +427,14 @@ class InteractiveConsole(cmd.Cmd):
 
         print ""
     
+    def do_version(self, line):
+    
     def do_format(self, line=None):
         """
         Change database format to v4
         """
-        if self.vault_format == "v3":
-            self.vault_format = "v4"
-        else:
-            self.vault_format = "v3"
         print "Database format used is %s" % self.vault_format
-
+    
     def do_uuid(self, line=None):
         """
         Change status of uuid

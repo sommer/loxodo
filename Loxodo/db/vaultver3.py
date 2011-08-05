@@ -36,15 +36,24 @@ class VaultVer3(object):
   def __init__ (self):
     self.db_version_tag = 'PWS3'
     self.db_end_tag = 'PWS3-EOFPWS3-EOF'
+    self.db_format = 'v3'
+    
+    self.db_filename = None
+    self.__filehandle = None
   
-  def db_open(self, filename=None):
+  def db_open(self, filename=None, mode='rb'):
     self.db_filename = filename
     if self.db_filename:
-      self.__filehandle = file(filename, 'rb')
+      self.__filehandle = file(filename, mode)
   
   def db_close(self):
-    self.__filehandle.write(self.db_end_tag)
+    self.db_filename = None
     self.__filehandle.close()
+  
+  def db_end_data(self):
+    # Write end tag only if file was opened for write.
+    if self.__filehandle.mode == 'wb':
+      self.__filehandle.write(self.db_end_tag)
   
   # Read length of bytes from db file version 3
   def db_read_data (self, length):
@@ -100,10 +109,27 @@ class VaultVer3(object):
     vault.f_iv = vault.urandom(16)
 
     hmac_checker = HMAC(key_l, "", hashlib.sha256)
+    # XXX this is not needed here ?
     cipher = TwofishCBC(key_k, vault.f_iv)
 
     # No records yet
-
     vault.f_hmac = hmac_checker.digest()
     
+
+  def db_write_header(self, vault, password):
+    # FIXME: choose new SALT, B1-B4, IV values on each file write? Conflicting Specs!
+
+    # write boilerplate
+    self.__filehandle.write(vault.f_tag)
+    self.__filehandle.write(vault.f_salt)
+    self.__filehandle.write(struct.pack("<L", vault.f_iter))
+
+    self.__filehandle.write(vault.f_sha_ps)
+
+    self.__filehandle.write(vault.f_b1)
+    self.__filehandle.write(vault.f_b2)
+    self.__filehandle.write(vault.f_b3)
+    self.__filehandle.write(vault.f_b4)
+
+    self.__filehandle.write(vault.f_iv)
     

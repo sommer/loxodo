@@ -4,9 +4,6 @@ import sys
 import os
 import platform
 
-prog_version = '1.0.0-git'
-prog_name = 'Loxodo'
-
 # On Windows CE, use the "ppygui" frontend.
 if platform.system() == "Windows" and platform.release() == "CE":
     from Loxodo.frontends.ppygui import loxodo
