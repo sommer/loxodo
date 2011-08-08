@@ -434,7 +434,8 @@ class Vault(object):
         # Read database header to Vault class fill all required fields
         self.db_ver.db_read_header(password, self)
 
-        stretched_password = self._stretch_password(password, self.f_salt, self.f_iter)  # P': the stretched key
+        # Get Stretched master password from db
+        stretched_password = self.db_ver.db_get_stretched_passwd(self, password)  # P': the stretched key
         my_sha_ps = hashlib.sha256(stretched_password).digest()
         if (self.f_sha_ps != my_sha_ps):
             raise self.BadPasswordError("Wrong password")
@@ -503,7 +504,8 @@ class Vault(object):
 
         self.db_ver.db_open(tmpfilename, 'wb')
 
-        stretched_password = self._stretch_password(password, self.f_salt, self.f_iter)
+        # f_sha_ps should be already defined, why we want to regen it here.
+        stretched_password = self.db_ver.db_get_stretched_passwd(self, password)
         self.f_sha_ps = hashlib.sha256(stretched_password).digest()
         
         self.db_ver.db_write_header(self, password)

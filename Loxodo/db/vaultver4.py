@@ -28,6 +28,7 @@ import uuid
 
 from ..twofish.twofish_ecb import TwofishECB
 from ..twofish.twofish_cbc import TwofishCBC
+from ..random_password import random_password
 
 class VaultVer4(object):
   """
@@ -42,6 +43,8 @@ class VaultVer4(object):
     
     self.db_filename = None
     self.__filehandle = None
+    
+    self.db_v4_passwds = []
   
   def db_open(self, filename=None, mode='rb'):
     self.db_filename = filename
@@ -79,9 +82,24 @@ class VaultVer4(object):
     else:
       return False
   
+  def db_get_stretched_passwd(self, vault, password):
+    for item in self.db_v4_passwds:
+      if item['orig'] == '1':
+        stretched_user_pass = vault._stretch_password(password, vault.f_salt, vault.f_iter)
+        cipher = TwofishECB(stretched_user_pass)
+        return cipher.decrypt(item['passwd'])
+  
   # Read header from file to Vault
   def db_read_header(self, password, vault):
     vault.f_tag = self.__filehandle.read(4)  # TAG: magic tag
+    
+    if vault.f_tag != self.db_version_tag:
+      raise DBError, "Wrong database version string giving up."
+    
+    self.db_v4_passwds.append({'auth': self.__filehandle.read(4), 'passwd': self.__filehandle.read(32), 'orig': '1'})
+    
+    db_tag = self.__filehandle.read(4)
+    
     vault.f_salt = self.__filehandle.read(32)  # SALT: SHA-256 salt
     vault.f_iter = struct.unpack("<L", self.__filehandle.read(4))[0]  # ITER: SHA-256 keystretch iterations
     vault.f_sha_ps = self.__filehandle.read(32) # H(P'): SHA-256 hash of stretched passphrase
@@ -92,15 +110,23 @@ class VaultVer4(object):
     vault.f_iv = self.__filehandle.read(16)  # IV: initialization vector of Twofish CBC
   
   # Create empty Vault for v3 db
+  # password argument is secondary password from user
   def db_create_header(self, password, vault):
     vault.f_tag = self.db_version_tag
     vault.f_salt = vault.urandom(32)
     vault.f_iter = 2048
 
-    stretched_password = vault._stretch_password(password, vault.f_salt, vault.f_iter)
-    vault.f_sha_ps = hashlib.sha256(stretched_password).digest()
+    # Database version 4 uses one master password which is random generated
+    # and secondary passwords to encrypt them.
+    # XXX What about master normal password ?
+    rand_p = random_password()
+    rand_p.password_length = 32
+    master_passwd = rand_p.generate_password()
+    
+    stretched_master_password = vault._stretch_password(master_passwd, vault.f_salt, vault.f_iter)
+    vault.f_sha_ps = hashlib.sha256(stretched_master_password).digest()
 
-    cipher = TwofishECB(stretched_password)
+    cipher = TwofishECB(stretched_master_password)
     vault.f_b1 = cipher.encrypt(vault.urandom(16))
     vault.f_b2 = cipher.encrypt(vault.urandom(16))
     vault.f_b3 = cipher.encrypt(vault.urandom(16))
@@ -117,11 +143,22 @@ class VaultVer4(object):
     # No records yet
     vault.f_hmac = hmac_checker.digest()
   
+    # Encrypt master password with user one
+    stretched_user_pass = vault._stretch_password(password, vault.f_salt, vault.f_iter)
+    user_cipher = TwofishECB(stretched_user_pass)
+    self.db_v4_passwds = [{'auth': self.db_ptag[0], 'passwd': user_cipher.encrypt(stretched_master_password), 'orig': '1'}]
+  
   def db_write_header(self, vault, password):
     # FIXME: choose new SALT, B1-B4, IV values on each file write? Conflicting Specs!
 
     # write boilerplate
     self.__filehandle.write(vault.f_tag)
+    
+    for item in self.db_v4_passwds:
+       self.__filehandle.write(item['auth'])
+       self.__filehandle.write(item['passwd'])
+
+    self.__filehandle.write(self.db_dbtag)
     self.__filehandle.write(vault.f_salt)
     self.__filehandle.write(struct.pack("<L", vault.f_iter))
 

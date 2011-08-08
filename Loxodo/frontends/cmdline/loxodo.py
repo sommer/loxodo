@@ -427,8 +427,6 @@ class InteractiveConsole(cmd.Cmd):
 
         print ""
     
-    def do_version(self, line):
-    
     def do_format(self, line=None):
         """
         Change database format to v4

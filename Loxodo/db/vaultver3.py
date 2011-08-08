@@ -76,6 +76,9 @@ class VaultVer3(object):
       return True
     else:
       return False
+      
+  def db_get_stretched_passwd(self, vault, password):
+    return vault._stretch_password(password, vault.f_salt, vault.f_iter)
   
   # Read header from file to Vault
   def db_read_header(self, password, vault):
