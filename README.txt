@@ -5,6 +5,8 @@ Copyright (C) 2011 Adam Hamsik <adam.hamsik@chillisys.com>
 
 Loxodo lives at http://www.christoph-sommer.de/loxodo
 
+This source code is from https://github.com/haad/loxodo
+
 
 Quickstart
 ----------
@@ -28,12 +30,15 @@ TODO
 ----
 
 * It might be good to be able to merge 2 databases together.
-* Add option to add users to vault from cli entirely.
+* Add option to add users/passwords to vault from cli entirely.
 * Add support for multiple secondary password which can access database,
   to make database sharing possible with other users without knowing some
   shared password
 * Make crypto class and hide all crypto stuff there so we can use different, 
   crypto algorithms e.g. AES
 * Add simple web interface ?
+    [1] http://flask.pocoo.org/docs/quickstart/
 * Test suite
-
+    [1] http://docs.python.org/library/unittest.html
+* Cleanup, a lot of code is quite messy, add comments, support for pydoc
+    [1] http://docs.python.org/library/pydoc.html
