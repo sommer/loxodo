@@ -96,9 +96,12 @@ class VaultVer4(object):
     if vault.f_tag != self.db_version_tag:
       raise DBError, "Wrong database version string giving up."
     
-    self.db_v4_passwds.append({'auth': self.__filehandle.read(4), 'passwd': self.__filehandle.read(32), 'orig': '1'})
-    
-    db_tag = self.__filehandle.read(4)
+    # Add all user passwords/auth_tags from vault db to list 
+    while True:
+      auth_tag = self.__filehandle.read(4)
+      if auth_tag == self.db_dbtag:
+        break
+      self.db_v4_passwds.append({'auth': auth_tag, 'passwd': self.__filehandle.read(32), 'orig': '1'})
     
     vault.f_salt = self.__filehandle.read(32)  # SALT: SHA-256 salt
     vault.f_iter = struct.unpack("<L", self.__filehandle.read(4))[0]  # ITER: SHA-256 keystretch iterations
@@ -153,7 +156,7 @@ class VaultVer4(object):
 
     # write boilerplate
     self.__filehandle.write(vault.f_tag)
-    
+
     for item in self.db_v4_passwds:
        self.__filehandle.write(item['auth'])
        self.__filehandle.write(item['passwd'])
@@ -170,4 +173,18 @@ class VaultVer4(object):
     self.__filehandle.write(vault.f_b4)
 
     self.__filehandle.write(vault.f_iv)
-  
+
+  #
+  # Go through all loaded passwords from file and try to find working one. 
+  # Working one == password which decypts it's saved passwd correctly (it's digest is same as sha_ps)
+  # When we have working password use decrypted master password, and encypt it with new user password.
+  #
+  def db_add_user(self, vault, existing_user_password, new_user_password):
+    for item in self.db_v4_passwds:
+      if item['orig'] == '1':
+        stretched_user_pass = vault._stretch_password(existing_user_password, vault.f_salt, vault.f_iter)
+        cipher = TwofishECB(stretched_user_pass)
+        if hashlib.sha256(cipher.decrypt(item['passwd'])).digest() == vault.f_sha_ps:
+            new_stretched_user_pass = vault._stretch_password(new_user_password, vault.f_salt, vault.f_iter)
+            newu_cipher = TwofishECB(new_stretched_user_pass)
+            self.db_v4_passwds.append({'auth': self.db_ptag[0], 'passwd': newu_cipher.encrypt(cipher.decrypt(item['passwd'])), 'orig': '0'})

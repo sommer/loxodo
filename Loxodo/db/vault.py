@@ -400,10 +400,19 @@ class Vault(object):
 
     def export(self, password, filename):
         #self._read_from_file(filename, password)
-        print "# passwordsafe version 3.0 database"
+        print "# passwordsafe version "+self.db_format+" database"
         print "uuid,group,name,login,passwd,notes,url"
         for record in self.records:
             print "\"" + str(record.uuid) + "," + record.group + "," + record.title + "," + record.user + "," + record.passwd + "," + record.notes + "," + record.url
+
+    def get_vault_format(self):
+        return self.db_format
+
+    def add_user_passwd(self, existing_user_password, new_user_password):
+        if self.db_format != "v4":
+          print "Multiple users psaswords are supported only in version 4 of vault database."
+          sys.exit(2)
+        self.db_ver.db_add_user(self, existing_user_password, new_user_password)
     
     def _read_from_file(self, filename, password):
         """
@@ -414,9 +423,10 @@ class Vault(object):
         ver3 = VaultVer3()
         ver4 = VaultVer4()
 
-        # Read Starting database tag and set db_ver db file access class
+        # Read begining database tag and set db_ver db file access class
         tag = file(filename, 'rb').read(4)
 
+        # Auto detect database type for existing vaults
         if (ver3.db_test_bg_tag(tag)):
           self.db_ver = ver3
         elif (ver4.db_test_bg_tag(tag)):
@@ -425,8 +435,11 @@ class Vault(object):
           raise self.VaultVersionError("Not a PasswordSafe V3 and V4 compatible file")
 
         if self.db_format != self.db_ver.db_format:
-          print "Database version missmatch I was asked to open database with version %s and it's a %s version" % (self.db_format, self.db_ver.db_format)
-          sys.exit(1)
+          if self.db_format == "auto":
+            self.db_format = self.db_ver.db_format
+          else:
+            print "Database version missmatch I was asked to open database with version %s and it's a %s version" % (self.db_format, self.db_ver.db_format)
+            sys.exit(1)
 
         # Open password database
         self.db_ver.db_open(filename)
@@ -551,4 +564,3 @@ class Vault(object):
         except OSError:
             pass
         os.rename(tmpfilename, filename)
-

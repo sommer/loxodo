@@ -102,6 +102,13 @@ class InteractiveConsole(cmd.Cmd):
     def emptyline(self):
         pass
 
+    def do_password(self):
+      if not self.vault:
+        raise RuntimeError("No vault opened")
+
+      new_user_password = getpass.getpass("New User Vault password: ")
+      self.vault.add_user_passwd(self.vault_password, new_user_password)
+
     def do_help(self, line):
         """
         Displays this message.
@@ -606,7 +613,8 @@ def main(argv):
     parser.add_option("-e", "--echo", dest="echo", default=False, action="store_true", help="Passwords are displayed on the screen")
     parser.add_option("-u", "--uuid", dest="uuid", default=False, action="store_true", help="Show uuid while processing passwords")
     parser.add_option("-x", "--export", dest="export", default=False, action="store_true", help="Export database to csv")
-    parser.add_option("-f", "--format", dest="format", default=False, action="store", type="string", help="Change database format to v4 with multi password support options [v3, v4]")
+    parser.add_option("-f", "--format", dest="format", default=False, action="store", type="string", help="Open vault with format version v4 with multi password support options [v3, v4]")
+    parser.add_option("-P", "--passwd", dest="do_password", default=False, action="store_true", help="Add new password to v4 database while user must know any existing password.")
 
     (options, args) = parser.parse_args()
 
@@ -628,10 +636,13 @@ def main(argv):
     if options.format:
       interactiveConsole.vault_format = options.format
     else:
-      interactiveConsole.vault_format = "v3"
+      interactiveConsole.vault_format = "auto"
 
     if options.create_new_vault:
-        interactiveConsole.create_vault()
+      # If we do not know, which version of db build go for v3
+      if interactiveConsole.vault_format == "auto":
+        interactiveConsole.vault_format = "v3"
+      interactiveConsole.create_vault()
     else:
         interactiveConsole.open_vault()
         if options.do_ls:
@@ -640,6 +651,11 @@ def main(argv):
             interactiveConsole.do_show(options.do_show, options.echo, options.passwd, options.uuid)
         elif options.export:
             interactiveConsole.do_export()
+        elif options.do_password:
+          if interactiveConsole.vault.get_vault_format() != "v4":
+            print "Can't use -P option with non v4 database format which is used by default."
+            sys.exit(2)
+          interactiveConsole.do_password()
         else:
             interactiveConsole.intro +=  interactiveConsole.vault_format
             interactiveConsole.uuid = options.uuid
@@ -651,4 +667,3 @@ def main(argv):
 
 
 main(sys.argv[1:])
-
