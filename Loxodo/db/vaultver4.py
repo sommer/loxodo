@@ -87,7 +87,9 @@ class VaultVer4(object):
       if item['orig'] == '1':
         stretched_user_pass = vault._stretch_password(password, vault.f_salt, vault.f_iter)
         cipher = TwofishECB(stretched_user_pass)
-        return cipher.decrypt(item['passwd'])
+        if hashlib.sha256(cipher.decrypt(item['passwd'])).digest() == vault.f_sha_ps:
+          return cipher.decrypt(item['passwd'])
+    return ""
   
   # Read header from file to Vault
   def db_read_header(self, password, vault):

@@ -108,6 +108,7 @@ class InteractiveConsole(cmd.Cmd):
 
       new_user_password = getpass.getpass("New User Vault password: ")
       self.vault.add_user_passwd(self.vault_password, new_user_password)
+      self.vault.write_to_file(self.vault_file_name, self.vault_password)
 
     def do_help(self, line):
         """
