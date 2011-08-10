@@ -20,6 +20,83 @@ Quickstart
 ./loxodo.py -i
 	runs Loxodo in CLI Interactive mode
 
+## Add Password to vault version 4 first ask for already existing password 
+##  later submit new user password.
+$ ./loxodo.py -P /tmp/test4.db 
+Opening /tmp/test4.db ...
+Vault password: PASSWORD1
+... Done.
+
+New User Vault password: PASSWORD2
+
+$ ./loxodo.py -i /tmp/test4.db 
+Opening /tmp/test4.db ...
+Vault password: PASSWORD2
+... Done.
+
+Ready for commands. Type "help" or "help <command>" for help, type "quit" to quit. Database format is: auto
+[test4.db]> add
+Entry's title: 567
+Entry's group: 567
+Username: popo
+Entry's notes: 
+Entry's url: 
+New password. [.] for none, [ENTER] for random.
+Password: 
+Generated password: veBbR`aM
+Enter [y] to accept, [ENTER] for random y
+Entry Added, but vault not yet saved
+[test4.db*]> save
+Changes Saved
+[test4.db]> quit
+
+$ ./loxodo.py -i /tmp/test4.db 
+Opening /tmp/test4.db ...
+Vault password: PASSWORD2
+... Done.
+
+Ready for commands. Type "help" or "help <command>" for help, type "quit" to quit. Database format is: auto
+[test4.db]> ls
+
+[group.title] username
+URL: url
+Notes: notes
+----------------------
+[567.567] popo
+URL: 
+Notes: 
+----------
+[test123.test] jozo
+URL: 
+Notes: 
+----------
+
+[test4.db]> quit
+
+$ ./loxodo.py -i /tmp/test4.db 
+Opening /tmp/test4.db ...
+Vault password: PASSWORD1
+... Done.
+
+Ready for commands. Type "help" or "help <command>" for help, type "quit" to quit. Database format is: auto
+[test4.db]> ls
+
+[group.title] username
+URL: url
+Notes: notes
+----------------------
+[567.567] popo
+URL: 
+Notes: 
+----------
+[test123.test] jozo
+URL: 
+Notes: 
+----------
+
+[test4.db]> quit
+
+
 Changelog
 ---------
 
