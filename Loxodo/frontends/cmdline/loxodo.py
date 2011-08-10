@@ -45,6 +45,8 @@ class InteractiveConsole(cmd.Cmd):
         self.mod = False
         # options for sorting are 'alpha' and 'mod'
         self.sort_key = 'alpha'
+        # options are brief or verbose
+        self.output = 'brief'
 
         cmd.Cmd.__init__(self)
         if sys.platform == "darwin":
@@ -124,11 +126,12 @@ class InteractiveConsole(cmd.Cmd):
             return
 
         print "\nCommands:"
-        print "  ".join(("ls", "show", 'add', 'mod', 'del', "save", 'quit', 'echo', 'sort', 'uuid', 'vi', 'tab', 'export'))
+        print "  ".join(("ls", "show", 'add', 'mod', 'del', "save", 'quit', 'echo', 'sort', 'output', 'uuid', 'vi', 'tab', 'export'))
         print
         print "echo is %s" % self.echo
         print "uuid is %s" % self.uuid
         print "sort is %s" % self.sort_key
+        print "output is %s" % self.output
         print
         print "vi editing mode is %s" % self.vi
         print "tab completition is %s" % self.tabcomp
@@ -440,14 +443,25 @@ class InteractiveConsole(cmd.Cmd):
             print "[%s.%s] %s" % (record.group.encode('utf-8', 'replace'),
                                    record.title.encode('utf-8', 'replace'),
                                    record.user.encode('utf-8', 'replace'))
-            if record.url:
-                print "    URL: %s" % (record.url.encode('utf-8', 'replace'))
-            if record.notes:
-                print "    Notes: %s" % (record.notes.encode('utf-8', 'replace'))
-            if record.last_mod != 0:
-                print "    Last mod: %s" % time.strftime('%Y/%m/%d',time.gmtime(record.last_mod))
+            if self.output == 'verbose':
+              if record.url:
+                  print "    URL: %s" % (record.url.encode('utf-8', 'replace'))
+              if record.notes:
+                  print "    Notes: %s" % (record.notes.encode('utf-8', 'replace'))
+              if record.last_mod != 0:
+                  print "    Last mod: %s" % time.strftime('%Y/%m/%d',time.gmtime(record.last_mod))
         print "-"*15
         print ""
+
+    def do_output(self, line=None):
+        """
+        Change status of output
+        """
+        if self.output == 'brief':
+            self.output = 'verbose'
+        else:
+            self.output = 'brief'
+        print "output is %s" % self.output
 
     def do_sort(self, line=None):
         """
