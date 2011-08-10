@@ -24,6 +24,7 @@ import getpass
 import readline
 import cmd
 import re
+import time
 
 from ...db.vault import Vault
 from ...config import config
@@ -40,6 +41,10 @@ class InteractiveConsole(cmd.Cmd):
 
         self.vi = False
         self.tabcomp = True
+        self.echo = False
+        self.mod = False
+        # options for sorting are 'alpha' and 'mod'
+        self.sort_key = 'alpha'
 
         cmd.Cmd.__init__(self)
         if sys.platform == "darwin":
@@ -119,10 +124,11 @@ class InteractiveConsole(cmd.Cmd):
             return
 
         print "\nCommands:"
-        print "  ".join(("ls", "show", 'add', 'mod', 'del', "save", 'quit', 'echo', 'uuid', 'vi', 'tab', 'export'))
+        print "  ".join(("ls", "show", 'add', 'mod', 'del', "save", 'quit', 'echo', 'sort', 'uuid', 'vi', 'tab', 'export'))
         print
         print "echo is %s" % self.echo
         print "uuid is %s" % self.uuid
+        print "sort is %s" % self.sort_key
         print
         print "vi editing mode is %s" % self.vi
         print "tab completition is %s" % self.tabcomp
@@ -294,7 +300,7 @@ class InteractiveConsole(cmd.Cmd):
         pattern = re.compile(uuid_regexp, re.IGNORECASE)
         title = ""
         user = None
-        group = None
+        group = Non6cb7791e
 
         if pattern.match(line) is not None:
             uuid = line
@@ -414,7 +420,11 @@ class InteractiveConsole(cmd.Cmd):
             vault_records = self.find_titles(line)
         else:
             vault_records = self.vault.records[:]
+
+        if self.sort_key == 'alpha':
             vault_records.sort(lambda e1, e2: cmp(e1.title, e2.title))
+        elif self.sort_key == 'mod':
+            vault_records.sort(lambda e1, e2: cmp(e1.last_mod, e2.last_mod))
 
         if vault_records is None:
             print "No matches found."
@@ -424,17 +434,31 @@ class InteractiveConsole(cmd.Cmd):
         print "[group.title] username"
         print "URL: url"
         print "Notes: notes"
-        print "----------------------"
+        print "Last mod: modification time"
+        print "-"*10
         for record in vault_records:
             print "[%s.%s] %s" % (record.group.encode('utf-8', 'replace'),
                                    record.title.encode('utf-8', 'replace'),
                                    record.user.encode('utf-8', 'replace'))
-            print "URL: %s" % (record.url.encode('utf-8', 'replace'))
-            print "Notes: %s" % (record.notes.encode('utf-8', 'replace'))
-            print "-"*10
-
+            if record.url:
+                print "    URL: %s" % (record.url.encode('utf-8', 'replace'))
+            if record.notes:
+                print "    Notes: %s" % (record.notes.encode('utf-8', 'replace'))
+            if record.last_mod != 0:
+                print "    Last mod: %s" % time.strftime('%Y/%m/%d',time.gmtime(record.last_mod))
+        print "-"*15
         print ""
-    
+
+    def do_sort(self, line=None):
+        """
+        Change status of sort key
+        """
+        if self.sort_key == 'alpha':
+            self.sort_key = 'mod'
+        else:
+            self.sort_key = 'alpha'
+        print "sort key is %s" % self.sort_key
+
     def do_format(self, line=None):
         """
         Change database format to v4
@@ -528,6 +552,9 @@ Username : %s""" % (record.group.encode('utf-8', 'replace'),
 
             if record.url:
                 print "URL      : %s" % record.url.encode('utf-8', 'replace')
+
+            if record.last_mod != 0:
+                print "Last mod : %s" % time.strftime('%Y/%m/%d',time.gmtime(record.last_mod))
 
             print ""
     
