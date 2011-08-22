@@ -1,3 +1,4 @@
+*.tmproj
 *.pyc
 .DS_Store
 Loxodo*egg*
