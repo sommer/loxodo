@@ -1,0 +1,11 @@
+<!doctype html>
+<title>Loxodo Password Vault web interface</title>
+{% if name %}
+  <h1>You are logged in as {{ name }}!</h1>
+  <ul>
+    <li>Get list of vault entries <a href="/list">list</a></li>
+    <li>Logout from web loxodo <a href="/logout">logout</a></li>
+  </ul>
+{% else %}
+  <h1>You are not logged in please go to <a href="/login">/login site</a> to log in.</h1>
+{% endif %}
