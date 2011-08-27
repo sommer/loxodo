@@ -14,7 +14,7 @@ from flask import Flask, session, redirect, url_for, escape, request, render_tem
 from ...db.vault import Vault
 from ...config import config
 
-DB_PATH="/tmp/test-v41.db"
+DB_PATH="tmp/test-v41.db"
 DB_FORMAT="v4"
 
 class Webloxodo:
@@ -36,6 +36,28 @@ def index():
         name = None
     return render_template('index.html', name=name)
 
+@app.route('/add', methods=['GET', 'POST'])
+def add():
+  # It might be a good idea to encode passwords in base64 so we do not have
+  # them in plaintext in html and use javascript to decode them.
+  if ('logged_in' in session) and (webloxo.vault) and (request.method == 'GET'):
+    return render_template('adde.html')
+  if request.method == 'POST':
+    entry = webloxo.vault.Record.create()
+    # Add some validations here group, user, password must exist
+    entry.title = request.form['title']
+    entry.group = request.form['group']
+    entry.user = request.form['user']
+    entry.passwd = request.form['pass']
+    entry.notes = request.form['notes']
+    entry.url = request.form['url']
+    # Add new entry to vault
+    webloxo.vault.records.append(entry)
+    # Save changes to vault
+    webloxo.vault.write_to_file(webloxo.vault_file, webloxo.password)
+  return redirect(url_for('index'))
+
+
 @app.route('/list')
 def list():
   # It might be a good idea to encode passwords in base64 so we do not have
@@ -47,7 +69,7 @@ def list():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if 'logged_in' in session:
-      return 'You have been authenticated to vault already.'
+      return redirect(url_for('index'))
     if request.method == 'POST':
         webloxo.password=request.form['password'].encode('utf-8','replace')
         webloxo.vault_file=request.form['vault_path']
