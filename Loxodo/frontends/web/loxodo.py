@@ -73,6 +73,8 @@ def login():
     if request.method == 'POST':
         webloxo.password=request.form['password'].encode('utf-8','replace')
         webloxo.vault_file=request.form['vault_path']
+        if (not os.path.isfile(webloxo.vault_file)) and (request.form['vault_create'] == "1"):
+          Vault.create(webloxo.password, filename=webloxo.vault_file, format=webloxo.vault_format)
         webloxo.vault = Vault(webloxo.password, filename=webloxo.vault_file, format=webloxo.vault_format)
         if webloxo.vault != None:
           session['logged_in'] = request.form['password']
