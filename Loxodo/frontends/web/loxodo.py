@@ -73,8 +73,16 @@ def login():
     if request.method == 'POST':
         webloxo.password=request.form['password'].encode('utf-8','replace')
         webloxo.vault_file=request.form['vault_path']
-        if (not os.path.isfile(webloxo.vault_file)) and (request.form['vault_create'] == "1"):
-          Vault.create(webloxo.password, filename=webloxo.vault_file, format=webloxo.vault_format)
+        try:
+          create_f=request.form['vault_create']
+        except KeyError:
+          create_f="0"
+
+        if not os.path.isfile(webloxo.vault_file):
+          if ( create_f == "1"):
+            Vault.create(webloxo.password, filename=webloxo.vault_file, format=webloxo.vault_format)
+          else:
+            return render_template('err.html', err_msg="Vault doesn't exist, please use correct path or check Create new vault check.")
         webloxo.vault = Vault(webloxo.password, filename=webloxo.vault_file, format=webloxo.vault_format)
         if webloxo.vault != None:
           session['logged_in'] = request.form['password']
