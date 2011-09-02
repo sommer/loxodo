@@ -79,11 +79,19 @@ def login():
           create_f="0"
 
         if not os.path.isfile(webloxo.vault_file):
-          if ( create_f == "1"):
+          if (create_f == "1"):
             Vault.create(webloxo.password, filename=webloxo.vault_file, format=webloxo.vault_format)
           else:
             return render_template('err.html', err_msg="Vault doesn't exist, please use correct path or check Create new vault check.")
-        webloxo.vault = Vault(webloxo.password, filename=webloxo.vault_file, format=webloxo.vault_format)
+        try:
+          webloxo.vault = Vault(webloxo.password, filename=webloxo.vault_file, format=webloxo.vault_format)
+        except Vault.BadPasswordError:
+            return render_template('err.html', err_msg="Bad password.")
+        except Vault.VaultVersionError:
+            return render_template('err.html', err_msg="This is not a PasswordSafe V4 Vault.")
+        except Vault.VaultFormatError:
+            return render_template('err.html', err_msg="Vault integrity check failed.")
+
         if webloxo.vault != None:
           session['logged_in'] = request.form['password']
         return redirect(url_for('index'))
