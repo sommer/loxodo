@@ -288,6 +288,7 @@ class InteractiveConsole(cmd.Cmd):
         print ""
 
     # There must be better way to do this, this is quite unpleasant for user do work with.
+    # maybe sometuing like mod u [name], mod t [title], mod g [group], mod group.title
     def do_mod(self, line=None):
         """
         Modify an entry from the vault. Every record is identified by group.title 
@@ -307,7 +308,7 @@ class InteractiveConsole(cmd.Cmd):
         user = None
         group = None
         
-
+        
         if pattern.match(line) is not None:
             uuid = line
         else:
@@ -317,14 +318,12 @@ class InteractiveConsole(cmd.Cmd):
             else:
                 line_elements = line.split(" ")
                 title = line_elements[0]
-
+                
                 if len(line_elements) == 2:
                     group = line_elements[1]
                 if len(line_elements) == 3:
                     user = line_elements[2]
-
-        print line+" "+title
-
+        
         match_records, nonmatch_records = self.mod_titles(title=title, uuid=uuid, user=user, group=group)
 
         if match_records is None:
