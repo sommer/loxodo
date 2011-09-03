@@ -287,9 +287,11 @@ class InteractiveConsole(cmd.Cmd):
 
         print ""
 
+    # There must be better way to do this, this is quite unpleasant for user do work with.
     def do_mod(self, line=None):
         """
-        Modify an entry from the vault.
+        Modify an entry from the vault. Every record is identified by group.title 
+        locators if they are not provided entry is considered as title we try to match it against db.
         """
         if not self.vault:
             raise RuntimeError("No vault opened")
@@ -303,7 +305,8 @@ class InteractiveConsole(cmd.Cmd):
         pattern = re.compile(uuid_regexp, re.IGNORECASE)
         title = ""
         user = None
-        group = Non6cb7791e
+        group = None
+        
 
         if pattern.match(line) is not None:
             uuid = line
@@ -319,6 +322,8 @@ class InteractiveConsole(cmd.Cmd):
                     group = line_elements[1]
                 if len(line_elements) == 3:
                     user = line_elements[2]
+
+        print line+" "+title
 
         match_records, nonmatch_records = self.mod_titles(title=title, uuid=uuid, user=user, group=group)
 
