@@ -110,8 +110,9 @@ def datetimeformat(value, format='%H:%M / %d-%m-%Y'):
     str_time = time.gmtime(value)
     return time.strftime(format, str_time)
 
-def get_html_id(str):
-    return base64.b64encode(hashlib.sha256(str.encode('utf-8','replace')).digest())[3:12]
+def get_html_id(record_id):
+    # Base64 encode sha256 hash from entry passed to this routine use only 10 chars from it that should be enough.
+    return base64.b64encode(hashlib.sha256(str(record_id).encode('utf-8','replace')).digest())[3:13]
 
 if __name__ == "Loxodo.frontends.web.loxodo":
     app.jinja_env.filters['datetimeformat'] = datetimeformat

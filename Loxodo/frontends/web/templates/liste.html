@@ -6,10 +6,10 @@
   function showElementByVisible(obj) {
     if (document.getElementById(obj).style.visibility == "hidden") {
       document.getElementById(obj).style.visibility = "visible";
-      document.getElementById("show_hide_pwd_bt").value="Hide Password";
+      document.getElementById("show_hide_pwd_bt_"+obj).value="Hide Password";
     } else {
       document.getElementById(obj).style.visibility = "hidden";
-      document.getElementById("show_hide_pwd_bt").value="Show Password";
+      document.getElementById("show_hide_pwd_bt_"+obj).value="Show Password";
     }
   }
 
@@ -35,11 +35,11 @@
           <td>{{record.group.encode('utf-8', 'replace')}}</td>
           <td>{{record.title.encode('utf-8', 'replace')}}</td>
           <td>{{record.user.encode('utf-8', 'replace')}}</td>
-          <td id="{{record.url|get_html_id}}" style="visibility: hidden">{{record.passwd.encode('utf-8', 'replace')}}</td>
+          <td id="{{record.last_mod|get_html_id}}" style="visibility: hidden">{{record.passwd.encode('utf-8', 'replace')}}</td>
           <td>{{record.notes.encode('utf-8', 'replace')}}</td>
           <td>{{record.url.encode('utf-8', 'replace')}}</td>
           <td>{{record.last_mod|datetimeformat}}</td>
-          <td><input id="show_hide_pwd_bt" type="button" value="Show Password" onClick="showElementByVisible('{{record.url|get_html_id}}');" /></td>
+          <td><input id="show_hide_pwd_bt_{{record.last_mod|get_html_id}}" type="button" value="Show Password" onClick="showElementByVisible('{{record.last_mod|get_html_id}}');" /></td>
         </tr>
         {% endfor %}
     </table>
