@@ -1,0 +1,38 @@
+<!doctype html>
+<head>
+<title>Add new entries to opened vault</title>
+
+</head>
+<body>
+  <h1>Form for adding new entries into vault</h1>
+  <p>Go back <a href="/">Home</a></p>
+  <form action="" method="post">
+        <table>
+          <tr>
+            <td>Group:</td>
+            <td><input type=text name=group value="{{record.group.encode('utf-8', 'replace')}}"></td>
+            </tr>
+          <tr>
+            <td>Title:</td>
+            <td><input type=text name=title value="{{record.title.encode('utf-8', 'replace')}}"></td>
+            </tr>
+          <tr>
+            <td>User:</td>
+            <td><input type=text name=user value="{{record.user.encode('utf-8', 'replace')}}"></td>
+            </tr>
+          <tr>
+            <td>Password:</td>
+            <td><input type=text name=pass value="{{record.passwd.encode('utf-8', 'replace')}}"></td>
+            </tr>
+          <tr>
+            <td>Notes:</td>
+            <td><input type=text name=notes value="{{record.notes.encode('utf-8', 'replace')}}"></td>
+            </tr>
+          <tr>
+            <td>Url:</td>
+            <td><input type=text name=url value="{{record.url.encode('utf-8', 'replace')}}"></td>
+            </tr>
+        </table>
+        <p><input type=submit value="Modify entry"></p>
+    </form>
+</body>

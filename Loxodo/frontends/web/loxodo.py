@@ -57,6 +57,45 @@ def add():
     webloxo.vault.write_to_file(webloxo.vault_file, webloxo.password)
   return redirect(url_for('index'))
 
+@app.route('/mod', methods=['GET', 'POST'])
+def mod():
+  if ('logged_in' in session) and (webloxo.vault) and (request.method == 'GET'):
+    vault_records = webloxo.vault.records[:]
+    return render_template('mod_list.html', vault_records=vault_records)
+  if request.method == 'POST':
+    entry_id = request.form['mod_radio']
+    vault_records = webloxo.vault.records[:]
+    
+    for record in vault_records:
+      if get_html_id(record.last_mod) == entry_id:
+        return redirect(url_for('mod_entry', id=entry_id))
+    return render_template('mod_list.html', vault_records=vault_records)
+
+@app.route('/mod_entry/<id>', methods=['GET', 'POST'])
+def mod_entry(id=None):
+  if id == None:
+    return redirect(url_for('mod'))
+  
+  if ('logged_in' in session) and (webloxo.vault) and (request.method == 'GET'):
+    vault_records = webloxo.vault.records[:]
+    for record in vault_records:
+      if get_html_id(record.last_mod) == id:
+        return render_template('mod_entry.html', record=record)
+    return redirect(url_for('mod'))
+
+  if request.method == 'POST':
+    vault_records = webloxo.vault.records[:]
+    for record in vault_records:
+      if get_html_id(record.last_mod) == id:
+        record.title = request.form['title']
+        record.group = request.form['group']
+        record.user = request.form['user']
+        record.passwd = request.form['pass']
+        record.notes = request.form['notes']
+        record.url = request.form['url']
+        # Save changes to vault
+        webloxo.vault.write_to_file(webloxo.vault_file, webloxo.password)
+    return redirect(url_for('mod'))
 
 @app.route('/list')
 def list():
