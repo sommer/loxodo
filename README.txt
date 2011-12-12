@@ -118,6 +118,7 @@ to make database sharing possible with other users without knowing some
 shared password. With this change we introduce new version of vault database called version 4
 with multiple password support.
 August 2011: Add option to add db passwords to vault from cli entirely.
+December 2011: Add simple web interface, based on flask.
 
 TODO
 ----
@@ -130,8 +131,7 @@ TODO
 * Make crypto class and hide all crypto stuff there so we can use different,
   crypto algorithms e.g. AES
 * Add option to add users/passwords to vault from cli entirely.
-* Add simple web interface ?
-    [1] http://flask.pocoo.org/docs/quickstart/
+* Use javascript to request password from vault, do not put passwords to html.
 * Test suite
     [1] http://docs.python.org/library/unittest.html
 * Cleanup, a lot of code is quite messy, add comments, support for pydoc
@@ -246,5 +246,4 @@ Installing collected packages: flask, Werkzeug, Jinja2
     warning: no previously-included files matching '*.pyo' found under directory 'docs'
 Successfully installed flask Werkzeug Jinja2
 Cleaning up...
-
 

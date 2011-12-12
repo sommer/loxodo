@@ -119,6 +119,7 @@ ul.tabbed li {
 table {
 	margin-bottom: 1.4em;
 	width: 100%;
+	border: 2px solid black;
 }
 th {font-weight: bold;}
 thead th {background: #C3D9FF;}
