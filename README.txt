@@ -137,7 +137,6 @@ TODO
 * Cleanup, a lot of code is quite messy, add comments, support for pydoc
     [1] http://docs.python.org/library/pydoc.html
 
-
 Pythonbrew setup
 ~~~~~~~~~~~~~~~~
 
