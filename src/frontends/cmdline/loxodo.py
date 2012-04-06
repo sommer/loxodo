@@ -24,6 +24,7 @@ from getpass import getpass
 import readline
 import cmd
 import re
+import csv
 try:
     import pygtk
     import gtk
@@ -84,7 +85,7 @@ class InteractiveConsole(cmd.Cmd):
             return
 
         print "\nCommands:"
-        print "  ".join(("ls", "show", "quit", "add", "save"))
+        print "  ".join(("ls", "show", "quit", "add", "save", "import"))
         print
 
     def do_quit(self, line):
@@ -135,6 +136,32 @@ class InteractiveConsole(cmd.Cmd):
         self.vault.records.append(entry)
         self.vault_modified = True
         print "User Added, but not saved"
+
+    def do_import(self, line):
+        """
+        Adds a CSV importer, based on CSV file
+
+        Example: /home/user/data.csv
+        Columns: Title,User,Password,URL,Group
+        """
+        if not line:
+            cmd.Cmd.do_help(self, "import")
+            return
+
+        data = csv.reader(open(line, 'rb'))
+        try:
+            for row in data:
+                entry = self.vault.Record.create()
+                entry.title = row[0]
+                entry.user = row[1]
+                entry.passwd = row[2]
+                entry.url = row[3]
+                entry.group = row[4]
+                self.vault.records.append(entry)
+            self.vault_modified = True
+            print "Import completed, but not saved."
+        except csv.Error, e:
+            sys.exit('file %s, line %d: %s' % (line, data.line_num, e))
 
     def do_ls(self, line):
         """
