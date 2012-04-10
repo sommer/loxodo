@@ -18,9 +18,6 @@ if hasattr(sys,"frozen") and (sys.platform != 'darwin'):
 else:
     config.set_basescript(unicode(__file__, sys.getfilesystemencoding()))
 
-if config.set_basescript == "web-loxodo.py":
-    
-
 # If cmdline arguments were given, use the "cmdline" frontend.
 if len(sys.argv) > 1:
     from Loxodo.frontends.cmdline import loxodo
