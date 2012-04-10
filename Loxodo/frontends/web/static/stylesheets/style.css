@@ -1,0 +1,287 @@
+/*  
+Template name: Natural Gloom
+Template URI: http://templates.arcsin.se/natural-gloom-website-template/
+Release date: 2009-05-19
+Description: A gloomy and artistic two-column template.
+Author: Viktor Persson
+Author URI: http://arcsin.se/
+
+This template is licensed under a Creative Commons Attribution 2.5 License:
+http://templates.arcsin.se/license/
+*/
+
+
+/* 
+   Reset
+------------------------------------------------------------------- */
+
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, code, del, dfn, em, img, q, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, textarea, input, select {margin: 0; padding: 0; border: 0; font-weight: inherit; font-style: inherit; font-size: 100%; font-family: inherit; vertical-align: baseline;}
+table {border-collapse: collapse; border-spacing: 0;}
+caption, th, td {text-align: left; font-weight: normal;}
+table, td, th {vertical-align: middle;}
+blockquote:before, blockquote:after, q:before, q:after {content: "";}
+blockquote, q {quotes: "" "";}
+a img {border: none;}
+:focus {outline: 0;}
+
+
+/* 
+   General 
+------------------------------------------------------------------- */
+
+html {
+	height: 100%;
+	padding-bottom: 1px; /* force scrollbars */
+}
+
+body {
+	background: #797E84 url('../../images/body.jpg');
+	color: #444;
+	font: normal 80% sans-serif;
+	line-height: 1.5;
+}
+
+
+/* 
+   Typography 
+------------------------------------------------------------------- */
+
+/* Headings */
+
+h1,h2,h3,h4,h5,h6 {
+	color: #555;
+	font-weight: bold;
+	line-height: 1;
+	margin-bottom: 0.3em;
+}
+h4,h5,h6 {font-weight: bold;}
+
+h1 {font-size: 2.6em;}
+h2 {font-size: 2em;}
+h3 {font-size: 1.5em;}
+h4 {font-size: 1.25em;}
+h5 {font-size: 1.1em;}
+h6 {font-size: 1em;}
+
+h1 img, h2 img, h3 img, h4 img, h5 img, h6 img {margin: 0;}
+
+/* Text elements */
+
+p {margin-bottom: 1em;}
+
+a:focus,a:hover {color: #000;}
+a {
+	color:  #e09f38;
+	text-decoration: underline;
+}
+
+abbr, acronym {border-bottom: 1px dotted #666;}
+address {margin-bottom: 1.5em;}
+blockquote {margin: 1.5em;}
+del, blockquote {color: #666;}
+em, dfn, blockquote, address {font-style: italic;}
+strong, dfn {font-weight: bold;}
+sup, sub {line-height: 0;}
+
+pre {
+	margin: 1.5em 0;
+	white-space: pre;
+}
+pre,code,tt {
+	font: 1em monospace;
+	line-height: 1.5;
+}
+
+/* Lists */
+
+li ul, li ol {margin-left: 1.5em;}
+ul, ol {margin: 0 1.5em 1.5em 1.5em;}
+
+ul {list-style-type: disc;}
+ol {list-style-type: decimal;}
+
+dl {margin: 0 0 1.5em 0;}
+dl dt {font-weight: bold;}
+dd {margin-left: 1.5em;}
+
+ul.tabbed {
+	display: inline;
+	margin: 0;
+}
+ul.tabbed li {
+	float: left;
+	list-style: none;
+	margin: 0;
+}
+
+/* Tables */
+
+table {
+	margin-bottom: 1.4em;
+	width: 100%;
+	border: 2px solid black;
+}
+th {font-weight: bold;}
+thead th {background: #C3D9FF;}
+th,td,caption {padding: 4px 10px 4px 5px;}
+tr.even td {background: #F2F6FA;}
+tfoot {font-style: italic;}
+caption {background: #EEE;}
+
+table.data_table {
+	border: 1px solid #CCB;
+	margin-bottom: 2em;
+	width: 100%;
+}
+table.data_table th {
+	background: #E5E5E5;
+	border: 1px solid #D5D5D5;
+	color: #555;
+	text-align: left;
+}
+table.data_table tr {border-bottom: 1px solid #DDD;}
+table.data_table td, table th {padding: 10px;}
+table.data_table td {
+	background: #F0F0F0;
+	border: 1px solid #E0E0E0;
+}
+table.data_table tr.even td {background: #F5F5F5;}
+
+/* 
+   Alignment 
+------------------------------------------------------------------- */
+
+/* General */
+
+.center,.aligncenter {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/* Images */
+
+img.bordered,img.alignleft,img.alignright,img.aligncenter {
+	background-color: #FFF;
+	border: 1px solid #DDD;
+	padding: 3px;
+}
+img.alignleft, img.left {margin: 0 1.5em 1em 0;}
+img.alignright, img.right {margin: 0 0 1em 1.5em;}
+
+
+/* Floats */   
+
+.left,.alignleft {float: left;}
+.right,.alignright {float: right;}
+
+.clear,.clearer {clear: both;}
+.clearer {
+	display: block;
+	font-size: 0;
+	line-height: 0;	
+}
+
+/* 
+   Layout 
+------------------------------------------------------------------- */
+
+/* General wrappers */
+
+#layout_wrapper {
+	background: url('../images/layout_wrapper.jpg') repeat-x;
+	padding-bottom: 16px;
+}
+#layout_wrapper2 {
+	background: url('../images/layout_wrapper2.png') no-repeat left top;
+	padding-top: 90px;
+}
+#layout_wrapper3 {
+	background: #FFF;
+	margin: 0 auto;
+	width: 992px;	
+}
+#layout_wrapper4 {padding: 6px;}
+
+
+/* Header */
+
+#header_wrapper {
+	background: #222 url('../images/header.png') no-repeat;
+	background-position: left top;
+	height: 150px;
+}
+#header {padding: 48px 48px 0 168px;}
+
+#site_title h1 {
+	color: #EA2;
+	font-size: 2.5em;
+}
+#site_title h1 a {
+	color: #EA2;
+	text-decoration: none;
+}
+#site_title h1 a:hover {color: #DDD;}
+#site_title h2 {
+	color: #999;
+	font-size: 1.3em;
+}
+#site_title h1 em {
+	display: block;
+	font-style: inherit;
+	color: #999;
+	font-size: 0.5em;
+}
+
+
+/* Navigation */
+
+#navigation {
+	background: #6E7D85 url('../images/navigation.gif') repeat-x;
+	margin-bottom: 3px;
+	padding-top: 4px;
+}
+#navigation a {
+	color: #E0E6EA;
+	display: block;
+	font-weight: bold;
+	text-decoration: none;
+}
+#navigation a:hover {color: #F0F6FA;}
+
+/* Main navigation */
+#nav li {border-right: 1px solid #54646C;}
+#nav a {
+	font-size: 1.3em;
+	padding: 10px 16px;
+}
+#nav a:hover {background: #5E6D75;}
+
+/* Main */
+
+#main_wrapper {
+/*	border-bottom: 1px solid #C3C4C1;*/
+	margin-bottom: 3px;
+}
+#main {
+	background: url('../images/main.gif') no-repeat;
+	padding: 24px 0;
+}
+#content_wrapper {width: 690px;}
+#content {padding: 0 20px;}
+
+/* Footer */
+
+#footer {	
+	background: #DDD;
+	border: 1px solid #CCC;
+	padding: 8px 12px;
+}
+#footer .right, #footer .right a {
+	color: #777;
+	text-decoration: none;
+}
+#footer .right a:hover {
+	color: #223;
+	text-decoration: underline;
+}

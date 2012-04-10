@@ -56,10 +56,12 @@ elif sys.platform == 'win32':
         )
     )
     setup(**extra_options)
-else:
-    extra_options = dict(
-        scripts = ['loxodo.py'],
-    )
-    setup(**extra_options)
+#else:
+#    extra_options = dict(
+#        name="Loxodo",
+#        app = ['loxodo.py'],
+#        scripts = ['loxodo.py']
+#    )
+#    setup(**extra_options)
 
 
