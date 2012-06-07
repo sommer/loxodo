@@ -131,14 +131,7 @@ class Config(object):
         base_path = os.path.join(os.path.expanduser("~"), ".config")
         if os.path.isdir(base_path):
             return os.path.join(base_path, base_fname, base_fname + ".ini")
-
-        # First fallback is writing to the program's base directory
-        base_path = os.path.dirname(config.get_basescript())
-        if os.path.isdir(base_path):
-            return os.path.join(base_path, base_fname + ".ini")
-
-        # Final fallback is writing to the current working directory
-        return base_fname + ".ini"
-
+        else:
+            return os.path.join(os.path.expanduser("~"),"."+ base_fname + ".ini")
 
 config = Config()
