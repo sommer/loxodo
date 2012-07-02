@@ -42,7 +42,6 @@ class VaultFrame(gui.CeFrame):
         self.sizer = sizer
 
         self.vault_file_name = None
-        self.vault_password = None
         self._is_modified = None
         self.vault = None
 
@@ -51,9 +50,9 @@ class VaultFrame(gui.CeFrame):
         Set the Vault that this frame should display.
         """
         self.vault_file_name = None
-        self.vault_password = None
         self._is_modified = False
-        self.vault = Vault(password, filename=filename)
+        self.vault = Vault(password)
+        self.read_psafe3_file(filename)
 
         self.list.redraw = False
         for record in self.vault.records:
@@ -62,7 +61,6 @@ class VaultFrame(gui.CeFrame):
         self.list.adjust_all()
 
         self.vault_file_name = filename
-        self.vault_password = password
     
     def _on_edit(self, ev):
         if (len(self.list.rows.selection) < 1):

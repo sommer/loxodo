@@ -40,7 +40,6 @@ class InteractiveConsole(cmd.Cmd):
     def __init__(self):
         self.vault = None
         self.vault_file_name = None
-        self.vault_password = None
         self.vault_modified = False
 
         cmd.Cmd.__init__(self)
@@ -51,13 +50,15 @@ class InteractiveConsole(cmd.Cmd):
 
     def open_vault(self):
         print "Opening " + self.vault_file_name + "..."
+        vault_password = None
         try:
-            self.vault_password = getpass("Vault password: ")
+            vault_password = getpass("Vault password: ")
         except EOFError:
             print "\n\nBye."
             raise RuntimeError("No password given")
         try:
-            self.vault = Vault(self.vault_password, filename=self.vault_file_name)
+            self.vault = Vault(vault_password)
+            self.vault.read_psafe3_file(self.vault_file_name)
             self.prompt = "[" + os.path.basename(self.vault_file_name) + "]> "
         except Vault.BadPasswordError:
             print "Bad password."
@@ -96,8 +97,8 @@ class InteractiveConsole(cmd.Cmd):
         return True
 
     def do_save(self, line=None):
-        if self.vault_modified and self.vault_file_name and self.vault_password:
-            self.vault.write_to_file(self.vault_file_name, self.vault_password)
+        if self.vault_modified and self.vault_file_name:
+            self.vault.write_psafe3_file(self.vault_file_name)
             self.vault_modified = False
             print "Changes Saved"
 

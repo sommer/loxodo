@@ -36,23 +36,11 @@ class Vault(object):
     The on-disk represenation of the Vault is described in the following file:
     http://passwordsafe.svn.sourceforge.net/viewvc/passwordsafe/trunk/pwsafe/pwsafe/docs/formatV3.txt?revision=2139
     """
-    def __init__(self, password, filename=None):
-        self.f_tag = None
-        self.f_salt = None
-        self.f_iter = None
-        self.f_sha_ps = None
-        self.f_b1 = None
-        self.f_b2 = None
-        self.f_b3 = None
-        self.f_b4 = None
-        self.f_iv = None
-        self.f_hmac = None
+    def __init__(self, password):
+        assert type(password) != unicode
+        self.password = password
         self.header = self.Header()
         self.records = []
-        if not filename:
-            self._create_empty(password)
-        else:
-            self._read_from_file(filename, password)
 
     class BadPasswordError(RuntimeError):
         pass
@@ -340,74 +328,47 @@ class Vault(object):
 
         filehandle.write(data)
 
-    @staticmethod
-    def create(password, filename):
-        vault = Vault(password)
-        vault.write_to_file(filename, password)
-
-    def _create_empty(self, password):
-
+    def set_password(self, password):
         assert type(password) != unicode
+        self.password = password
 
-        self.f_tag = 'PWS3'
-        self.f_salt = Vault._urandom(32)
-        self.f_iter = 2048
-        stretched_password = self._stretch_password(password, self.f_salt, self.f_iter)
-        self.f_sha_ps = hashlib.sha256(stretched_password).digest()
-
-        cipher = TwofishECB(stretched_password)
-        self.f_b1 = cipher.encrypt(Vault._urandom(16))
-        self.f_b2 = cipher.encrypt(Vault._urandom(16))
-        self.f_b3 = cipher.encrypt(Vault._urandom(16))
-        self.f_b4 = cipher.encrypt(Vault._urandom(16))
-        key_k = cipher.decrypt(self.f_b1) + cipher.decrypt(self.f_b2)
-        key_l = cipher.decrypt(self.f_b3) + cipher.decrypt(self.f_b4)
-
-        self.f_iv = Vault._urandom(16)
-
-        hmac_checker = HMAC(key_l, "", hashlib.sha256)
-        cipher = TwofishCBC(key_k, self.f_iv)
-
-        # No records yet
-
-        self.f_hmac = hmac_checker.digest()
-
-    def _read_from_file(self, filename, password):
+    def read_psafe3_file(self, filename):
         """
         Initialize all class members by loading the contents of a Vault stored in the given file.
         """
-        assert type(password) != unicode
 
         filehandle = file(filename, 'rb')
 
-        # read boilerplate
-
-        self.f_tag = filehandle.read(4)  # TAG: magic tag
-        if (self.f_tag != 'PWS3'):
+        f_tag = filehandle.read(4)  # TAG: magic tag
+        if (f_tag != 'PWS3'):
             raise self.VaultVersionError("Not a PasswordSafe V3 file")
 
-        self.f_salt = filehandle.read(32)  # SALT: SHA-256 salt
-        self.f_iter = struct.unpack("<L", filehandle.read(4))[0]  # ITER: SHA-256 keystretch iterations
-        stretched_password = self._stretch_password(password, self.f_salt, self.f_iter)  # P': the stretched key
-        my_sha_ps = hashlib.sha256(stretched_password).digest()
+        f_salt = filehandle.read(32)  # SALT: SHA-256 salt
+        f_iter = struct.unpack("<L", filehandle.read(4))[0]  # ITER: SHA-256 keystretch iterations
+        f_sha_ps = filehandle.read(32) # H(P'): SHA-256 hash of stretched passphrase
 
-        self.f_sha_ps = filehandle.read(32) # H(P'): SHA-256 hash of stretched passphrase
-        if (self.f_sha_ps != my_sha_ps):
+        f_b1 = filehandle.read(16)  # B1
+        f_b2 = filehandle.read(16)  # B2
+        f_b3 = filehandle.read(16)  # B3
+        f_b4 = filehandle.read(16)  # B4
+
+        f_iv = filehandle.read(16)  # IV: initialization vector of Twofish CBC
+
+        # decrypt keys
+
+        stretched_password = self._stretch_password(self.password, f_salt, f_iter)  # P': the stretched key
+        my_sha_ps = hashlib.sha256(stretched_password).digest()
+        if (f_sha_ps != my_sha_ps):
             raise self.BadPasswordError("Wrong password")
 
-        self.f_b1 = filehandle.read(16)  # B1
-        self.f_b2 = filehandle.read(16)  # B2
-        self.f_b3 = filehandle.read(16)  # B3
-        self.f_b4 = filehandle.read(16)  # B4
-
         cipher = TwofishECB(stretched_password)
-        key_k = cipher.decrypt(self.f_b1) + cipher.decrypt(self.f_b2)
-        key_l = cipher.decrypt(self.f_b3) + cipher.decrypt(self.f_b4)
+        key_k = cipher.decrypt(f_b1) + cipher.decrypt(f_b2)
+        key_l = cipher.decrypt(f_b3) + cipher.decrypt(f_b4)
 
-        self.f_iv = filehandle.read(16)  # IV: initialization vector of Twofish CBC
+        # read contents
 
         hmac_checker = HMAC(key_l, "", hashlib.sha256)
-        cipher = TwofishCBC(key_k, self.f_iv)
+        cipher = TwofishCBC(key_k, f_iv)
 
         # read header
 
@@ -436,55 +397,74 @@ class Vault(object):
 
         # read HMAC
 
-        self.f_hmac = filehandle.read(32)  # HMAC: used to verify Vault's integrity
+        f_hmac = filehandle.read(32)  # HMAC: used to verify Vault's integrity
 
         my_hmac = hmac_checker.digest()
-        if (self.f_hmac != my_hmac):
+        if (f_hmac != my_hmac):
             raise self.VaultFormatError("File integrity check failed")
 
-        self.records.sort()
         filehandle.close()
 
-    def write_to_file(self, filename, password):
+        self.records.sort()
+
+    def write_psafe3_file(self, filename):
         """
         Store contents of this Vault into a file.
         """
-        assert type(password) != unicode
 
-        _last_save = struct.pack("<L", int(time.time()))
-        self.header.raw_fields[0x04] = self.Field(0x04, len(_last_save), _last_save)
-        _what_saved = "Loxodo 0.0-git".encode("utf_8", "replace")
-        self.header.raw_fields[0x06] = self.Field(0x06, len(_what_saved), _what_saved)
+        f_tag = 'PWS3'
+        f_salt = Vault._urandom(32)
+        f_iter = 2048
+        f_sha_ps = None
+        f_b1 = None
+        f_b2 = None
+        f_b3 = None
+        f_b4 = None
+        f_iv = Vault._urandom(16)
+        f_hmac = None
+        key_k = Vault._urandom(32)
+        key_l = Vault._urandom(32)
+
+        stretched_password = self._stretch_password(self.password, f_salt, f_iter)
+        f_sha_ps = hashlib.sha256(stretched_password).digest()
+
+        cipher = TwofishECB(stretched_password)
+        k = cipher.encrypt(key_k)
+        f_b1 = k[0:16]
+        f_b2 = k[16:32]
+        l = cipher.encrypt(key_l)
+        f_b3 = l[0:16]
+        f_b4 = l[16:32]
 
         # write to temporary file first
         (osfilehandle, tmpfilename) = tempfile.mkstemp('.part', os.path.basename(filename) + ".", os.path.dirname(filename), text=False)
         filehandle = os.fdopen(osfilehandle, "wb")
 
-        # FIXME: choose new SALT, B1-B4, IV values on each file write? Conflicting Specs!
+        # write params
 
-        # write boilerplate
+        filehandle.write(f_tag)
+        filehandle.write(f_salt)
+        filehandle.write(struct.pack("<L", f_iter))
 
-        filehandle.write(self.f_tag)
-        filehandle.write(self.f_salt)
-        filehandle.write(struct.pack("<L", self.f_iter))
+        filehandle.write(f_sha_ps)
 
-        stretched_password = self._stretch_password(password, self.f_salt, self.f_iter)
-        self.f_sha_ps = hashlib.sha256(stretched_password).digest()
-        filehandle.write(self.f_sha_ps)
+        filehandle.write(f_b1)
+        filehandle.write(f_b2)
+        filehandle.write(f_b3)
+        filehandle.write(f_b4)
 
-        filehandle.write(self.f_b1)
-        filehandle.write(self.f_b2)
-        filehandle.write(self.f_b3)
-        filehandle.write(self.f_b4)
+        filehandle.write(f_iv)
 
-        cipher = TwofishECB(stretched_password)
-        key_k = cipher.decrypt(self.f_b1) + cipher.decrypt(self.f_b2)
-        key_l = cipher.decrypt(self.f_b3) + cipher.decrypt(self.f_b4)
+        # write contents
 
-        filehandle.write(self.f_iv)
+        # update "last saved" timestamp and application
+        _last_save = struct.pack("<L", int(time.time()))
+        self.header.raw_fields[0x04] = self.Field(0x04, len(_last_save), _last_save)
+        _what_saved = "Loxodo 0.0-git".encode("utf_8", "replace")
+        self.header.raw_fields[0x06] = self.Field(0x06, len(_what_saved), _what_saved)
 
         hmac_checker = HMAC(key_l, "", hashlib.sha256)
-        cipher = TwofishCBC(key_k, self.f_iv)
+        cipher = TwofishCBC(key_k, f_iv)
 
         end_of_record = self.Field(0xff, 0, "")
 
@@ -503,12 +483,14 @@ class Vault(object):
 
         self._write_field_tlv(filehandle, cipher, None)
 
-        self.f_hmac = hmac_checker.digest()
-        filehandle.write(self.f_hmac)
+        f_hmac = hmac_checker.digest()
+        filehandle.write(f_hmac)
+
         filehandle.close()
 
         try:
-            tmpvault = Vault(password, filename=tmpfilename)
+            tmpvault = Vault(self.password)
+            tmpvault.read_psafe3_file(tmpfilename)
         except RuntimeError:
             os.remove(tmpfilename)
             raise self.VaultFormatError("File integrity check failed")

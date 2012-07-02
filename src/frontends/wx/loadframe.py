@@ -92,7 +92,8 @@ class LoadFrame(wx.Frame):
         filename = dialog.GetPath()
         dialog.Destroy()
 
-        Vault.create(password, filename=filename)
+        newVault = Vault(password)
+        newVault.write_psafe3_file(filename)
         self._fb_filename.SetValue(filename)
 
         dial = wx.MessageDialog(self,

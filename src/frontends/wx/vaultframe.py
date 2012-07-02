@@ -220,14 +220,13 @@ class VaultFrame(wx.Frame):
         self._searchbox.SetFocus()
 
         self.vault_file_name = None
-        self.vault_password = None
         self.vault = None
         self._is_modified = False
 
     def mark_modified(self):
         self._is_modified = True
-        if ((self.vault_file_name is not None) and (self.vault_password is not None)):
-            self.save_vault(self.vault_file_name, self.vault_password)
+        if (self.vault_file_name is not None):
+            self.save_vault(self.vault_file_name)
         self.list.update_fields()
 
     def open_vault(self, filename, password):
@@ -235,23 +234,21 @@ class VaultFrame(wx.Frame):
         Set the Vault that this frame should display.
         """
         self.vault_file_name = None
-        self.vault_password = None
         self._is_modified = False
-        self.vault = Vault(password, filename=filename)
+        self.vault = Vault(password)
+        self.vault.read_psafe3_file(filename)
         self.list.set_vault(self.vault)
         self.vault_file_name = filename
-        self.vault_password = password
         self.statusbar.SetStatusText(_("Read Vault contents from disk"), 0)
 
-    def save_vault(self, filename, password):
+    def save_vault(self, filename):
         """
         Write Vault contents to disk.
         """
         try:
             self._is_modified = False
             self.vault_file_name = filename
-            self.vault_password = password
-            self.vault.write_to_file(filename, password)
+            self.vault.write_psafe3_file(filename)
             self.statusbar.SetStatusText(_("Wrote Vault contents to disk"), 0)
         except RuntimeError:
             dial = wx.MessageDialog(self,
@@ -407,7 +404,7 @@ if not, write to the Free Software Foundation, Inc.,
             dial.Destroy()
             return
 
-        self.vault_password = password_new
+        self.vault.set_password(password_new)
         self.statusbar.SetStatusText(_('Changed Vault password'), 0)
         self.mark_modified()
 
@@ -431,7 +428,8 @@ if not, write to the Free Software Foundation, Inc.,
 
         merge_vault = None
         try:
-            merge_vault = Vault(password, filename=filename)
+            merge_vault = Vault(password)
+            merge_vault.read_psafe3_file(filename)
         except Vault.BadPasswordError:
             dial = wx.MessageDialog(self,
                                     _('The given password does not match the Vault'),
