@@ -12,7 +12,7 @@ __all__ = [
     'YubiKeyConfigUSBHID',
 ]
 
-from yubico import __version__
+from . import __version__
 
 import struct
 import binascii

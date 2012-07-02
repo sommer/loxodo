@@ -16,7 +16,7 @@ import struct
 import yubico_util
 import yubikey_defs
 import yubico_exception
-from yubico import __version__
+from . import __version__
 
 class YubiKeyFrame:
     """

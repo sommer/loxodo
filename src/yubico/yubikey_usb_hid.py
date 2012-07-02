@@ -13,7 +13,7 @@ __all__ = [
   'YubiKeyUSBHIDError'
 ]
 
-from yubico import __version__
+from . import __version__
 
 import yubico_util
 import yubico_exception
