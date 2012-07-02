@@ -40,8 +40,6 @@ class LoadFrame(wx.Frame):
         self._fb_filename = filebrowsebutton.FileBrowseButtonWithHistory(self.panel_1, -1, size=(450, -1),  changeCallback = self._on_pickvault, labelText = _("Vault") + ":")
         if (config.recentvaults):
             self._fb_filename.SetHistory(config.recentvaults, 0)
-        self._lb_passwd = wx.StaticText(self.panel_1, -1, _("Password") + ":")
-        self._tc_passwd = wx.TextCtrl(self.panel_1, -1, "", style=wx.TE_PASSWORD)
         self.static_line_1 = wx.StaticLine(self.panel_1, -1)
 
         self.SetTitle("Loxodo - " + _("Open Vault"))
@@ -53,8 +51,9 @@ class LoadFrame(wx.Frame):
         sizer_3.Add(self._fb_filename, 0, wx.EXPAND|wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.RIGHT, 5)
 
         sizer_5 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_5.Add(self._lb_passwd, 0, wx.ALIGN_RIGHT|wx.ALIGN_CENTER_VERTICAL|wx.RIGHT, 5)
-        sizer_5.Add(self._tc_passwd, 1, wx.EXPAND|wx.ALIGN_CENTER_VERTICAL)
+
+        (self._tc_passwd, self._tc_passwd_alt, self._bt_showhide) = self._add_a_passwdfield(sizer_5, _("Password") + ":", "")
+
         sizer_3.Add(sizer_5, 0, wx.EXPAND|wx.LEFT|wx.RIGHT, 5)
 
         sizer_3.Add(self.static_line_1, 0, wx.TOP|wx.EXPAND, 10)
@@ -76,6 +75,69 @@ class LoadFrame(wx.Frame):
         self.Layout()
         self.SetMinSize(self.GetSize())
         self.SetMaxSize((-1, self.GetSize().height))
+        self._tc_passwd.SetFocus()
+
+    def _on_toggle_passwd_mask(self, dummy):
+        dial = wx.MessageDialog(self,
+                                _("Unmasking the password will make it visible on screen. Proceed with unmask?"),
+                                _("Really unmask password?"),
+                                wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION
+                                )
+        retval = dial.ShowModal()
+        dial.Destroy()
+        if retval != wx.ID_YES:
+            return
+
+        _tmp = self._tc_passwd
+        _passwd = _tmp.GetValue()
+        self._tc_passwd = self._tc_passwd_alt
+        self._tc_passwd_alt = _tmp
+        self._tc_passwd.Show()
+        self._tc_passwd_alt.Hide()
+        self._tc_passwd.GetParent().Layout()
+        self._tc_passwd.SetValue(_passwd)
+        if (self._tc_passwd_alt.FindFocus() == self._tc_passwd_alt):
+            self._tc_passwd.SetFocus()
+
+    def _add_a_passwdfield(self, parent_sizer, label, default_value):
+        _label = wx.StaticText(self.panel_1, -1, label, style=wx.ALIGN_RIGHT)
+        parent_sizer.Add(_label, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5)
+        r_container = wx.BoxSizer()
+        parent_sizer.Add(r_container, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.ALL|wx.EXPAND, 5)
+        r_masked = wx.TextCtrl(self.panel_1, -1, default_value, style=wx.PASSWORD, size=(128, -1))
+        r_container.Add(r_masked, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.EXPAND, 0)
+        r_shown = wx.TextCtrl(self.panel_1, -1, default_value, size=(128, -1))
+        r_shown.Hide()
+        r_container.Add(r_shown, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.EXPAND, 0)
+        r_hwtoken = wx.Button(self.panel_1, wx.ID_REPLACE, _("use hw token"))
+        wx.EVT_BUTTON(self, wx.ID_REPLACE, self._on_use_hw_token)
+        r_container.Add(r_hwtoken, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.SHRINK|wx.LEFT, 10)
+        r_toggle = wx.Button(self.panel_1, wx.ID_MORE, _("(un)mask"))
+        wx.EVT_BUTTON(self, wx.ID_MORE, self._on_toggle_passwd_mask)
+        r_container.Add(r_toggle, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.SHRINK|wx.LEFT, 10)
+        return (r_masked, r_shown, r_toggle)
+
+    def _on_use_hw_token(self, dummy):
+        password = self._tc_passwd.GetValue().encode('latin1', 'replace')
+        assert type(password) != unicode
+
+        half_iterations = 1024
+        import base64
+        import hashlib
+        from hmac import HMAC
+        stretched_password = password
+        for dummy in range(half_iterations):
+            stretched_password = hashlib.sha256(stretched_password).digest()
+        half_stretched_password = stretched_password
+        for dummy in range(half_iterations):
+            stretched_password = hashlib.sha256(stretched_password).digest()
+        import src.yubico as yubico
+        YK = yubico.find_yubikey()
+        response = YK.challenge_response(stretched_password, slot=2)
+        hmac = HMAC(half_stretched_password, response, hashlib.sha256)
+
+        password = base64.b64encode(hmac.digest(), '-_').rstrip('=')
+        self._tc_passwd.SetValue(password)
         self._tc_passwd.SetFocus()
 
     def _on_pickvault(self, evt):
