@@ -36,7 +36,7 @@ class LoadFrame(wx.Frame):
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         self.panel_1 = wx.Panel(self, -1)
-        self.bitmap_1 = wx.StaticBitmap(self.panel_1, -1, wx.Bitmap(os.path.join(os.path.dirname(config.get_basescript()), "resources", "loxodo-icon.png"), wx.BITMAP_TYPE_ANY))
+        self.bitmap_1 = wx.StaticBitmap(self.panel_1, -1, wx.Bitmap(os.path.join(os.path.dirname(os.path.realpath(config.get_basescript())), "resources", "loxodo-icon.png"), wx.BITMAP_TYPE_ANY))
         self._fb_filename = filebrowsebutton.FileBrowseButtonWithHistory(self.panel_1, -1, size=(450, -1),  changeCallback = self._on_pickvault, labelText = _("Vault") + ":")
         if (config.recentvaults):
             self._fb_filename.SetHistory(config.recentvaults, 0)
