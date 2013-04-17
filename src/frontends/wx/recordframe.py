@@ -73,7 +73,9 @@ class RecordFrame(wx.Dialog):
         self.Layout()
 
         self.Fit()
-        self.SetMinSize(self.GetSize())
+        sz = self.GetSize()
+        sz[1] = sz[1] + 100
+        self.SetMinSize(sz)
 
         self.set_initial_focus()
 
