@@ -39,7 +39,7 @@ class RecordFrame(wx.Dialog):
         self.panel = wx.Panel(self, -1)
 
         _sz_main = wx.BoxSizer(wx.VERTICAL)
-        _sz_fields = wx.FlexGridSizer(5, 2, 5, 5)
+        _sz_fields = wx.FlexGridSizer(cols=2, hgap=5, vgap=5)
         _sz_fields.AddGrowableCol(1)
         _sz_fields.AddGrowableRow(5)
         self._tc_group = self._add_a_textcontrol(_sz_fields, _("Group") + ":", "")
@@ -109,7 +109,7 @@ class RecordFrame(wx.Dialog):
     def _add_a_textbox(self, parent_sizer, label, default_value):
         _label = wx.StaticText(self.panel, -1, label, style=wx.ALIGN_RIGHT)
         parent_sizer.Add(_label, 0, wx.ALL|wx.ALIGN_TOP|wx.ALIGN_RIGHT, 5)
-        control = wx.TextCtrl(self.panel, -1, default_value, style=wx.TE_MULTILINE, size=(128, -1))
+        control = wx.TextCtrl(self.panel, -1, default_value, style=wx.TE_MULTILINE, size=(128, 128))
         parent_sizer.Add(control, 1, wx.ALIGN_TOP|wx.ALIGN_LEFT|wx.ALL|wx.EXPAND, 5)
         return control
 
