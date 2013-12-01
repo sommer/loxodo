@@ -144,6 +144,8 @@ class VaultFrame(wx.Frame):
 
         self.panel = wx.Panel(self, -1)
 
+        self._searchbox = wx.SearchCtrl(self.panel, size=(200, -1))
+        self._searchbox.ShowCancelButton(True)
         self.list = self.VaultListCtrl(self.panel, -1, size=(640, 240), style=wx.LC_REPORT|wx.SUNKEN_BORDER|wx.LC_VIRTUAL|wx.LC_EDIT_LABELS)
         self.list.Bind(wx.EVT_COMMAND_RIGHT_CLICK, self._on_list_contextmenu)
         self.list.Bind(wx.EVT_RIGHT_UP, self._on_list_contextmenu)
@@ -196,8 +198,6 @@ class VaultFrame(wx.Frame):
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         _rowsizer = wx.BoxSizer(wx.HORIZONTAL)
-        self._searchbox = wx.SearchCtrl(self.panel, size=(200, -1))
-        self._searchbox.ShowCancelButton(True)
         self.Bind(wx.EVT_SEARCHCTRL_CANCEL_BTN, self._on_search_cancel, self._searchbox)
         self.Bind(wx.EVT_TEXT, self._on_search_do, self._searchbox)
         self._searchbox.Bind(wx.EVT_CHAR, self._on_searchbox_char)
