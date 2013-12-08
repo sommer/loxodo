@@ -39,7 +39,7 @@ class Settings(wx.Dialog):
         self.panel = wx.Panel(self, -1)
 
         _sz_main = wx.BoxSizer(wx.VERTICAL)
-        _sz_fields = wx.FlexGridSizer(5, 2, 5, 5)
+        _sz_fields = wx.FlexGridSizer(cols=2, hgap=5, vgap=5)
         _sz_fields.AddGrowableCol(1)
         _sz_fields.AddGrowableRow(5)
 

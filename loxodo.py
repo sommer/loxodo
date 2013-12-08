@@ -25,8 +25,6 @@ if len(sys.argv) > 1:
 
 # In all other cases, use the "wx" frontend.    
 try:
-    import wxversion
-    wxversion.select(['2.8'])
     import wx
 except ImportError, e:
     print >> sys.stderr, 'Could not find wxPython, the wxWidgets Python bindings: %s' % e

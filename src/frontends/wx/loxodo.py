@@ -25,9 +25,8 @@ from .loadframe import LoadFrame
 
 
 def main():
-    app = wx.PySimpleApp(0)
+    app = wx.App(False)
     setup_wx_locale()
-    wx.InitAllImageHandlers()
     mainframe = LoadFrame(None, -1, "")
     app.SetTopWindow(mainframe)
     mainframe.Show()
