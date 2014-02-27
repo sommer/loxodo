@@ -10,11 +10,11 @@ Usage (Windows):
 """
 
 import sys
-from setuptools import setup
+from setuptools import setup, find_packages
 
-if sys.platform == 'darwin':
+if False and sys.platform == 'darwin':
     extra_options = dict(
-        name="Loxodo",
+        name="loxodo",
         setup_requires = ['py2app'],
         app = ['loxodo.py'],
         options = dict(
@@ -58,7 +58,12 @@ elif sys.platform == 'win32':
     setup(**extra_options)
 else:
     extra_options = dict(
+        name="loxodosrc",
+        version="0.0.1",
         scripts = ['loxodo.py'],
+        package_dir={'loxodosrc': 'loxodosrc'},
+        packages=find_packages(),
+        package_data={'': ["*.png"]},
     )
     setup(**extra_options)
 

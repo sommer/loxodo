@@ -16,3 +16,5 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
+import pkgutil
+__path__ = pkgutil.extend_path(__path__, __name__)

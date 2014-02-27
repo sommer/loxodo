@@ -356,7 +356,7 @@ if not, write to the Free Software Foundation, Inc.,
                       )
 
         about = wx.AboutDialogInfo()
-        about.SetIcon(wx.Icon(os.path.join(os.path.dirname(os.path.realpath(config.get_basescript())), "resources", "loxodo-icon.png"), wx.BITMAP_TYPE_PNG, 128, 128))
+        about.SetIcon(wx.Icon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "loxodo-icon.png"), wx.BITMAP_TYPE_PNG, 128, 128))
         about.SetName("Loxodo")
         about.SetVersion("0.0-git")
         about.SetCopyright("Copyright (C) 2008 Christoph Sommer <mail@christoph-sommer.de>")
