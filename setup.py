@@ -16,6 +16,7 @@ if sys.platform == 'darwin':
     extra_options = dict(
         name="Loxodo",
         setup_requires = ['py2app'],
+        scripts = ['loxodo.py'],
         app = ['loxodo.py'],
         options = dict(
             py2app = dict(
