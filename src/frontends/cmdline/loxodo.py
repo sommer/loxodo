@@ -221,8 +221,9 @@ Username : %s""" % (record.group.encode('utf-8', 'replace'),
 
             if pygtk is not None and gtk is not None:
                 cb = gtk.clipboard_get()
-                cb.set_text(record.passwd)
-                cb.store()
+                if cb is not None:
+                  cb.set_text(record.passwd)
+                  cb.store()
 
     def complete_show(self, text, line, begidx, endidx):
         if not text:
