@@ -36,6 +36,7 @@ class Config(object):
         self.reduction = False
         self.search_notes = False
         self.search_passwd = False
+        self.use_pwgen = False
         self.alphabet = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_"
 
         self._fname = self.get_config_filename()
@@ -70,6 +71,10 @@ class Config(object):
             if self._parser.get("base", "search_passwd") == "True":
                 self.search_passwd = True
 
+        if self._parser.has_option("base", "use_pwgen"):
+            if self._parser.get("base", "use_pwgen") == "True":
+                self.use_pwgen = True
+
         if not os.path.exists(self._fname):
             self.save()
 
@@ -97,6 +102,7 @@ class Config(object):
         self._parser.set("base", "alphabetreduction", str(self.reduction))
         self._parser.set("base", "search_notes", str(self.search_notes))
         self._parser.set("base", "search_passwd", str(self.search_passwd))
+        self._parser.set("base", "use_pwgen", str(self.use_pwgen))
         filehandle = open(self._fname, 'w')
         self._parser.write(filehandle)
         filehandle.close()

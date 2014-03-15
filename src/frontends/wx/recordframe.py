@@ -21,6 +21,7 @@ import os
 import platform
 import random
 import struct
+import subprocess
 import wx
 
 from .wxlocale import _
@@ -176,7 +177,7 @@ class RecordFrame(wx.Dialog):
             self._tc_passwd.SetFocus()
 
     def _on_generate_passwd(self, dummy):
-        _pwd = self.generate_password(alphabet=config.alphabet,pwd_length=config.pwlength,allow_reduction=config.reduction)
+        _pwd = self.generate_password(alphabet=config.alphabet,pwd_length=config.pwlength,allow_reduction=config.reduction,use_pwgen=config.use_pwgen)
         self._tc_passwd.SetValue(_pwd)
 
     @staticmethod
@@ -190,7 +191,21 @@ class RecordFrame(wx.Dialog):
             return retval
 
     @staticmethod
-    def generate_password(alphabet="abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_", pwd_length=8, allow_reduction=False):
+    def generate_password(alphabet="abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_",
+                          pwd_length=10, allow_reduction=False, use_pwgen=False):
+        if use_pwgen:
+            # use pwgen program to generate pronounceable passwords
+            options = '-cn'
+            if allow_reduction:
+                options += 'B'
+            stdout, stderr = subprocess.Popen(
+                    ['pwgen', options, str(pwd_length), '1'],
+                    stdout=subprocess.PIPE).communicate()
+            pwd = stdout.strip()
+            assert len(pwd) == pwd_length
+            return pwd
+
+
         # remove some easy-to-mistake characters
         if allow_reduction:
             for _chr in "0OjlI1":
