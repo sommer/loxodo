@@ -1,0 +1,8 @@
+recursive-include locale *
+recursive-include resources *
+include src/frontends/ppygui/README.txt
+include loxodo.py
+include LICENSE.txt
+include .project
+include .pydevproject
+include Makefile

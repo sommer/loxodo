@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Loxodo
+Comment=Password Safe V3 compatible Password Vault
+Keywords=encryption;security;
+Exec=/usr/bin/loxodo
+Terminal=false
+Type=Application
+Icon=loxodo-qt
+Categories=Utility;Security;
+StartupNotify=true

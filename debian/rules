@@ -1,0 +1,12 @@
+#!/usr/bin/make -f
+export DH_VERBOSE=1
+
+%:
+	dh $@ --with python2
+
+override_dh_auto_install:
+	$(MAKE) -C locale
+	python setup.py install --root=debian/loxodo --install-layout=deb --install-lib=/usr/share/loxodo --install-scripts=/usr/share/loxodo --install-data=/usr/share/loxodo
+#	$(MAKE) xdg
+
+override_dh_auto_build:
