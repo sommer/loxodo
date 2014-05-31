@@ -1,0 +1,2 @@
+debian/loxodo.desktop /usr/share/applications
+resources/loxodo-qt.svg /usr/share/pixmaps
