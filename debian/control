@@ -1,12 +1,22 @@
 Source: loxodo
-Maintainer: Christoph Sommer <mail@christoph-sommer.de>
 Section: utils
 Priority: optional
-Build-Depends: python-setuptools (>= 0.6), python (>= 2.7), python-qt4 (>= 4.10), debhelper (>= 7.4.3), xdg-utils (>= 1.1)
+Maintainer: Christoph Sommer <mail@christoph-sommer.de>
+Build-Depends: python-setuptools (>= 0.6), python (>= 2.7), debhelper (>= 7.4.3), xdg-utils (>= 1.1)
 Standards-Version: 3.9.4
 X-Python-Version: >= 2.7
 
-Package: loxodo
+
+Package: loxodo-wx
 Architecture: all
-Depends: ${misc:Depends}, ${python:Depends}
+Depends: ${misc:Depends}, ${python:Depends}, python-wxgtk2.8 (>= 2.8)
 Description: Password Safe V3 compatible Password Vault
+ wxWidgets front-end.
+
+
+Package: loxodo-qt4
+Architecture: all
+Depends: ${misc:Depends}, ${python:Depends}, python-qt4 (>= 4.10)
+Description: Password Safe V3 compatible Password Vault
+ PyQT4 front-end.
+

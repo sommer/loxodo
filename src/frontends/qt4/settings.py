@@ -18,6 +18,7 @@
 #
 
 import os
+import pkgutil
 
 from PyQt4 import QtGui
 from PyQt4.QtCore import Qt
@@ -56,12 +57,14 @@ ALL_EXT = {
 
 
 def icon_from_resources(name):
-    cpath = os.path.dirname(os.path.realpath(config.get_basescript()))
-    ipath = os.path.join(cpath, 'resources', 'icons', name + '.svg')
-    if os.path.exists(ipath):
-        return QtGui.QIcon.fromTheme(name, QtGui.QIcon(ipath))
-    else:
+    try:
+        qpixmap = QtGui.QPixmap()
+        qpixmap.loadFromData(pkgutil.get_data(
+            'resources.icons', name + '.svg'))
+    except IOError:
         return QtGui.QIcon.fromTheme(name)
+    else:
+        return QtGui.QIcon.fromTheme(name, QtGui.QIcon(qpixmap))
 
 
 class Settings(QtGui.QDialog):

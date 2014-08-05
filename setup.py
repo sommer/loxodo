@@ -50,7 +50,7 @@ METADATA = {
         'Topic :: Security :: Cryptography',
     ],
     'packages': find_packages(),
-    'scripts': ['loxodo.py'],
+    'scripts': ['loxodo.py', '__main__.py'],
     'data_files': get_data_files((
         ('.', 'resources'),
         ('.', 'locale'),

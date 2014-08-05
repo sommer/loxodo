@@ -19,6 +19,7 @@
 
 import os
 import platform
+import pkgutil
 import sys
 
 from PyQt4 import Qt
@@ -36,10 +37,9 @@ def main():
         APPID = 'okami.loxodo.qt.1'
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APPID)
     app = QtGui.QApplication(sys.argv)
-    cpath = os.path.dirname(os.path.realpath(config.get_basescript()))
-    ipath = os.path.join(cpath, 'resources', 'loxodo-qt.svg')
-    qicon = QtGui.QIcon(ipath)
-    app.setWindowIcon(qicon)
+    qpixmap = QtGui.QPixmap()
+    qpixmap.loadFromData(pkgutil.get_data('resources', 'loxodo-qt.svg'))
+    app.setWindowIcon(QtGui.QIcon(qpixmap))
     mainframe = VaultFrame()
     mainframe.show()
     app.exec_()

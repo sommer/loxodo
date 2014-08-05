@@ -22,6 +22,14 @@ if set(sys.argv) & {'-i', '-h'}:
     from src.frontends.cmdline import loxodo
     sys.exit()
 
+if '-wx' in sys.argv:
+    from src.frontends.wx import loxodo
+    sys.exit()
+
+if '-qt4' in sys.argv:
+    from src.frontends.qt4 import loxodo
+    sys.exit()
+
 frontend = config.frontend
 # invalid frontend, select first one
 if not frontend in config.frontends:

@@ -1,6 +1,7 @@
 #
 # Loxodo -- Password Safe V3 compatible Password Vault
 # Copyright (C) 2008 Christoph Sommer <mail@christoph-sommer.de>
+# Copyright (C) 2014 Okami <okami@fuzetsu.info>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -16,3 +17,5 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
+if __file__ == '__main__':
+    from .. import loxodo

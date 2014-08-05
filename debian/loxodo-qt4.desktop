@@ -1,10 +1,12 @@
 [Desktop Entry]
 Name=Loxodo
-Comment=Password Safe V3 compatible Password Vault
+Name[en]=Loxodo
+Comment=Password Safe V3 compatible Password Vault, PyQt4 front-end.
 Keywords=encryption;security;
-Exec=/usr/bin/loxodo
+Exec=/usr/bin/loxodo -qt4
 Terminal=false
 Type=Application
 Icon=loxodo-qt
 Categories=Utility;Security;
 StartupNotify=true
+

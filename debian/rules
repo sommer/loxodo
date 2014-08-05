@@ -6,7 +6,8 @@ export DH_VERBOSE=1
 
 override_dh_auto_install:
 	$(MAKE) -C locale
-	python setup.py install --root=debian/loxodo --install-layout=deb --install-lib=/usr/share/loxodo --install-scripts=/usr/share/loxodo --install-data=/usr/share/loxodo
-#	$(MAKE) xdg
+	python setup.py install --root=debian/loxodo-qt4 --install-layout=deb --install-lib=/usr/share/loxodo --install-scripts=/usr/share/loxodo --install-data=/usr/share/loxodo
+	python setup.py install --root=debian/loxodo-wx --install-layout=deb --install-lib=/usr/share/loxodo --install-scripts=/usr/share/loxodo --install-data=/usr/share/loxodo
 
 override_dh_auto_build:
+

@@ -18,6 +18,7 @@
 #
 
 import os
+import pkgutil
 
 from PyQt4 import QtGui
 from PyQt4.QtCore import Qt
@@ -35,11 +36,10 @@ class LoadFrame(QtGui.QDialog):
     def __init__(self, parent=None, is_new=True):
         super(LoadFrame, self).__init__(parent)
 
-        path = os.path.dirname(os.path.realpath(
-            config.get_basescript()))
         logo = QtGui.QLabel(self)
-        logo.setPixmap(QtGui.QPixmap(
-            os.path.join(path, 'resources', 'qt-bw.svg')))
+        qpixmap = QtGui.QPixmap()
+        qpixmap.loadFromData(pkgutil.get_data('resources', 'qt-bw.svg'))
+        logo.setPixmap(qpixmap)
         logo.setScaledContents(True)
 
         self._tc_passwd = QtGui.QLineEdit(self)
