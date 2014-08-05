@@ -69,7 +69,7 @@ class Settings(QtGui.QDialog):
         super(Settings, self).__init__(parent)
 
         self._frontend = QtGui.QComboBox(self)
-        self._frontend.addItems(config.FRONTENDS)
+        self._frontend.addItems(config.frontends)
 
         # self._search_notes = QtGui.QCheckBox('Search inside notes', self)
         # self._search_passwd = QtGui.QCheckBox(

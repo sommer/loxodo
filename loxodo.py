@@ -18,36 +18,18 @@ if hasattr(sys, "frozen") and (sys.platform != 'darwin'):
 else:
     config.set_basescript(unicode(__file__, sys.getfilesystemencoding()))
 
+if '-cmdline' in sys.argv:
+    from src.frontends.cmdline import loxodo
+    sys.exit()
 
-frontends = list(config.FRONTENDS)
-# change frontends priority using config
-if config.frontend in frontends and frontends.index(config.frontend) > 0:
-    frontends.remove(config.frontend)
-    frontends.insert(0, config.frontend)
+frontend = config.frontend
+# invalid frontend, select first one
+if not frontend in config.frontends:
+    config.frontend = config.frontends[0]
 
-
-for frontend in frontends:
-    # update current frontend
-    config.frontend = frontend
-    if frontend == 'wx':
-        try:
-            import wx
-            from src.frontends.wx import loxodo
-            sys.exit()
-        except ImportError as e:
-            print('Could not find wxPython, the wxWidgets Python bindings: %s' % e)
-            print('Falling to the next frontend.')
-            print('')
-    elif frontend == 'qt4':
-        try:
-            import PyQt4
-            from src.frontends.qt4 import loxodo
-            sys.exit()
-        except ImportError as e:
-            print('Could not find PyQt4, the Qt4 Python bindings: %s' % e)
-            print('Falling to the next frontend.')
-            print('')
-
-
-from src.frontends.cmdline import loxodo
-sys.exit()
+if frontend == 'wx':
+    from src.frontends.wx import loxodo
+    sys.exit()
+elif frontend == 'qt4':
+    from src.frontends.qt4 import loxodo
+    sys.exit()

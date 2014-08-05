@@ -26,15 +26,25 @@ class Config(object):
     """
     Manages the configuration file
     """
-    FRONTENDS = (
-        'wx',
-        'qt4',
-    )
-
     def __init__(self):
         """
         DEFAULT VALUES
         """
+        # available frontends
+        self.frontends = []
+        try:
+            import wx
+        except ImportError as e:
+            pass
+        else:
+            self.frontends.append('wx')
+        try:
+            import PyQt4
+        except ImportError as e:
+            pass
+        else:
+            self.frontends.append('qt4')
+
         self._basescript = None
         self.recentvaults = []
         self.pwlength = 10

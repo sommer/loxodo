@@ -43,6 +43,9 @@ class Settings(wx.Dialog):
         _sz_fields.AddGrowableCol(1)
         _sz_fields.AddGrowableRow(5)
 
+        self._cb_frontend = self._add_a_combobox(
+            _sz_fields, _('Frontend') + ':', config.frontend, config.frontends)
+
         self._search_notes = self._add_a_checkbox(_sz_fields,_("Search inside notes") + ":")
         self._search_passwd = self._add_a_checkbox(_sz_fields,_("Search inside passwords") + ":")
 
@@ -82,6 +85,19 @@ class Settings(wx.Dialog):
         self.set_initial_focus()
         self.update_fields()
 
+    def _add_a_combobox(
+            self, parent_sizer, label, default_value, choices, extrastyle=0):
+        _label = wx.StaticText(self.panel, -1, label, style=wx.ALIGN_RIGHT)
+        parent_sizer.Add(
+            _label, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT | wx.ALL, 5)
+        control = wx.ComboBox(
+            self.panel, -1, value=default_value, choices=choices,
+            style=wx.CB_READONLY)
+        parent_sizer.Add(
+            control, 1, wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_LEFT | wx.ALL |
+            wx.EXPAND, 5)
+        return control
+
     def _add_a_checkbox(self, parent_sizer, label, extrastyle=0):
         _label = wx.StaticText(self.panel, -1, label, style=wx.ALIGN_RIGHT)
         parent_sizer.Add(_label, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5)
@@ -115,6 +131,7 @@ class Settings(wx.Dialog):
         """
         Update fields from source
         """
+        self._cb_frontend.SetValue(config.frontend)
         self._sc_length.SetValue(config.pwlength)
         self._tc_alphabet.SetValue(config.alphabet)
         self._cb_reduction.SetValue(config.reduction)
@@ -125,6 +142,7 @@ class Settings(wx.Dialog):
         """
         Update source from fields
         """
+        config.frontend = self._cb_frontend.GetValue()
         config.pwlength = self._sc_length.GetValue()
         config.reduction = self._cb_reduction.GetValue()
         config.search_notes = self._search_notes.GetValue()
