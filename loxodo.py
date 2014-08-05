@@ -18,7 +18,7 @@ if hasattr(sys, "frozen") and (sys.platform != 'darwin'):
 else:
     config.set_basescript(unicode(__file__, sys.getfilesystemencoding()))
 
-if '-cmdline' in sys.argv:
+if set(sys.argv) & {'-i', '-h'}:
     from src.frontends.cmdline import loxodo
     sys.exit()
 
@@ -33,3 +33,7 @@ if frontend == 'wx':
 elif frontend == 'qt4':
     from src.frontends.qt4 import loxodo
     sys.exit()
+
+# fallback frontend
+from src.frontends.cmdline import loxodo
+sys.exit()
