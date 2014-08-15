@@ -185,6 +185,9 @@ class VaultFrame(wx.Frame):
         temp_id = wx.NewId()
         self._recordmenu.Append(temp_id, _("Open UR&L\tCtrl+L"))
         wx.EVT_MENU(self, temp_id, self._on_open_url)
+        temp_id = wx.NewId()
+        self._recordmenu.Append(temp_id, _("Search &For Entry\tCtrl+F"))
+        wx.EVT_MENU(self, temp_id, self._on_search_for_entry)
         menu_bar = wx.MenuBar()
         menu_bar.Append(filemenu, _("&Vault"))
         menu_bar.Append(self._recordmenu, _("&Record"))
@@ -591,6 +594,13 @@ if not, write to the Free Software Foundation, Inc.,
             webbrowser.open(entry.url)
         except ImportError:
             self.statusbar.SetStatusText(_('Could not load python module "webbrowser" needed to open "%s"') % entry.url, 0)
+
+    def _on_search_for_entry(self, dummy):
+        """
+        Event handler: Fires when user chooses this menu item.
+        """
+        self._searchbox.SetFocus()
+        self._searchbox.SelectAll()
 
     def _on_search_do(self, dummy):
         """
