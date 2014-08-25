@@ -38,7 +38,7 @@ class LoadFrame(QtGui.QDialog):
 
         logo = QtGui.QLabel(self)
         qpixmap = QtGui.QPixmap()
-        qpixmap.loadFromData(pkgutil.get_data('resources', 'qt-bw.svg'))
+        qpixmap.loadFromData(pkgutil.get_data('resources', 'loxodo-qt-bw.svg'))
         logo.setPixmap(qpixmap)
         logo.setScaledContents(True)
 

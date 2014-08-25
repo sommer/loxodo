@@ -6,7 +6,7 @@ Keywords=encryption;security;
 Exec=/usr/bin/loxodo -qt4
 Terminal=false
 Type=Application
-Icon=loxodo-qt
+Icon=loxodo-qt-icon
 Categories=Utility;Security;
 StartupNotify=true
 
