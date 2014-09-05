@@ -15,7 +15,7 @@ Quickstart:
 	displays help about Loxodo's cmdline mode
 
 ./setup.py py2app
-	creates a stand-alone .app (Mac OS X) 
+	creates a stand-alone .app (Mac OS X), wxPython is required: http://www.wxpython.org/download.php 
 
 ./setup.py py2exe
 	creates a stand-alone .exe (Windows)
