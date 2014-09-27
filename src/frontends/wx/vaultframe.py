@@ -149,6 +149,7 @@ class VaultFrame(wx.Frame):
         self.list = self.VaultListCtrl(self.panel, -1, size=(640, 240), style=wx.LC_REPORT|wx.SUNKEN_BORDER|wx.LC_VIRTUAL|wx.LC_EDIT_LABELS)
         self.list.Bind(wx.EVT_COMMAND_RIGHT_CLICK, self._on_list_contextmenu)
         self.list.Bind(wx.EVT_RIGHT_UP, self._on_list_contextmenu)
+        self.list.Bind(wx.EVT_CHAR, self._on_list_box_char)
 
         self.statusbar = self.CreateStatusBar(1, wx.ST_SIZEGRIP)
 
@@ -185,6 +186,9 @@ class VaultFrame(wx.Frame):
         temp_id = wx.NewId()
         self._recordmenu.Append(temp_id, _("Open UR&L\tCtrl+L"))
         wx.EVT_MENU(self, temp_id, self._on_open_url)
+        temp_id = wx.NewId()
+        self._recordmenu.Append(temp_id, _("Search &For Entry\tCtrl+F"))
+        wx.EVT_MENU(self, temp_id, self._on_search_for_entry)
         menu_bar = wx.MenuBar()
         menu_bar.Append(filemenu, _("&Vault"))
         menu_bar.Append(self._recordmenu, _("&Record"))
@@ -223,6 +227,17 @@ class VaultFrame(wx.Frame):
         self.vault_password = None
         self.vault = None
         self._is_modified = False
+
+    def _on_list_box_char(self, key_event):
+        """
+        Typing in the list box doesn't do anything, redirect it to the search box
+        """
+        if not (0 < key_event.GetKeyCode() < 256):
+            # Arrow keys, page up, etc -- let event propagate to default handler
+            key_event.Skip()
+            return
+        self._searchbox.SetFocus()
+        self._searchbox.EmulateKeyPress(key_event)
 
     def mark_modified(self):
         self._is_modified = True
@@ -591,6 +606,13 @@ if not, write to the Free Software Foundation, Inc.,
             webbrowser.open(entry.url)
         except ImportError:
             self.statusbar.SetStatusText(_('Could not load python module "webbrowser" needed to open "%s"') % entry.url, 0)
+
+    def _on_search_for_entry(self, dummy):
+        """
+        Event handler: Fires when user chooses this menu item.
+        """
+        self._searchbox.SetFocus()
+        self._searchbox.SelectAll()
 
     def _on_search_do(self, dummy):
         """
