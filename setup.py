@@ -8,58 +8,108 @@ Usage (Mac OS X):
 Usage (Windows):
     python setup.py py2exe
 """
-
+import operator
+import os
 import sys
-from setuptools import setup
+from setuptools import setup, find_packages
+
+
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
+
+def get_data_files(data_dirs):
+    data_files = []
+    for dest, src in data_dirs:
+        for subdir in map(operator.itemgetter(0), os.walk(src)):  # find all subdirs dirs
+            data_files += map(lambda x: (os.path.relpath(subdir, dest), (x,)),  # py2exe config formatting
+                filter(os.path.isfile,  # files only
+                map(lambda x: os.path.join(subdir, x), os.listdir(subdir))))  # every file
+    return data_files
+
+METADATA = {
+    'name': 'loxodo',
+    'version': '1.0',
+    'author': 'Christoph Sommer',
+    'author_email': 'mail@christoph-sommer.de',
+    'description': '''Password Safe V3 compatible Password Vault.''',
+    'license': 'GPLv2+',
+    'keywords': 'loxodo password safe',
+    'url': 'http://www.christoph-sommer.de/loxodo',
+    'long_description': read('README.txt'),
+    'classifiers': [
+        'Development Status :: 6 - Mature',
+        'Environment :: Console',
+        'Environment :: MacOS X',
+        'Environment :: Win32 (MS Windows)',
+        'Environment :: X11 Applications :: Qt',
+        'Intended Audience :: End Users/Desktop',
+        'License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 2 :: Only',
+        'Topic :: Security :: Cryptography',
+    ],
+    'packages': find_packages(),
+    'scripts': ['loxodo.py', '__main__.py'],
+    'data_files': get_data_files((
+        ('.', 'resources'),
+        ('.', 'locale'),
+    )),
+    # 'install_requires': ['PyQt4>=4.10.4'],
+    'include_package_data': True,
+}
 
 if sys.platform == 'darwin':
-    extra_options = dict(
-        name="Loxodo",
-        setup_requires = ['py2app'],
-        app = ['loxodo.py'],
-        options = dict(
-            py2app = dict(
-                argv_emulation = True,
-                iconfile = 'resources/loxodo-icon.icns',
-                packages = ['src', 'wx'],
-                site_packages = True,
-                resources = ['resources', 'locale', 'LICENSE.txt', 'README.txt']
-            )
-        )
-    )
-    setup(**extra_options)
-elif sys.platform == 'win32':
+    METADATA.update({
+        'name': 'Loxodo',
+        'setup_requires': ['py2app'],
+        'app': ['loxodo.py'],
+        'options': {
+            'py2app': {
+                'argv_emulation': True,
+                'iconfile': 'resources/loxodo-icon.icns',
+                'packages': ['src', 'wx'],
+                'site_packages': True,
+                'resources': [
+                    'resources', 'locale', 'LICENSE.txt', 'README.txt'
+                ],
+            }
+        }
+    })
+elif sys.platform in ('win32', 'cygwin'):
     import py2exe
-    import os
+    import PyQt4
 
-    # create list of needed data files
-    dataFiles = []
-    for subdir in ('resources', 'locale'):
-        for root, dirs, files in os.walk(subdir):
-            if not files:
-                next
-            files = []
-            for filename in files:
-                files.append(os.path.join(root, filename))
-            if not files:
-                next
-            dataFiles.append((root, files))
-
-    extra_options = dict(
-        setup_requires = ['py2exe'],
-        windows = ['loxodo.py'],
-        data_files = dataFiles,
-        options = dict(
-            py2exe = dict(
-                excludes = 'ppygui'
-            )
-        )
+    pyqt4_dir = os.path.dirname(PyQt4.__file__)
+    data_dirs = (
+        (os.path.join(pyqt4_dir, 'plugins'), os.path.join(pyqt4_dir, 'plugins', 'imageformats')),
     )
-    setup(**extra_options)
-else:
-    extra_options = dict(
-        scripts = ['loxodo.py'],
-    )
-    setup(**extra_options)
+    data_files = get_data_files(data_dirs)
+    METADATA.update({
+        'setup_requires': ['py2exe'],
+        'windows': [{
+            'script':'loxodo.py',
+            'icon_resources': [(1, 'resources/loxodo-qt.ico')],
+        }],
+        'data_files': METADATA['data_files'] + data_files,
+        'zipfile': None,
+        'options': {
+            'py2exe': {
+                'bundle_files': 3,
+                'compressed': True,
+                'includes':  [
+                    'sip',
+                    'PyQt4.QtSvg',
+                    'PyQt4.QtXml',
+                ],
+                'excludes': 'ppygui',
+                'dll_excludes': [
+                    'w9xpopen.exe',
+                    'MSVCP90.dll',
+                ],
+            }
+        }
+    })
 
-
+if __name__ == '__main__':
+    setup(**METADATA)

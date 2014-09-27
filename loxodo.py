@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import sys
-import os
 import platform
+
 
 # On Windows CE, use the "ppygui" frontend.
 if platform.system() == "Windows" and platform.release() == "CE":
@@ -13,25 +13,35 @@ if platform.system() == "Windows" and platform.release() == "CE":
 from src.config import config
 
 # store base script name, taking special care if we're "frozen" using py2app or py2exe
-if hasattr(sys,"frozen") and (sys.platform != 'darwin'):
+if hasattr(sys, "frozen") and (sys.platform != 'darwin'):
     config.set_basescript(unicode(sys.executable, sys.getfilesystemencoding()))
 else:
     config.set_basescript(unicode(__file__, sys.getfilesystemencoding()))
 
-# If cmdline arguments were given, use the "cmdline" frontend.
-if len(sys.argv) > 1:
+if set(sys.argv) & {'-i', '-h'}:
     from src.frontends.cmdline import loxodo
     sys.exit()
 
-# In all other cases, use the "wx" frontend.    
-try:
-    import wx
-except ImportError, e:
-    print >> sys.stderr, 'Could not find wxPython, the wxWidgets Python bindings: %s' % e
-    print >> sys.stderr, 'Falling back to cmdline frontend.'
-    print >> sys.stderr, ''
-    from src.frontends.cmdline import loxodo
+if '-wx' in sys.argv:
+    from src.frontends.wx import loxodo
     sys.exit()
 
-from src.frontends.wx import loxodo
+if '-qt4' in sys.argv:
+    from src.frontends.qt4 import loxodo
+    sys.exit()
 
+frontend = config.frontend
+# invalid frontend, select first one
+if not frontend in config.frontends:
+    config.frontend = config.frontends[0]
+
+if frontend == 'wx':
+    from src.frontends.wx import loxodo
+    sys.exit()
+elif frontend == 'qt4':
+    from src.frontends.qt4 import loxodo
+    sys.exit()
+
+# fallback frontend
+from src.frontends.cmdline import loxodo
+sys.exit()
