@@ -236,6 +236,10 @@ class VaultFrame(wx.Frame):
             # Arrow keys, page up, etc -- let event propagate to default handler
             key_event.Skip()
             return
+        if key_event.HasModifiers():
+            # ctrl (eg Ctrl-U to copy username, Ctrl-P to copy password)
+            key_event.Skip()
+            return
         self._searchbox.SetFocus()
         self._searchbox.EmulateKeyPress(key_event)
 
