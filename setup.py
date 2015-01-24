@@ -58,8 +58,24 @@ elif sys.platform == 'win32':
     setup(**extra_options)
 else:
     extra_options = dict(
-        scripts = ['loxodo.py'],
+        name = 'Loxodo',
+        author = 'Christoph Sommer',
+        author_email = 'mail@christoph-sommer.de',
+        url = 'http://www.christoph-sommer.de/loxodo/',
+        description = 'A Password Safe V3 compatible password vault',
+        download_url = 'http://github.com/sommer/loxodo/zipball/master',
+        license = 'GPL-2.0+',
+        scripts = [ 'loxodo.py' ],
+        packages = ['src',
+                    'src.frontends',
+                    'src.frontends.cmdline',
+                    'src.frontends.wx',
+                    'src.twofish'],
+        package_data = {
+            'src.frontends.wx': [
+                '../../../resources/*',
+                '../../../locale/de/LC_MESSAGES/*'
+            ],
+        },
     )
     setup(**extra_options)
-
-

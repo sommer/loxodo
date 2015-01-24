@@ -19,6 +19,8 @@
 
 import wx
 import os
+
+from .paths import get_localedir
 from ...config import config
 
 _ = wx.GetTranslation
@@ -32,7 +34,7 @@ def setup_wx_locale():
     if 'unicode' not in wx.PlatformInfo:
         print "Warning: You need a unicode build of wxPython to run this application. Continuing anyway."
     try:
-        localedir = os.path.join(os.path.dirname(os.path.realpath(config.get_basescript())), "locale")
+        localedir = get_localedir()
         domain = "loxodo"
 
         from locale import getdefaultlocale
