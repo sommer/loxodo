@@ -242,7 +242,8 @@ class VaultFrame(wx.Frame):
             key_event.Skip()
             return
         self._searchbox.SetFocus()
-        self._searchbox.EmulateKeyPress(key_event)
+        # self._searchbox.EmulateKeyPress is tempting, but is missing in some versions of wxpython (wxgtk 3.0.2)
+        wx.UIActionSimulator().Char(key_event.GetKeyCode())
 
     def mark_modified(self):
         self._is_modified = True
