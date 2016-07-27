@@ -169,27 +169,8 @@ class VaultFrame(wx.Frame):
         filemenu.AppendSeparator()
         filemenu.Append(wx.ID_EXIT, _("E&xit"))
         wx.EVT_MENU(self, wx.ID_EXIT, self._on_exit)
-        self._recordmenu = wx.Menu()
-        self._recordmenu.Append(wx.ID_ADD, _("&Add\tCtrl+A"))
-        wx.EVT_MENU(self, wx.ID_ADD, self._on_add)
-        self._recordmenu.Append(wx.ID_DELETE, _("&Delete\tCtrl+Back"))
-        wx.EVT_MENU(self, wx.ID_DELETE, self._on_delete)
-        self._recordmenu.AppendSeparator()
-        self._recordmenu.Append(wx.ID_PROPERTIES, _("&Edit\tCtrl+E"))
-        wx.EVT_MENU(self, wx.ID_PROPERTIES, self._on_edit)
-        self._recordmenu.AppendSeparator()
-        temp_id = wx.NewId()
-        self._recordmenu.Append(temp_id, _("Copy &Username\tCtrl+U"))
-        wx.EVT_MENU(self, temp_id, self._on_copy_username)
-        temp_id = wx.NewId()
-        self._recordmenu.Append(temp_id, _("Copy &Password\tCtrl+P"))
-        wx.EVT_MENU(self, temp_id, self._on_copy_password)
-        temp_id = wx.NewId()
-        self._recordmenu.Append(temp_id, _("Open UR&L\tCtrl+L"))
-        wx.EVT_MENU(self, temp_id, self._on_open_url)
-        temp_id = wx.NewId()
-        self._recordmenu.Append(temp_id, _("Search &For Entry\tCtrl+F"))
-        wx.EVT_MENU(self, temp_id, self._on_search_for_entry)
+        self._recordmenu = self._create_recordmenu()
+        self._recordmenu_popup = self._create_recordmenu()
         menu_bar = wx.MenuBar()
         menu_bar.Append(filemenu, _("&Vault"))
         menu_bar.Append(self._recordmenu, _("&Record"))
@@ -228,6 +209,37 @@ class VaultFrame(wx.Frame):
         self.vault_password = None
         self.vault = None
         self._is_modified = False
+
+    def _create_recordmenu(self):
+        """
+        Create self._recordmenu or self._recordmenu_popup, a menu of actions
+        for the current record.
+
+        We need to create two of these because of:
+            https://forums.wxwidgets.org/viewtopic.php?t=39069
+        """
+        recordmenu = wx.Menu()
+        recordmenu.Append(wx.ID_ADD, _("&Add\tCtrl+A"))
+        wx.EVT_MENU(self, wx.ID_ADD, self._on_add)
+        recordmenu.Append(wx.ID_DELETE, _("&Delete\tCtrl+Back"))
+        wx.EVT_MENU(self, wx.ID_DELETE, self._on_delete)
+        recordmenu.AppendSeparator()
+        recordmenu.Append(wx.ID_PROPERTIES, _("&Edit\tCtrl+E"))
+        wx.EVT_MENU(self, wx.ID_PROPERTIES, self._on_edit)
+        recordmenu.AppendSeparator()
+        temp_id = wx.NewId()
+        recordmenu.Append(temp_id, _("Copy &Username\tCtrl+U"))
+        wx.EVT_MENU(self, temp_id, self._on_copy_username)
+        temp_id = wx.NewId()
+        recordmenu.Append(temp_id, _("Copy &Password\tCtrl+P"))
+        wx.EVT_MENU(self, temp_id, self._on_copy_password)
+        temp_id = wx.NewId()
+        recordmenu.Append(temp_id, _("Open UR&L\tCtrl+L"))
+        wx.EVT_MENU(self, temp_id, self._on_open_url)
+        temp_id = wx.NewId()
+        recordmenu.Append(temp_id, _("Search &For Entry\tCtrl+F"))
+        wx.EVT_MENU(self, temp_id, self._on_search_for_entry)
+        return recordmenu
 
     def _on_list_box_char(self, key_event):
         """
@@ -348,7 +360,7 @@ class VaultFrame(wx.Frame):
         self.list.update_fields()
 
     def _on_list_contextmenu(self, dummy):
-        self.PopupMenu(self._recordmenu)
+        self.PopupMenu(self._recordmenu_popup)
 
     def _on_about(self, dummy):
         """
