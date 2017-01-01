@@ -21,6 +21,7 @@ import os
 import platform
 import random
 import struct
+import subprocess
 import wx
 
 from .wxlocale import _
@@ -49,6 +50,13 @@ class Settings(wx.Dialog):
         self._sc_length = self._add_a_spincontrol(_sz_fields, _("Generated Password Length") + ":",4,128)
 
         _sz_main.Add(_sz_fields, 1, wx.EXPAND | wx.GROW)
+
+        try:
+            # Throws exception of pwgen is not installed
+            subprocess.Popen(['pwgen'], stdout=subprocess.PIPE).communicate()
+            self._cb_pwgen = self._add_a_checkbox(_sz_fields,_("Use pwgen to generate passwords") + ":")
+        except OSError:
+            self._cb_pwgen = None
 
         self._cb_reduction = self._add_a_checkbox(_sz_fields,_("Avoid easy to mistake chars") + ":")
 
@@ -115,6 +123,8 @@ class Settings(wx.Dialog):
         """
         Update fields from source
         """
+        if self._cb_pwgen:
+            self._cb_pwgen.SetValue(config.use_pwgen)
         self._sc_length.SetValue(config.pwlength)
         self._tc_alphabet.SetValue(config.alphabet)
         self._cb_reduction.SetValue(config.reduction)
@@ -125,6 +135,8 @@ class Settings(wx.Dialog):
         """
         Update source from fields
         """
+        if self._cb_pwgen:
+            config.use_pwgen = self._cb_pwgen.GetValue()
         config.pwlength = self._sc_length.GetValue()
         config.reduction = self._cb_reduction.GetValue()
         config.search_notes = self._search_notes.GetValue()
