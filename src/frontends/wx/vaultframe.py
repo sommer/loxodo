@@ -19,6 +19,7 @@
 
 import os
 import wx
+import re
 
 from .wxlocale import _
 from ...vault import Vault
@@ -85,21 +86,23 @@ class VaultFrame(wx.Frame):
             wx.ListCtrl.Refresh(self)
 
         def filter_record(self,record):
-            if record.title.lower().find(self._filterstring.lower()) >= 0:
+            if not self._filterstring:
+               return True
+            if re.match(self._filterstring.lower(), record.title.lower()):
                return True
 
-            if record.group.lower().find(self._filterstring.lower()) >= 0:
+            if re.match(self._filterstring.lower(), record.group.lower()):
                return True
 
-            if record.user.lower().find(self._filterstring.lower()) >= 0:
+            if re.match(self._filterstring.lower(), record.user.lower()):
                return True
 
             if config.search_notes:
-             if record.notes.lower().find(self._filterstring.lower()) >= 0:
+             if re.match(self._filterstring.lower(), record.notes.lower()):
                 return True
 
             if config.search_passwd:
-             if record.passwd.find(self._filterstring) >= 0:
+             if re.match(self._filterstring, record.passwd):
                 return True
 
             return False
