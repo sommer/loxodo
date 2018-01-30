@@ -23,9 +23,16 @@ if len(sys.argv) > 1:
     from src.frontends.cmdline import loxodo
     sys.exit()
 
-# In all other cases, use the "wx" frontend.    
+# In all other cases, use the "wx" frontend.
 try:
     import wx
+    assert(wx.__version__.startswith('4.0.'))
+except AssertionError, e:
+    print >> sys.stderr, 'Found incompatible wxPython, the wxWidgets Python bindings: %s' % wx.__version__
+    print >> sys.stderr, 'Falling back to cmdline frontend.'
+    print >> sys.stderr, ''
+    from src.frontends.cmdline import loxodo
+    sys.exit()
 except ImportError, e:
     print >> sys.stderr, 'Could not find wxPython, the wxWidgets Python bindings: %s' % e
     print >> sys.stderr, 'Falling back to cmdline frontend.'

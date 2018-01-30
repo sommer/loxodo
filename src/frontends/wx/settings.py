@@ -40,8 +40,6 @@ class Settings(wx.Dialog):
 
         _sz_main = wx.BoxSizer(wx.VERTICAL)
         _sz_fields = wx.FlexGridSizer(cols=2, hgap=5, vgap=5)
-        _sz_fields.AddGrowableCol(1)
-        _sz_fields.AddGrowableRow(5)
 
         self._search_notes = self._add_a_checkbox(_sz_fields,_("Search inside notes") + ":")
         self._search_passwd = self._add_a_checkbox(_sz_fields,_("Search inside passwords") + ":")
@@ -53,6 +51,8 @@ class Settings(wx.Dialog):
         self._cb_reduction = self._add_a_checkbox(_sz_fields,_("Avoid easy to mistake chars") + ":")
 
         self._tc_alphabet = self._add_a_textcontrol(_sz_fields,_("Alphabet")+ ":",config.alphabet)
+
+        _sz_fields.AddGrowableCol(1)
 
         _ln_line = wx.StaticLine(self.panel, -1, size=(20, -1), style=wx.LI_HORIZONTAL)
         _sz_main.Add(_ln_line, 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.RIGHT|wx.TOP, 5)

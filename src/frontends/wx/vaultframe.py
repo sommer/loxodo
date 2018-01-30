@@ -19,6 +19,7 @@
 
 import os
 import wx
+import wx.adv
 
 from .wxlocale import _
 from ...vault import Vault
@@ -152,7 +153,7 @@ class VaultFrame(wx.Frame):
         self.list.Bind(wx.EVT_RIGHT_UP, self._on_list_contextmenu)
         self.list.Bind(wx.EVT_CHAR, self._on_list_box_char)
 
-        self.statusbar = self.CreateStatusBar(1, wx.ST_SIZEGRIP)
+        self.statusbar = self.CreateStatusBar(1, wx.STB_SIZEGRIP)
 
         # Set up menus
         filemenu = wx.Menu()
@@ -375,7 +376,7 @@ if not, write to the Free Software Foundation, Inc.,
                       "Nick Verbeck"
                       )
 
-        about = wx.AboutDialogInfo()
+        about = wx.adv.AboutDialogInfo()
         about.SetIcon(wx.Icon(os.path.join(get_resourcedir(), "loxodo-icon.png"), wx.BITMAP_TYPE_PNG, 128, 128))
         about.SetName("Loxodo")
         about.SetVersion("0.0-git")
@@ -383,7 +384,7 @@ if not, write to the Free Software Foundation, Inc.,
         about.SetWebSite("http://www.christoph-sommer.de/loxodo")
         about.SetLicense(gpl_v2)
         about.SetDevelopers(developers)
-        wx.AboutBox(about)
+        wx.adv.AboutBox(about)
 
     def _on_settings(self, dummy):
         """

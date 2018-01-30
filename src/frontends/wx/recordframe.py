@@ -40,8 +40,6 @@ class RecordFrame(wx.Dialog):
 
         _sz_main = wx.BoxSizer(wx.VERTICAL)
         _sz_fields = wx.FlexGridSizer(cols=2, hgap=5, vgap=5)
-        _sz_fields.AddGrowableCol(1)
-        _sz_fields.AddGrowableRow(5)
         self._tc_title = self._add_a_textcontrol(_sz_fields, _("Title") + ":", "")
         self._tc_group = self._add_a_textcontrol(_sz_fields, _("Group") + ":", "")
         self._tc_user = self._add_a_textcontrol(_sz_fields, _("Username") + ":", "")
@@ -49,6 +47,8 @@ class RecordFrame(wx.Dialog):
         self._tc_url = self._add_a_textcontrol(_sz_fields, _("URL") + ":", "")
         self._tc_notes = self._add_a_textbox(_sz_fields, _("Notes") + ":", "")
         _sz_main.Add(_sz_fields, 1, wx.EXPAND | wx.GROW)
+        _sz_fields.AddGrowableCol(1)
+        _sz_fields.AddGrowableRow(5)
 
         _ln_line = wx.StaticLine(self.panel, -1, size=(20, -1), style=wx.LI_HORIZONTAL)
         _sz_main.Add(_ln_line, 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.RIGHT|wx.TOP, 5)
@@ -93,7 +93,7 @@ class RecordFrame(wx.Dialog):
         parent_sizer.Add(_label, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5)
         r_container = wx.BoxSizer()
         parent_sizer.Add(r_container, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.ALL|wx.EXPAND, 5)
-        r_masked = wx.TextCtrl(self.panel, -1, default_value, style=wx.PASSWORD, size=(128, -1))
+        r_masked = wx.TextCtrl(self.panel, -1, default_value, style=wx.TE_PASSWORD, size=(128, -1))
         r_container.Add(r_masked, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.EXPAND, 0)
         r_shown = wx.TextCtrl(self.panel, -1, default_value, size=(128, -1))
         r_shown.Hide()
