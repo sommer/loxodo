@@ -19,7 +19,7 @@ if sys.platform == 'darwin':
         app = ['loxodo.py'],
         options = dict(
             py2app = dict(
-                argv_emulation = True,
+                argv_emulation = False,
                 iconfile = 'resources/loxodo-icon.icns',
                 packages = ['src', 'wx'],
                 site_packages = True,
