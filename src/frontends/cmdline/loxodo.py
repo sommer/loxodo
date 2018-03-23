@@ -61,14 +61,19 @@ class InteractiveConsole(cmd.Cmd):
             self.prompt = "[" + os.path.basename(self.vault_file_name) + "]> "
         except Vault.BadPasswordError:
             print "Bad password."
-            raise
+            return False
         except Vault.VaultVersionError:
             print "This is not a PasswordSafe V3 Vault."
-            raise
+            return False
         except Vault.VaultFormatError:
             print "Vault integrity check failed."
+            return False
+        except:
+            print "Unexpected error:", sys.exc_info()[0]
             raise
         print "... Done.\n"
+
+        return True
 
     def postloop(self):
         print
@@ -285,16 +290,16 @@ def main(argv):
     else:
         interactiveConsole.vault_file_name = args[0]
 
-    interactiveConsole.open_vault()
-    if options.do_ls:
-        interactiveConsole.do_ls("")
-    elif options.do_show:
-        interactiveConsole.do_show(options.do_show, options.echo, options.passwd)
+    if interactiveConsole.open_vault():
+        if options.do_ls:
+            interactiveConsole.do_ls("")
+        elif options.do_show:
+            interactiveConsole.do_show(options.do_show, options.echo, options.passwd)
+        else:
+            interactiveConsole.cmdloop()
+        sys.exit(0)
     else:
-        interactiveConsole.cmdloop()
-
-    sys.exit(0)
-
+        sys.exit(1)
 
 main(sys.argv[1:])
 
