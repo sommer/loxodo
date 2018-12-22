@@ -51,7 +51,6 @@ elif sys.platform == 'win32':
         data_files = dataFiles,
         options = dict(
             py2exe = dict(
-                excludes = 'ppygui'
             )
         )
     )
