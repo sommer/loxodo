@@ -19,7 +19,8 @@
 
 import os
 import platform
-from ConfigParser import SafeConfigParser
+import six
+from six.moves.configparser import SafeConfigParser
 
 
 class Config(object):

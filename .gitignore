@@ -3,4 +3,4 @@
 .eggs
 build
 dist
-venv
+Pipfile.lock

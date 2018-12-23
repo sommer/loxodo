@@ -25,6 +25,7 @@ import os
 import tempfile
 import time
 import uuid
+import six
 
 from .twofish.twofish_ecb import TwofishECB
 from .twofish.twofish_cbc import TwofishCBC
@@ -37,6 +38,9 @@ class Vault(object):
     http://passwordsafe.svn.sourceforge.net/viewvc/passwordsafe/trunk/pwsafe/pwsafe/docs/formatV3.txt?revision=2139
     """
     def __init__(self, password, filename=None):
+
+        assert type(password) == six.text_type
+
         self.f_tag = None
         self.f_salt = None
         self.f_iter = None
@@ -50,9 +54,9 @@ class Vault(object):
         self.header = self.Header()
         self.records = []
         if not filename:
-            self._create_empty(password)
+            self._create_empty(password.encode('utf_8', 'replace'))
         else:
-            self._read_from_file(filename, password)
+            self._read_from_file(filename, password.encode('utf_8', 'replace'))
 
     class BadPasswordError(RuntimeError):
         pass
@@ -68,6 +72,9 @@ class Vault(object):
         Contains the raw, on-disk representation of a record's field.
         """
         def __init__(self, raw_type, raw_len, raw_value):
+
+            assert type(raw_value) == six.binary_type
+
             self.raw_type = raw_type
             self.raw_len = raw_len
             self.raw_value = raw_value
@@ -95,13 +102,13 @@ class Vault(object):
         def __init__(self):
             self.raw_fields = {}
             self._uuid = None
-            self._group = ""
-            self._title = ""
-            self._user = ""
-            self._notes = ""
-            self._passwd = ""
+            self._group = u""
+            self._title = u""
+            self._user = u""
+            self._notes = u""
+            self._passwd = u""
             self._last_mod = 0
-            self._url = ""
+            self._url = u""
 
         @staticmethod
         def create():
@@ -141,7 +148,7 @@ class Vault(object):
             self._uuid = value
             raw_id = 0x01
             if (raw_id not in self.raw_fields):
-                self.raw_fields[raw_id] = Vault.Field(raw_id, 0, "")
+                self.raw_fields[raw_id] = Vault.Field(raw_id, 0, b"")
             self.raw_fields[raw_id].raw_value = value.bytes_le
             self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
             self.mark_modified()
@@ -150,10 +157,13 @@ class Vault(object):
             return self._group
 
         def _set_group(self, value):
+
+            assert type(value) == six.text_type
+
             self._group = value
             raw_id = 0x02
             if (raw_id not in self.raw_fields):
-                self.raw_fields[raw_id] = Vault.Field(raw_id, len(value), value)
+                self.raw_fields[raw_id] = Vault.Field(raw_id, len(value), value.encode('utf_8', 'replace'))
             self.raw_fields[raw_id].raw_value = value.encode('utf_8', 'replace')
             self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
             self.mark_modified()
@@ -162,10 +172,13 @@ class Vault(object):
             return self._title
 
         def _set_title(self, value):
+
+            assert type(value) == six.text_type
+
             self._title = value
             raw_id = 0x03
             if (raw_id not in self.raw_fields):
-                self.raw_fields[raw_id] = Vault.Field(raw_id, len(value), value)
+                self.raw_fields[raw_id] = Vault.Field(raw_id, len(value), value.encode('utf_8', 'replace'))
             self.raw_fields[raw_id].raw_value = value.encode('utf_8', 'replace')
             self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
             self.mark_modified()
@@ -174,10 +187,13 @@ class Vault(object):
             return self._user
 
         def _set_user(self, value):
+
+            assert type(value) == six.text_type
+
             self._user = value
             raw_id = 0x04
             if (raw_id not in self.raw_fields):
-                self.raw_fields[raw_id] = Vault.Field(raw_id, len(value), value)
+                self.raw_fields[raw_id] = Vault.Field(raw_id, len(value), value.encode('utf_8', 'replace'))
             self.raw_fields[raw_id].raw_value = value.encode('utf_8', 'replace')
             self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
             self.mark_modified()
@@ -186,10 +202,13 @@ class Vault(object):
             return self._notes
 
         def _set_notes(self, value):
+
+            assert type(value) == six.text_type
+
             self._notes = value
             raw_id = 0x05
             if (raw_id not in self.raw_fields):
-                self.raw_fields[raw_id] = Vault.Field(raw_id, len(value), value)
+                self.raw_fields[raw_id] = Vault.Field(raw_id, len(value), value.encode('utf_8', 'replace'))
             self.raw_fields[raw_id].raw_value = value.encode('utf_8', 'replace')
             self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
             self.mark_modified()
@@ -198,10 +217,13 @@ class Vault(object):
             return self._passwd
 
         def _set_passwd(self, value):
+
+            assert type(value) == six.text_type
+
             self._passwd = value
             raw_id = 0x06
             if (raw_id not in self.raw_fields):
-                self.raw_fields[raw_id] = Vault.Field(raw_id, len(value), value)
+                self.raw_fields[raw_id] = Vault.Field(raw_id, len(value), value.encode('utf_8', 'replace'))
             self.raw_fields[raw_id].raw_value = value.encode('utf_8', 'replace')
             self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
             self.mark_modified()
@@ -214,7 +236,7 @@ class Vault(object):
             self._last_mod = value
             raw_id = 0x0c
             if (raw_id not in self.raw_fields):
-                self.raw_fields[raw_id] = Vault.Field(raw_id, 0, "0")
+                self.raw_fields[raw_id] = Vault.Field(raw_id, 0, b"0")
             self.raw_fields[raw_id].raw_value = struct.pack("<L", value)
             self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
 
@@ -222,10 +244,13 @@ class Vault(object):
             return self._url
 
         def _set_url(self, value):
+
+            assert type(value) == six.text_type
+
             self._url = value
             raw_id = 0x0d
             if (raw_id not in self.raw_fields):
-                self.raw_fields[raw_id] = Vault.Field(raw_id, len(value), value)
+                self.raw_fields[raw_id] = Vault.Field(raw_id, len(value), value.encode('utf_8', 'replace'))
             self.raw_fields[raw_id].raw_value = value.encode('utf_8', 'replace')
             self.raw_fields[raw_id].raw_len = len(self.raw_fields[raw_id].raw_value)
             self.mark_modified()
@@ -276,6 +301,9 @@ class Vault(object):
         The algorithm is described in the following paper:
         [KEYSTRETCH Section 4.1] http://www.schneier.com/paper-low-entropy.pdf
         """
+
+        assert type(password) == six.binary_type
+
         sha = hashlib.sha256()
         sha.update(password)
         sha.update(salt)
@@ -291,11 +319,11 @@ class Vault(object):
         data = filehandle.read(16)
         if (not data) or (len(data) < 16):
             raise self.VaultFormatError("EOF encountered when parsing record field")
-        if data == "PWS3-EOFPWS3-EOF":
+        if data == b"PWS3-EOFPWS3-EOF":
             return None
         data = cipher.decrypt(data)
         raw_len = struct.unpack("<L", data[0:4])[0]
-        raw_type = struct.unpack("<B", data[4])[0]
+        raw_type = six.byte2int([data[4]])
         raw_value = data[5:]
         if (raw_len > 11):
             for dummy in range((raw_len+4)//16):
@@ -311,7 +339,7 @@ class Vault(object):
         try:
             return os.urandom(count)
         except NotImplementedError:
-            retval = ""
+            retval = b""
             for dummy in range(count):
                 retval += struct.pack("<B", random.randint(0, 0xFF))
             return retval
@@ -321,7 +349,7 @@ class Vault(object):
         Write one field of a vault record using the given file handle.
         """
         if (field is None):
-            filehandle.write("PWS3-EOFPWS3-EOF")
+            filehandle.write(b"PWS3-EOFPWS3-EOF")
             return
 
         assert len(field.raw_value) == field.raw_len
@@ -342,14 +370,17 @@ class Vault(object):
 
     @staticmethod
     def create(password, filename):
+
+        assert type(password) == six.text_type
+
         vault = Vault(password)
         vault.write_to_file(filename, password)
 
     def _create_empty(self, password):
 
-        assert type(password) != unicode
+        assert type(password) == six.binary_type
 
-        self.f_tag = 'PWS3'
+        self.f_tag = b'PWS3'
         self.f_salt = Vault._urandom(32)
         self.f_iter = 2048
         stretched_password = self._stretch_password(password, self.f_salt, self.f_iter)
@@ -365,7 +396,7 @@ class Vault(object):
 
         self.f_iv = Vault._urandom(16)
 
-        hmac_checker = HMAC(key_l, "", hashlib.sha256)
+        hmac_checker = HMAC(key_l, b"", hashlib.sha256)
         cipher = TwofishCBC(key_k, self.f_iv)
 
         # No records yet
@@ -376,14 +407,15 @@ class Vault(object):
         """
         Initialize all class members by loading the contents of a Vault stored in the given file.
         """
-        assert type(password) != unicode
 
-        filehandle = file(filename, 'rb')
+        assert type(password) == six.binary_type
+
+        filehandle = open(filename, 'rb')
 
         # read boilerplate
 
         self.f_tag = filehandle.read(4)  # TAG: magic tag
-        if (self.f_tag != 'PWS3'):
+        if (self.f_tag != b'PWS3'):
             raise self.VaultVersionError("Not a PasswordSafe V3 file")
 
         self.f_salt = filehandle.read(32)  # SALT: SHA-256 salt
@@ -406,7 +438,7 @@ class Vault(object):
 
         self.f_iv = filehandle.read(16)  # IV: initialization vector of Twofish CBC
 
-        hmac_checker = HMAC(key_l, "", hashlib.sha256)
+        hmac_checker = HMAC(key_l, b"", hashlib.sha256)
         cipher = TwofishCBC(key_k, self.f_iv)
 
         # read header
@@ -442,14 +474,14 @@ class Vault(object):
         if (self.f_hmac != my_hmac):
             raise self.VaultFormatError("File integrity check failed")
 
-        self.records.sort()
         filehandle.close()
 
     def write_to_file(self, filename, password):
         """
         Store contents of this Vault into a file.
         """
-        assert type(password) != unicode
+
+        assert type(password) == six.text_type
 
         _last_save = struct.pack("<L", int(time.time()))
         self.header.raw_fields[0x04] = self.Field(0x04, len(_last_save), _last_save)
@@ -468,7 +500,7 @@ class Vault(object):
         filehandle.write(self.f_salt)
         filehandle.write(struct.pack("<L", self.f_iter))
 
-        stretched_password = self._stretch_password(password, self.f_salt, self.f_iter)
+        stretched_password = self._stretch_password(password.encode('utf_8', 'replace'), self.f_salt, self.f_iter)
         self.f_sha_ps = hashlib.sha256(stretched_password).digest()
         filehandle.write(self.f_sha_ps)
 
@@ -483,10 +515,10 @@ class Vault(object):
 
         filehandle.write(self.f_iv)
 
-        hmac_checker = HMAC(key_l, "", hashlib.sha256)
+        hmac_checker = HMAC(key_l, b"", hashlib.sha256)
         cipher = TwofishCBC(key_k, self.f_iv)
 
-        end_of_record = self.Field(0xff, 0, "")
+        end_of_record = self.Field(0xff, 0, b"")
 
         for field in self.header.raw_fields.values():
             self._write_field_tlv(filehandle, cipher, field)

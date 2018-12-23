@@ -62,10 +62,10 @@ class LoadFrame(wx.Frame):
 
         btnsizer = wx.BoxSizer(wx.HORIZONTAL)
         btn = wx.Button(self.panel_1, wx.ID_NEW)
-        wx.EVT_BUTTON(self, wx.ID_NEW, self._on_new)
+        btn.Bind(wx.EVT_BUTTON, self._on_new)
         btnsizer.Add(btn, 0, wx.TOP | wx.RIGHT, 10)
         btn = wx.Button(self.panel_1, wx.ID_OPEN)
-        wx.EVT_BUTTON(self, wx.ID_OPEN, self._on_open)
+        btn.Bind(wx.EVT_BUTTON, self._on_open)
         btn.SetDefault()
         btnsizer.Add(btn, 0, wx.TOP | wx.RIGHT, 10)
         sizer_3.Add(btnsizer, 0, wx.ALIGN_RIGHT | wx.BOTTOM, 5)
@@ -83,11 +83,11 @@ class LoadFrame(wx.Frame):
         pass
 
     def _on_new(self, dummy):
-        password = self._tc_passwd.GetValue().encode('latin1', 'replace')
+        password = self._tc_passwd.GetValue()
 
         filename = self._fb_filename.GetValue()
         wildcard = "|".join((_("Vault") + " (*.psafe3)", "*.psafe3", _("All files") + " (*.*)", "*.*"))
-        dialog = wx.FileDialog(self, message = _("Save new Vault as..."), defaultFile = filename, wildcard = wildcard, style = wx.SAVE | wx.OVERWRITE_PROMPT)
+        dialog = wx.FileDialog(self, message = _("Save new Vault as..."), defaultFile = filename, wildcard = wildcard, style = wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT)
         if dialog.ShowModal() != wx.ID_OK:
             return
         filename = dialog.GetPath()
@@ -108,7 +108,7 @@ class LoadFrame(wx.Frame):
 
     def _on_open(self, dummy):
         try:
-            password = self._tc_passwd.GetValue().encode('latin1', 'replace')
+            password = self._tc_passwd.GetValue()
             vaultframe = VaultFrame(None, -1, "")
             vaultframe.open_vault(self._fb_filename.GetValue(), password)
             config.recentvaults.insert(0, self._fb_filename.GetValue())

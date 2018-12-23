@@ -32,7 +32,7 @@ def setup_wx_locale():
     Set up internationalization support.
     """
     if 'unicode' not in wx.PlatformInfo:
-        print "Warning: You need a unicode build of wxPython to run this application. Continuing anyway."
+        print("Warning: You need a unicode build of wxPython to run this application. Continuing anyway.")
     try:
         localedir = get_localedir()
         domain = "loxodo"
@@ -51,5 +51,5 @@ def setup_wx_locale():
         LOXODO_LOCALE.AddCatalogLookupPathPrefix(localedir)
         LOXODO_LOCALE.AddCatalog(domain)
     except:
-        print "Warning: Setting up internationalization support failed. Continuing anyway."
+        print("Warning: Setting up internationalization support failed. Continuing anyway.")
 

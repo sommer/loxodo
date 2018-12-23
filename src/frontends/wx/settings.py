@@ -33,7 +33,7 @@ class Settings(wx.Dialog):
     """
     def __init__(self, parent):
         wx.Dialog.__init__(self, parent)
-        wx.EVT_CLOSE(self, self._on_frame_close)
+        self.Bind(wx.EVT_CLOSE, self._on_frame_close)
         self.Bind(wx.EVT_CHAR_HOOK, self._on_escape)
 
         self.panel = wx.Panel(self, -1)
@@ -59,10 +59,10 @@ class Settings(wx.Dialog):
 
         btnsizer = wx.StdDialogButtonSizer()
         btn = wx.Button(self.panel, wx.ID_CANCEL)
-        wx.EVT_BUTTON(self, wx.ID_CANCEL, self._on_cancel)
+        btn.Bind(wx.EVT_BUTTON, self._on_cancel)
         btnsizer.AddButton(btn)
         btn = wx.Button(self.panel, wx.ID_OK)
-        wx.EVT_BUTTON(self, wx.ID_OK, self._on_ok)
+        btn.Bind(wx.EVT_BUTTON, self._on_ok)
         btn.SetDefault()
         btnsizer.AddButton(btn)
         btnsizer.Realize()

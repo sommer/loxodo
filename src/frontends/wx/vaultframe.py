@@ -20,6 +20,7 @@
 import os
 import wx
 import wx.adv
+import six
 
 from .wxlocale import _
 from ...vault import Vault
@@ -49,7 +50,7 @@ class VaultFrame(wx.Frame):
             self.SetColumnWidth(0, 256)
             self.SetColumnWidth(1, 128)
             self.SetColumnWidth(2, 256)
-            self.sort_function = lambda e1, e2: cmp(e1.group.lower(), e2.group.lower())
+            self.sort_function = lambda e: six.text_type.lower(e.group)
             self.update_fields()
 
         def OnGetItemText(self, item, col):
@@ -81,7 +82,7 @@ class VaultFrame(wx.Frame):
                 return
             self.displayed_entries = [record for record in self.vault.records if self.filter_record(record)]
 
-            self.displayed_entries.sort(self.sort_function)
+            self.displayed_entries.sort(key=self.sort_function)
             self.SetItemCount(len(self.displayed_entries))
             wx.ListCtrl.Refresh(self)
 
@@ -142,7 +143,7 @@ class VaultFrame(wx.Frame):
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
 
-        wx.EVT_CLOSE(self, self._on_frame_close)
+        self.Bind(wx.EVT_CLOSE, self._on_frame_close)
 
         self.panel = wx.Panel(self, -1)
 
@@ -159,38 +160,38 @@ class VaultFrame(wx.Frame):
         filemenu = wx.Menu()
         temp_id = wx.NewId()
         filemenu.Append(temp_id, _("Change &Password") + "...")
-        wx.EVT_MENU(self, temp_id, self._on_change_password)
+        self.Bind(wx.EVT_MENU, self._on_change_password, id=temp_id)
         temp_id = wx.NewId()
         filemenu.Append(temp_id, _("&Merge Records from") + "...")
-        wx.EVT_MENU(self, temp_id, self._on_merge_vault)
+        self.Bind(wx.EVT_MENU, self._on_merge_vault, id=temp_id)
         filemenu.Append(wx.ID_ABOUT, _("&About"))
-        wx.EVT_MENU(self, wx.ID_ABOUT, self._on_about)
+        self.Bind(wx.EVT_MENU, self._on_about, id=wx.ID_ABOUT)
         filemenu.Append(wx.ID_PREFERENCES, _("&Settings"))
-        wx.EVT_MENU(self, wx.ID_PREFERENCES, self._on_settings)
+        self.Bind(wx.EVT_MENU, self._on_settings, id=wx.ID_PREFERENCES)
         filemenu.AppendSeparator()
         filemenu.Append(wx.ID_EXIT, _("E&xit"))
-        wx.EVT_MENU(self, wx.ID_EXIT, self._on_exit)
+        self.Bind(wx.EVT_MENU, self._on_exit, id=wx.ID_EXIT)
         self._recordmenu = wx.Menu()
         self._recordmenu.Append(wx.ID_ADD, _("&Add\tCtrl+Shift+A"))
-        wx.EVT_MENU(self, wx.ID_ADD, self._on_add)
+        self.Bind(wx.EVT_MENU, self._on_add, id=wx.ID_ADD)
         self._recordmenu.Append(wx.ID_DELETE, _("&Delete\tCtrl+Del"))
-        wx.EVT_MENU(self, wx.ID_DELETE, self._on_delete)
+        self.Bind(wx.EVT_MENU, self._on_delete, id=wx.ID_DELETE)
         self._recordmenu.AppendSeparator()
         self._recordmenu.Append(wx.ID_PROPERTIES, _("&Edit\tCtrl+E"))
-        wx.EVT_MENU(self, wx.ID_PROPERTIES, self._on_edit)
+        self.Bind(wx.EVT_MENU, self._on_edit, id=wx.ID_PROPERTIES)
         self._recordmenu.AppendSeparator()
         temp_id = wx.NewId()
         self._recordmenu.Append(temp_id, _("Copy &Username\tCtrl+Shift+C"))
-        wx.EVT_MENU(self, temp_id, self._on_copy_username)
+        self.Bind(wx.EVT_MENU, self._on_copy_username, id=temp_id)
         temp_id = wx.NewId()
         self._recordmenu.Append(temp_id, _("Copy &Password\tCtrl+C"))
-        wx.EVT_MENU(self, temp_id, self._on_copy_password)
+        self.Bind(wx.EVT_MENU, self._on_copy_password, id=temp_id)
         temp_id = wx.NewId()
         self._recordmenu.Append(temp_id, _("Open UR&L\tCtrl+L"))
-        wx.EVT_MENU(self, temp_id, self._on_open_url)
+        self.Bind(wx.EVT_MENU, self._on_open_url, id=temp_id)
         temp_id = wx.NewId()
         self._recordmenu.Append(temp_id, _("Search &For Entry\tCtrl+F"))
-        wx.EVT_MENU(self, temp_id, self._on_search_for_entry)
+        self.Bind(wx.EVT_MENU, self._on_search_for_entry, id=temp_id)
         menu_bar = wx.MenuBar()
         menu_bar.Append(filemenu, _("&Vault"))
         menu_bar.Append(self._recordmenu, _("&Record"))
@@ -304,7 +305,7 @@ class VaultFrame(wx.Frame):
             clip_object = wx.TextDataObject(text)
             wx.TheClipboard.SetData(clip_object)
             if duration:
-                wx.FutureCall(duration * 1000, self._clear_clipboard, text)
+                wx.CallLater(duration * 1000, self._clear_clipboard, text)
         finally:
             wx.TheClipboard.Close()
 
@@ -341,11 +342,11 @@ class VaultFrame(wx.Frame):
         """
         col = event.GetColumn()
         if (col == 0):
-            self.list.sort_function = lambda e1, e2: cmp(e1.title.lower(), e2.title.lower())
+            self.list.sort_function = lambda e: six.text_type.lower(e.title)
         if (col == 1):
-            self.list.sort_function = lambda e1, e2: cmp(e1.user.lower(), e2.user.lower())
+            self.list.sort_function = lambda e: six.text_type.lower(e.user)
         if (col == 2):
-            self.list.sort_function = lambda e1, e2: cmp(e1.group.lower(), e2.group.lower())
+            self.list.sort_function = lambda e: six.text_type.lower(e.group)
         self.list.update_fields()
 
     def _on_list_contextmenu(self, dummy):
@@ -404,7 +405,7 @@ if not, write to the Free Software Foundation, Inc.,
                                 _("Change Vault Password")
                                 )
         retval = dial.ShowModal()
-        password_new = dial.Value.encode('latin1', 'replace')
+        password_new = dial.Value
         dial.Destroy()
         if retval != wx.ID_OK:
             return
@@ -414,7 +415,7 @@ if not, write to the Free Software Foundation, Inc.,
                                 _("Change Vault Password")
                                 )
         retval = dial.ShowModal()
-        password_new_confirm = dial.Value.encode('latin1', 'replace')
+        password_new_confirm = dial.Value
         dial.Destroy()
         if retval != wx.ID_OK:
             return
@@ -445,7 +446,7 @@ if not, write to the Free Software Foundation, Inc.,
                                 _("Open Vault...")
                                 )
         retval = dial.ShowModal()
-        password = dial.Value.encode('latin1', 'replace')
+        password = dial.Value
         dial.Destroy()
         if retval != wx.ID_OK:
             return
