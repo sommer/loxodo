@@ -54,7 +54,7 @@ class RecordFrame(wx.Dialog):
         _sz_main.Add(_ln_line, 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.RIGHT|wx.TOP, 5)
 
         btnsizer = wx.StdDialogButtonSizer()
-        btn = wx.Button(self.panel, wx.ID_CANCEL)
+        btn = wx.Button(self.panel, wx.ID_CLOSE, label=_("Cancel"))
         btn.Bind(wx.EVT_BUTTON, self._on_cancel)
         btnsizer.AddButton(btn)
         btn = wx.Button(self.panel, wx.ID_OK)
