@@ -149,7 +149,7 @@ class VaultFrame(wx.Frame):
 
         self._searchbox = wx.SearchCtrl(self.panel, size=(200, -1))
         self._searchbox.ShowCancelButton(True)
-        self.list = self.VaultListCtrl(self.panel, -1, size=(640, 240), style=wx.LC_REPORT|wx.SUNKEN_BORDER|wx.LC_VIRTUAL|wx.LC_EDIT_LABELS)
+        self.list = self.VaultListCtrl(self.panel, -1, size=(640, 240), style=wx.LC_REPORT|wx.SUNKEN_BORDER|wx.LC_VIRTUAL)
         self.list.Bind(wx.EVT_COMMAND_RIGHT_CLICK, self._on_list_contextmenu)
         self.list.Bind(wx.EVT_RIGHT_UP, self._on_list_contextmenu)
         self.list.Bind(wx.EVT_CHAR, self._on_list_box_char)
@@ -221,7 +221,6 @@ class VaultFrame(wx.Frame):
         self.Layout()
 
         self.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self._on_list_item_activated, self.list)
-        self.Bind(wx.EVT_LIST_END_LABEL_EDIT, self._on_list_item_label_edit, self.list)
         self.Bind(wx.EVT_LIST_COL_CLICK, self._on_list_column_click, self.list)
 
         self._searchbox.SetFocus()
@@ -318,23 +317,6 @@ class VaultFrame(wx.Frame):
         self.list.Select(index, True)
         self.list.Focus(index)
         self._on_copy_password(None)
-
-    def _on_list_item_label_edit(self, event):
-        """
-        Event handler: Fires when user edits an entry's label.
-        """
-        if event.IsEditCancelled():
-            return
-        index = event.GetIndex()
-        entry = self.list.displayed_entries[index]
-        label_str = event.GetLabel()
-        if entry.title == label_str:
-            return
-        old_title = entry.title
-        entry.title = label_str
-        self.list.update_fields()
-        self.statusbar.SetStatusText(_('Changed title of "%s"') % old_title, 0)
-        self.mark_modified()
 
     def _on_list_column_click(self, event):
         """
