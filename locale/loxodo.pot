@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-26 01:57+0100\n"
+"POT-Creation-Date: 2018-12-30 18:07+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -128,11 +128,11 @@ msgid "Generated Password Length"
 msgstr ""
 
 #: ../src/frontends/wx/settings.py:51
-msgid "Avoid easy to mistake chars"
+msgid "Alphabet"
 msgstr ""
 
 #: ../src/frontends/wx/settings.py:53
-msgid "Alphabet"
+msgid "Avoid Bigrams"
 msgstr ""
 
 #: ../src/frontends/wx/settings.py:76

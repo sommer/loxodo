@@ -48,9 +48,9 @@ class Settings(wx.Dialog):
 
         _sz_main.Add(_sz_fields, 1, wx.EXPAND | wx.GROW)
 
-        self._cb_reduction = self._add_a_checkbox(_sz_fields,_("Avoid easy to mistake chars") + ":")
-
         self._tc_alphabet = self._add_a_textcontrol(_sz_fields,_("Alphabet")+ ":",config.alphabet)
+
+        self._tc_avoid_bigrams = self._add_a_textcontrol(_sz_fields,_("Avoid Bigrams")+ ":",config.avoid_bigrams)
 
         _sz_fields.AddGrowableCol(1)
 
@@ -117,7 +117,7 @@ class Settings(wx.Dialog):
         """
         self._sc_length.SetValue(config.pwlength)
         self._tc_alphabet.SetValue(config.alphabet)
-        self._cb_reduction.SetValue(config.reduction)
+        self._tc_avoid_bigrams.SetValue(config.avoid_bigrams)
         self._search_notes.SetValue(config.search_notes)
         self._search_passwd.SetValue(config.search_passwd)
 
@@ -126,10 +126,10 @@ class Settings(wx.Dialog):
         Update source from fields
         """
         config.pwlength = self._sc_length.GetValue()
-        config.reduction = self._cb_reduction.GetValue()
         config.search_notes = self._search_notes.GetValue()
         config.search_passwd = self._search_passwd.GetValue()
         config.alphabet = self._tc_alphabet.GetValue()
+        config.avoid_bigrams = self._tc_avoid_bigrams.GetValue()
         config.save()
 
     def _on_cancel(self, dummy):

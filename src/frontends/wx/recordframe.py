@@ -176,7 +176,7 @@ class RecordFrame(wx.Dialog):
             self._tc_passwd.SetFocus()
 
     def _on_generate_passwd(self, dummy):
-        _pwd = self.generate_password(alphabet=config.alphabet,pwd_length=config.pwlength,allow_reduction=config.reduction)
+        _pwd = self.generate_password(alphabet=config.alphabet,pwd_length=config.pwlength,avoid_bigrams=config.avoid_bigrams)
         self._tc_passwd.SetValue(_pwd)
 
     @staticmethod
@@ -190,20 +190,15 @@ class RecordFrame(wx.Dialog):
             return retval
 
     @staticmethod
-    def generate_password(alphabet="abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_", pwd_length=8, allow_reduction=False):
-        # remove some easy-to-mistake characters
-        if allow_reduction:
-            for _chr in "0OjlI1":
-                alphabet = alphabet.replace(_chr, "")
-
+    def generate_password(alphabet="0123456789", pwd_length=8, avoid_bigrams=""):
         # iteratively pick one character from this alphabet to assemble password
         last_chr = "x"
         pwd = ""
         for dummy in range(pwd_length):
-            # temporarily reduce alphabet to avoid easy-to-mistake character pairs
+            # temporarily reduce alphabet to avoid easy-to-mistake bigrams
             alphabet2 = alphabet
-            if allow_reduction:
-                for _chr in ('cl', 'mn', 'nm', 'nn', 'rn', 'vv', 'VV'):
+            if len(avoid_bigrams) > 1:
+                for _chr in (avoid_bigrams.split(" ")):
                     if last_chr == _chr[0]:
                         alphabet2 = alphabet.replace(_chr[1],"")
 

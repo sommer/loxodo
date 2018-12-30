@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Loxodo 0.0-git\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-26 01:57+0100\n"
-"PO-Revision-Date: 2018-12-26 01:58+0100\n"
+"POT-Creation-Date: 2018-12-30 18:07+0100\n"
+"PO-Revision-Date: 2018-12-30 18:07+0100\n"
 "Last-Translator: Christoph Sommer <mail@christoph-sommer.de>\n"
 "Language-Team: Christoph Sommer <mail@christoph-sommer.de>\n"
 "Language: de_DE\n"
@@ -127,12 +127,12 @@ msgid "Generated Password Length"
 msgstr "Generiere Passwörter mit Länge"
 
 #: ../src/frontends/wx/settings.py:51
-msgid "Avoid easy to mistake chars"
-msgstr "Ohne leicht zu verwechselnde Zeichen"
-
-#: ../src/frontends/wx/settings.py:53
 msgid "Alphabet"
 msgstr "Alphabet"
+
+#: ../src/frontends/wx/settings.py:53
+msgid "Avoid Bigrams"
+msgstr "Vermeide Bigramme"
 
 #: ../src/frontends/wx/settings.py:76
 msgid "Settings"
@@ -287,6 +287,9 @@ msgstr "Konnte Passwort für \"%s\" nicht in Zwischenablage kopieren"
 #, python-format
 msgid "Could not load python module \"webbrowser\" needed to open \"%s\""
 msgstr "Konnte Python-Modul “webbrowser” nicht laden, um “%s” zu öffnen"
+
+#~ msgid "Avoid easy to mistake chars"
+#~ msgstr "Ohne leicht zu verwechselnde Zeichen"
 
 #~ msgid "Changed title of \"%s\""
 #~ msgstr "Titel von \"%s\" geändet"
