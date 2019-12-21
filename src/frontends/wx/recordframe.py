@@ -33,15 +33,13 @@ class RecordFrame(wx.Dialog):
     """
     def __init__(self, parent):
         wx.Dialog.__init__(self, parent, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
-        wx.EVT_CLOSE(self, self._on_frame_close)
+        self.Bind(wx.EVT_CLOSE, self._on_frame_close)
         self.Bind(wx.EVT_CHAR_HOOK, self._on_escape)
 
         self.panel = wx.Panel(self, -1)
 
         _sz_main = wx.BoxSizer(wx.VERTICAL)
         _sz_fields = wx.FlexGridSizer(cols=2, hgap=5, vgap=5)
-        _sz_fields.AddGrowableCol(1)
-        _sz_fields.AddGrowableRow(5)
         self._tc_title = self._add_a_textcontrol(_sz_fields, _("Title") + ":", "")
         self._tc_group = self._add_a_textcontrol(_sz_fields, _("Group") + ":", "")
         self._tc_user = self._add_a_textcontrol(_sz_fields, _("Username") + ":", "")
@@ -49,16 +47,18 @@ class RecordFrame(wx.Dialog):
         self._tc_url = self._add_a_textcontrol(_sz_fields, _("URL") + ":", "")
         self._tc_notes = self._add_a_textbox(_sz_fields, _("Notes") + ":", "")
         _sz_main.Add(_sz_fields, 1, wx.EXPAND | wx.GROW)
+        _sz_fields.AddGrowableCol(1)
+        _sz_fields.AddGrowableRow(5)
 
         _ln_line = wx.StaticLine(self.panel, -1, size=(20, -1), style=wx.LI_HORIZONTAL)
         _sz_main.Add(_ln_line, 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.RIGHT|wx.TOP, 5)
 
         btnsizer = wx.StdDialogButtonSizer()
-        btn = wx.Button(self.panel, wx.ID_CANCEL)
-        wx.EVT_BUTTON(self, wx.ID_CANCEL, self._on_cancel)
+        btn = wx.Button(self.panel, wx.ID_CLOSE, label=_("Cancel"))
+        btn.Bind(wx.EVT_BUTTON, self._on_cancel)
         btnsizer.AddButton(btn)
         btn = wx.Button(self.panel, wx.ID_OK)
-        wx.EVT_BUTTON(self, wx.ID_OK, self._on_ok)
+        btn.Bind(wx.EVT_BUTTON, self._on_ok)
         btn.SetDefault()
         btnsizer.AddButton(btn)
         btnsizer.Realize()
@@ -93,16 +93,16 @@ class RecordFrame(wx.Dialog):
         parent_sizer.Add(_label, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL, 5)
         r_container = wx.BoxSizer()
         parent_sizer.Add(r_container, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.ALL|wx.EXPAND, 5)
-        r_masked = wx.TextCtrl(self.panel, -1, default_value, style=wx.PASSWORD, size=(128, -1))
+        r_masked = wx.TextCtrl(self.panel, -1, default_value, style=wx.TE_PASSWORD, size=(128, -1))
         r_container.Add(r_masked, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.EXPAND, 0)
         r_shown = wx.TextCtrl(self.panel, -1, default_value, size=(128, -1))
         r_shown.Hide()
         r_container.Add(r_shown, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.EXPAND, 0)
         r_toggle = wx.Button(self.panel, wx.ID_MORE, _("(un)mask"))
-        wx.EVT_BUTTON(self, wx.ID_MORE, self._on_toggle_passwd_mask)
+        r_toggle.Bind(wx.EVT_BUTTON, self._on_toggle_passwd_mask)
         r_container.Add(r_toggle, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.SHRINK|wx.LEFT, 10)
         r_generate = wx.Button(self.panel, wx.ID_REPLACE, _("generate"))
-        wx.EVT_BUTTON(self, wx.ID_REPLACE, self._on_generate_passwd)
+        r_generate.Bind(wx.EVT_BUTTON, self._on_generate_passwd)
         r_container.Add(r_generate, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_LEFT|wx.SHRINK|wx.LEFT, 10)
         return (r_masked, r_shown, r_toggle)
 
@@ -176,7 +176,7 @@ class RecordFrame(wx.Dialog):
             self._tc_passwd.SetFocus()
 
     def _on_generate_passwd(self, dummy):
-        _pwd = self.generate_password(alphabet=config.alphabet,pwd_length=config.pwlength,allow_reduction=config.reduction)
+        _pwd = self.generate_password(alphabet=config.alphabet,pwd_length=config.pwlength,avoid_bigrams=config.avoid_bigrams)
         self._tc_passwd.SetValue(_pwd)
 
     @staticmethod
@@ -190,20 +190,15 @@ class RecordFrame(wx.Dialog):
             return retval
 
     @staticmethod
-    def generate_password(alphabet="abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_", pwd_length=8, allow_reduction=False):
-        # remove some easy-to-mistake characters
-        if allow_reduction:
-            for _chr in "0OjlI1":
-                alphabet = alphabet.replace(_chr, "")
-
+    def generate_password(alphabet="0123456789", pwd_length=8, avoid_bigrams=""):
         # iteratively pick one character from this alphabet to assemble password
         last_chr = "x"
         pwd = ""
         for dummy in range(pwd_length):
-            # temporarily reduce alphabet to avoid easy-to-mistake character pairs
+            # temporarily reduce alphabet to avoid easy-to-mistake bigrams
             alphabet2 = alphabet
-            if allow_reduction:
-                for _chr in ('cl', 'mn', 'nm', 'nn', 'rn', 'vv', 'VV'):
+            if len(avoid_bigrams) > 1:
+                for _chr in (avoid_bigrams.split(" ")):
                     if last_chr == _chr[0]:
                         alphabet2 = alphabet.replace(_chr[1],"")
 

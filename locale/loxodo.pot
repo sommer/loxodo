@@ -8,258 +8,285 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-16 01:48+0100\n"
+"POT-Creation-Date: 2018-12-30 18:07+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/frontends/wx/loadframe.py:41 ../src/frontends/wx/loadframe.py:90
-#: ../src/frontends/wx/vaultframe.py:384
-msgid "Vault"
+#: ../src/frontends/wx/loadframe.py:40 ../src/frontends/wx/recordframe.py:46
+#: ../src/frontends/wx/vaultframe.py:427
+msgid "Password"
 msgstr ""
 
-#: ../src/frontends/wx/loadframe.py:44 ../src/frontends/wx/recordframe.py:58
-#: ../src/frontends/wx/vaultframe.py:392
-msgid "Password"
+#: ../src/frontends/wx/loadframe.py:43 ../src/frontends/wx/loadframe.py:89
+#: ../src/frontends/wx/vaultframe.py:419
+msgid "Vault"
 msgstr ""
 
 #: ../src/frontends/wx/loadframe.py:48
 msgid "Open Vault"
 msgstr ""
 
-#: ../src/frontends/wx/loadframe.py:90 ../src/frontends/wx/vaultframe.py:384
+#: ../src/frontends/wx/loadframe.py:89 ../src/frontends/wx/vaultframe.py:419
 msgid "All files"
 msgstr ""
 
-#: ../src/frontends/wx/loadframe.py:91
+#: ../src/frontends/wx/loadframe.py:90
 msgid "Save new Vault as..."
 msgstr ""
 
-#: ../src/frontends/wx/loadframe.py:101
+#: ../src/frontends/wx/loadframe.py:100
 msgid ""
 "A new Vault has been created using the given password. You can now proceed "
 "to open the Vault."
 msgstr ""
 
-#: ../src/frontends/wx/loadframe.py:102
+#: ../src/frontends/wx/loadframe.py:101
 msgid "Vault Created"
 msgstr ""
 
-#: ../src/frontends/wx/loadframe.py:124 ../src/frontends/wx/vaultframe.py:406
+#: ../src/frontends/wx/loadframe.py:122 ../src/frontends/wx/vaultframe.py:441
 msgid "The given password does not match the Vault"
 msgstr ""
 
-#: ../src/frontends/wx/loadframe.py:125 ../src/frontends/wx/vaultframe.py:372
-#: ../src/frontends/wx/vaultframe.py:407
+#: ../src/frontends/wx/loadframe.py:123 ../src/frontends/wx/vaultframe.py:407
+#: ../src/frontends/wx/vaultframe.py:442
 msgid "Bad Password"
 msgstr ""
 
-#: ../src/frontends/wx/loadframe.py:135 ../src/frontends/wx/vaultframe.py:415
+#: ../src/frontends/wx/loadframe.py:133 ../src/frontends/wx/vaultframe.py:450
 msgid "This is not a PasswordSafe V3 Vault"
 msgstr ""
 
-#: ../src/frontends/wx/loadframe.py:136 ../src/frontends/wx/loadframe.py:145
-#: ../src/frontends/wx/vaultframe.py:416 ../src/frontends/wx/vaultframe.py:425
+#: ../src/frontends/wx/loadframe.py:134 ../src/frontends/wx/loadframe.py:143
+#: ../src/frontends/wx/vaultframe.py:451 ../src/frontends/wx/vaultframe.py:460
 msgid "Bad Vault"
 msgstr ""
 
-#: ../src/frontends/wx/loadframe.py:144 ../src/frontends/wx/vaultframe.py:424
+#: ../src/frontends/wx/loadframe.py:142 ../src/frontends/wx/vaultframe.py:459
 msgid "Vault integrity check failed"
 msgstr ""
 
-#: ../src/frontends/wx/mergeframe.py:37
+#: ../src/frontends/wx/mergeframe.py:36
 msgid "Select the Records to merge into this Vault"
 msgstr ""
 
-#: ../src/frontends/wx/mergeframe.py:63
+#: ../src/frontends/wx/mergeframe.py:62
 msgid "Merge Vault Records"
 msgstr ""
 
-#: ../src/frontends/wx/recordframe.py:55 ../src/frontends/wx/vaultframe.py:47
-msgid "Group"
-msgstr ""
-
-#: ../src/frontends/wx/recordframe.py:56 ../src/frontends/wx/vaultframe.py:45
+#: ../src/frontends/wx/recordframe.py:43 ../src/frontends/wx/vaultframe.py:47
 msgid "Title"
 msgstr ""
 
-#: ../src/frontends/wx/recordframe.py:57 ../src/frontends/wx/vaultframe.py:46
+#: ../src/frontends/wx/recordframe.py:44 ../src/frontends/wx/vaultframe.py:49
+msgid "Group"
+msgstr ""
+
+#: ../src/frontends/wx/recordframe.py:45 ../src/frontends/wx/vaultframe.py:48
 msgid "Username"
 msgstr ""
 
-#: ../src/frontends/wx/recordframe.py:59
+#: ../src/frontends/wx/recordframe.py:47
 msgid "URL"
 msgstr ""
 
-#: ../src/frontends/wx/recordframe.py:60
+#: ../src/frontends/wx/recordframe.py:48
 msgid "Notes"
 msgstr ""
 
-#: ../src/frontends/wx/recordframe.py:85
+#: ../src/frontends/wx/recordframe.py:57
+msgid "Cancel"
+msgstr ""
+
+#: ../src/frontends/wx/recordframe.py:72
 msgid "Edit Vault Record"
 msgstr ""
 
-#: ../src/frontends/wx/recordframe.py:114
+#: ../src/frontends/wx/recordframe.py:101
 msgid "(un)mask"
 msgstr ""
 
-#: ../src/frontends/wx/recordframe.py:117
+#: ../src/frontends/wx/recordframe.py:104
 msgid "generate"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:138
+#: ../src/frontends/wx/settings.py:44
+msgid "Search inside notes"
+msgstr ""
+
+#: ../src/frontends/wx/settings.py:45
+msgid "Search inside passwords"
+msgstr ""
+
+#: ../src/frontends/wx/settings.py:47
+msgid "Generated Password Length"
+msgstr ""
+
+#: ../src/frontends/wx/settings.py:51
+msgid "Alphabet"
+msgstr ""
+
+#: ../src/frontends/wx/settings.py:53
+msgid "Avoid Bigrams"
+msgstr ""
+
+#: ../src/frontends/wx/settings.py:76
+msgid "Settings"
+msgstr ""
+
+#: ../src/frontends/wx/vaultframe.py:162
 msgid "Change &Password"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:141
+#: ../src/frontends/wx/vaultframe.py:165
 msgid "&Merge Records from"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:143
+#: ../src/frontends/wx/vaultframe.py:167
 msgid "&About"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:146
+#: ../src/frontends/wx/vaultframe.py:169
+msgid "&Settings"
+msgstr ""
+
+#: ../src/frontends/wx/vaultframe.py:172
 msgid "E&xit"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:149
-msgid "&Add\tCtrl+A"
+#: ../src/frontends/wx/vaultframe.py:175
+msgid "&Add\tCtrl+Shift+A"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:151
-msgid "&Delete\tCtrl+Back"
+#: ../src/frontends/wx/vaultframe.py:177
+msgid "&Delete\tCtrl+Del"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:154
+#: ../src/frontends/wx/vaultframe.py:180
 msgid "&Edit\tCtrl+E"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:158
-msgid "Copy &Username\tCtrl+U"
+#: ../src/frontends/wx/vaultframe.py:184
+msgid "Copy &Username\tCtrl+Shift+C"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:161
-msgid "Copy &Password\tCtrl+P"
+#: ../src/frontends/wx/vaultframe.py:187
+msgid "Copy &Password\tCtrl+C"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:164
-msgid "Copy UR&L\tCtrl+L"
+#: ../src/frontends/wx/vaultframe.py:190
+msgid "Open UR&L\tCtrl+L"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:167
+#: ../src/frontends/wx/vaultframe.py:193
+msgid "Search &For Entry\tCtrl+F"
+msgstr ""
+
+#: ../src/frontends/wx/vaultframe.py:196
 msgid "&Vault"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:168
+#: ../src/frontends/wx/vaultframe.py:197
 msgid "&Record"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:171
+#: ../src/frontends/wx/vaultframe.py:200
 msgid "Vault Contents"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:228
+#: ../src/frontends/wx/vaultframe.py:265
 msgid "Read Vault contents from disk"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:239
+#: ../src/frontends/wx/vaultframe.py:276
 msgid "Wrote Vault contents to disk"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:242
+#: ../src/frontends/wx/vaultframe.py:279
 msgid "Could not write Vault contents to disk"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:243
+#: ../src/frontends/wx/vaultframe.py:280
 msgid "Error writing to disk"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:252 ../src/frontends/wx/vaultframe.py:265
+#: ../src/frontends/wx/vaultframe.py:289 ../src/frontends/wx/vaultframe.py:302
 msgid "Could not open clipboard"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:261
+#: ../src/frontends/wx/vaultframe.py:298
 msgid "Cleared clipboard"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:300
-#, python-format
-msgid "Changed title of \"%s\""
-msgstr ""
-
-#: ../src/frontends/wx/vaultframe.py:351
+#: ../src/frontends/wx/vaultframe.py:386
 msgid "New password"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:352 ../src/frontends/wx/vaultframe.py:362
+#: ../src/frontends/wx/vaultframe.py:387 ../src/frontends/wx/vaultframe.py:397
 msgid "Change Vault Password"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:361
+#: ../src/frontends/wx/vaultframe.py:396
 msgid "Re-enter new password"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:371
+#: ../src/frontends/wx/vaultframe.py:406
 msgid "The given passwords do not match"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:380
+#: ../src/frontends/wx/vaultframe.py:415
 msgid "Changed Vault password"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:385 ../src/frontends/wx/vaultframe.py:393
+#: ../src/frontends/wx/vaultframe.py:420 ../src/frontends/wx/vaultframe.py:428
 msgid "Open Vault..."
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:444
+#: ../src/frontends/wx/vaultframe.py:478
 msgid "new"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:449
+#: ../src/frontends/wx/vaultframe.py:483
 #, python-format
 msgid "updates \"%s\""
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:521
+#: ../src/frontends/wx/vaultframe.py:545
 msgid ""
 "Are you sure you want to delete this record? It contains a username or "
 "password and there is no way to undo this action."
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:522
+#: ../src/frontends/wx/vaultframe.py:546
 msgid "Really delete record?"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:546
+#: ../src/frontends/wx/vaultframe.py:567
 #, python-format
 msgid "Copied username of \"%s\" to clipboard"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:548
+#: ../src/frontends/wx/vaultframe.py:569
 #, python-format
 msgid "Error copying username of \"%s\" to clipboard"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:560
+#: ../src/frontends/wx/vaultframe.py:581
 #, python-format
 msgid "Copied password of \"%s\" to clipboard"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:562
+#: ../src/frontends/wx/vaultframe.py:583
 #, python-format
 msgid "Error copying password of \"%s\" to clipboard"
 msgstr ""
 
-#: ../src/frontends/wx/vaultframe.py:574
+#: ../src/frontends/wx/vaultframe.py:597
 #, python-format
-msgid "Copied URL of \"%s\" to clipboard"
-msgstr ""
-
-#: ../src/frontends/wx/vaultframe.py:576
-#, python-format
-msgid "Error copying URL of \"%s\" to clipboard"
+msgid "Could not load python module \"webbrowser\" needed to open \"%s\""
 msgstr ""

@@ -19,7 +19,8 @@
 
 import os
 import platform
-from ConfigParser import SafeConfigParser
+import six
+from six.moves.configparser import SafeConfigParser
 
 
 class Config(object):
@@ -33,10 +34,10 @@ class Config(object):
         self._basescript = None
         self.recentvaults = []
         self.pwlength = 10
-        self.reduction = False
         self.search_notes = False
         self.search_passwd = False
-        self.alphabet = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_"
+        self.alphabet = "abcdefghikmnopqrstuvwxyz23456789ABCDEFGHJKLMNPQRSTUVWXYZ_"
+        self.avoid_bigrams = "cl mn nm nn rn vv VV"
 
         self._fname = self.get_config_filename()
         self._parser = SafeConfigParser()
@@ -52,15 +53,8 @@ class Config(object):
                 break
             self.recentvaults.append(self._parser.get("base", "recentvaults" + str(num)))
 
-        if self._parser.has_option("base", "alphabet"):
-            self.alphabet = int(self._parser.get("base", "alphabet"))
-
         if self._parser.has_option("base", "pwlength"):
             self.pwlength = int(self._parser.get("base", "pwlength"))
-
-        if self._parser.has_option("base", "alphabetreduction"):
-            if self._parser.get("base", "alphabetreduction") == "True":
-                self.reduction = True
 
         if self._parser.has_option("base", "search_notes"):
             if self._parser.get("base", "search_notes") == "True":
@@ -69,6 +63,12 @@ class Config(object):
         if self._parser.has_option("base", "search_passwd"):
             if self._parser.get("base", "search_passwd") == "True":
                 self.search_passwd = True
+
+        if self._parser.has_option("base", "alphabet"):
+            self.alphabet = self._parser.get("base", "alphabet")
+
+        if self._parser.has_option("base", "avoid_bigrams"):
+            self.avoid_bigrams = self._parser.get("base", "avoid_bigrams")
 
         if not os.path.exists(self._fname):
             self.save()
@@ -94,9 +94,10 @@ class Config(object):
                 break
 
         self._parser.set("base", "pwlength", str(self.pwlength))
-        self._parser.set("base", "alphabetreduction", str(self.reduction))
         self._parser.set("base", "search_notes", str(self.search_notes))
         self._parser.set("base", "search_passwd", str(self.search_passwd))
+        self._parser.set("base", "alphabet", str(self.alphabet))
+        self._parser.set("base", "avoid_bigrams", str(self.avoid_bigrams))
         filehandle = open(self._fname, 'w')
         self._parser.write(filehandle)
         filehandle.close()

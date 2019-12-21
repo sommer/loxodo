@@ -33,15 +33,13 @@ class Settings(wx.Dialog):
     """
     def __init__(self, parent):
         wx.Dialog.__init__(self, parent)
-        wx.EVT_CLOSE(self, self._on_frame_close)
+        self.Bind(wx.EVT_CLOSE, self._on_frame_close)
         self.Bind(wx.EVT_CHAR_HOOK, self._on_escape)
 
         self.panel = wx.Panel(self, -1)
 
         _sz_main = wx.BoxSizer(wx.VERTICAL)
         _sz_fields = wx.FlexGridSizer(cols=2, hgap=5, vgap=5)
-        _sz_fields.AddGrowableCol(1)
-        _sz_fields.AddGrowableRow(5)
 
         self._search_notes = self._add_a_checkbox(_sz_fields,_("Search inside notes") + ":")
         self._search_passwd = self._add_a_checkbox(_sz_fields,_("Search inside passwords") + ":")
@@ -50,19 +48,21 @@ class Settings(wx.Dialog):
 
         _sz_main.Add(_sz_fields, 1, wx.EXPAND | wx.GROW)
 
-        self._cb_reduction = self._add_a_checkbox(_sz_fields,_("Avoid easy to mistake chars") + ":")
-
         self._tc_alphabet = self._add_a_textcontrol(_sz_fields,_("Alphabet")+ ":",config.alphabet)
+
+        self._tc_avoid_bigrams = self._add_a_textcontrol(_sz_fields,_("Avoid Bigrams")+ ":",config.avoid_bigrams)
+
+        _sz_fields.AddGrowableCol(1)
 
         _ln_line = wx.StaticLine(self.panel, -1, size=(20, -1), style=wx.LI_HORIZONTAL)
         _sz_main.Add(_ln_line, 0, wx.GROW|wx.ALIGN_CENTER_VERTICAL|wx.RIGHT|wx.TOP, 5)
 
         btnsizer = wx.StdDialogButtonSizer()
         btn = wx.Button(self.panel, wx.ID_CANCEL)
-        wx.EVT_BUTTON(self, wx.ID_CANCEL, self._on_cancel)
+        btn.Bind(wx.EVT_BUTTON, self._on_cancel)
         btnsizer.AddButton(btn)
         btn = wx.Button(self.panel, wx.ID_OK)
-        wx.EVT_BUTTON(self, wx.ID_OK, self._on_ok)
+        btn.Bind(wx.EVT_BUTTON, self._on_ok)
         btn.SetDefault()
         btnsizer.AddButton(btn)
         btnsizer.Realize()
@@ -117,7 +117,7 @@ class Settings(wx.Dialog):
         """
         self._sc_length.SetValue(config.pwlength)
         self._tc_alphabet.SetValue(config.alphabet)
-        self._cb_reduction.SetValue(config.reduction)
+        self._tc_avoid_bigrams.SetValue(config.avoid_bigrams)
         self._search_notes.SetValue(config.search_notes)
         self._search_passwd.SetValue(config.search_passwd)
 
@@ -126,10 +126,10 @@ class Settings(wx.Dialog):
         Update source from fields
         """
         config.pwlength = self._sc_length.GetValue()
-        config.reduction = self._cb_reduction.GetValue()
         config.search_notes = self._search_notes.GetValue()
         config.search_passwd = self._search_passwd.GetValue()
         config.alphabet = self._tc_alphabet.GetValue()
+        config.avoid_bigrams = self._tc_avoid_bigrams.GetValue()
         config.save()
 
     def _on_cancel(self, dummy):
