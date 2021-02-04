@@ -224,7 +224,7 @@ class InteractiveConsole(cmd.Cmd):
         for record in vault_records:
             print(record.title + " [" + record.user + "]")
 
-    def do_show(self, line, echo=True, passwd=False):
+    def do_show(self, line, echo=True, passwd=False, yaml=False):
         """
         Show the specified entry (including its password).
         A case insenstive search of titles is done, entries can also be specified as regular expressions.
@@ -242,7 +242,13 @@ class InteractiveConsole(cmd.Cmd):
             return
 
         for record in matches:
-            if echo is True:
+            if yaml is True:
+                print("%s: '%s'" % (record.title, record.passwd))
+                if record.user:
+                    print("%s_USER: '%s'" % (record.title, record.user))
+                if record.notes.strip():
+                    print("%s_NOTES: >\n%s" % (record.title, '\n'.join([('    '+x) for x in record.notes.split('\n')])))
+            elif echo is True:
                 print("""
 %s.%s
 Username : %s
@@ -257,7 +263,7 @@ Username : %s""" % (record.group,
                     record.title,
                     record.user))
 
-            if record.notes.strip():
+            if record.notes.strip() and not yaml:
                 l = record.notes.strip().split("\r\n")
                 a = "Notes    : "
                 b = "         : "
@@ -318,6 +324,7 @@ def main(argv):
     parser.add_option("-i", "--interactive", dest="interactive", default=False, action="store_true", help="use command line interface")
     parser.add_option("-p", "--password", dest="passwd", default=False, action="store_true", help="Auto adds password to clipboard. (GTK Only)")
     parser.add_option("-e", "--echo", dest="echo", default=False, action="store_true", help="Causes password to be displayed on the screen")
+    parser.add_option("-y", "--yaml", action="store_true", help="produce output in YAML format")
     (options, args) = parser.parse_args()
 
     interactiveConsole = InteractiveConsole()
@@ -339,7 +346,7 @@ def main(argv):
     if options.do_ls:
         interactiveConsole.do_ls("")
     elif options.do_show:
-        interactiveConsole.do_show(options.do_show, options.echo, options.passwd)
+        interactiveConsole.do_show(options.do_show, options.echo, options.passwd, options.yaml)
     else:
         interactiveConsole.cmdloop()
 
