@@ -51,3 +51,13 @@ Quickstart:
 ./loxodo.py -i
 	runs Loxodo in command line interactive mode
 
+
+Getting the pass phrase from the environment:
+---------------------------------------------
+
+This is risky and is intended only for careful automation purposes. 
+Only consider this if you are confident you can keep the contents of your environment
+variables secret. In particular, someone who gets hold of the same filesystem with both the password safe
+file and the environment variable has, effecitvely, full access to all your passwords.
+
+If you can live with the risk you can set VAULT_PASSWORD in the environment.

@@ -71,7 +71,10 @@ class InteractiveConsole(cmd.Cmd):
     def open_vault(self):
         print("Opening " + self.vault_file_name + "...")
         try:
-            self.vault_password = self._getpass("Vault password: ")
+            if os.environ.get('VAULT_PASSWORD'):
+                self.vault_password = os.environ['VAULT_PASSWORD']
+            else:
+                self.vault_password = self._getpass("Vault password: ")
         except EOFError:
             print("\n\nBye.")
             raise RuntimeError("No password given")
